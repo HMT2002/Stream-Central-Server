@@ -1,0 +1,9 @@
+node_modules
+*/videos/
+*/node_modules/
+*.mp4
+*.mkv
+*.ass
+*.vtt
+*.ass
+*.srt
