@@ -31,7 +31,7 @@ const AppRouter = () => {
             <Route path="/thread/:slug" element={<ThreadPage />} />
             <Route path="/account/:username" element={<AccountPage />} />
             <Route path="/video/:videoname" element={<VideoPage />} />
-            <Route path="/video-demo" element={<VideoDemo />} />
+            <Route path="/video-demo/:filename" element={<VideoDemo />} />
 
             <Route path="/video-ver-2/:videoname" element={<VideoPageVer2 />} />
             <Route path="/video-ver-3/:videoname" element={<VideoPageVer3 />} />

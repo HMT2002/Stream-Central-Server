@@ -63,6 +63,7 @@ const authRouter = require('./routes/authRoute');
 const notificationRouter = require('./routes/notificationRoute');
 const videoRouter = require('./routes/videoRoute');
 const testRouter = require('./routes/testRoute');
+const redirectRouter = require('./routes/redirectRoute');
 
 const lessonRouter = require('./routes/lessonRoute');
 const educationRouter = require('./routes/educationRoute');
@@ -82,6 +83,8 @@ app.use('/api/v1/document', documentRouter);
 
 app.use('/api/test', testRouter);
 app.use('/api/video', videoRouter);
+app.use('/redirect', redirectRouter);
+
 
 app.all('*', (req, res, next) => {
   next(new AppError('Cant find ' + req.originalUrl + ' on the server', 404));

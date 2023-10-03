@@ -25,6 +25,7 @@ import '../styles/VideoDemo.css';
 
 const VideoDemo = () => {
   const params = useParams();
+  const filename=params.filename
   const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
   const videoNormal = useRef();
 
@@ -36,30 +37,34 @@ const VideoDemo = () => {
 
   useEffect(() => {
     const LoadVideo = async () => {
-      setSource((prevState) => '/videos/MY Heart Rate.mp4');
       try {
-        // var obj_play_HLS = {
-        //   fill: true,
-        //   fluid: true,
-        //   autoplay: true,
-        //   controls: true,
-        //   preload: 'auto',
-        //   loop: true,
-        //   sources: [
-        //     {
-        //       src: '/videos/convert/MY Heart Rate.m3u8',
-        //       type: 'application/x-mpegURL',
-        //     },
-        //   ],
-        // };
-        // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
-        //   videojs.log('Your player is ready!');
-        //   const defaultVolume = 0.4;
-        //   this.volume(defaultVolume);
-        //   this.on('ended', function () {
-        //     videojs.log('Awww...over so soon?!');
-        //   });
-        // });
+
+
+        const config = {
+          startPosition: 0, // can be any number you want
+        };
+        const url='/redirect/hls/'+filename+'.m3u8';
+        const hls = new Hls(config);
+        hls.loadSource(url);
+        hls.attachMedia(videoHLS.current);
+        hls.subtitleDisplay = true;
+
+        var obj_play_HLS = {
+          fill: true,
+          fluid: true,
+          autoplay: true,
+          controls: true,
+          loop: true,
+        };
+        const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
+          videojs.log('Your player is ready!');
+          const defaultVolume = 0.4;
+          this.volume(defaultVolume);
+          this.on('ended', function () {
+            videojs.log('Awww...over so soon?!');
+          });
+        });
+
 
         // const videoDashWindowCurrent=videoDashWindow.current;
         // var urlDash = 'http://localhost/tmp_dash/videomusic1080/index.mpd';
@@ -68,24 +73,25 @@ const VideoDemo = () => {
         // playerDashWindow.current.attachView(videoDashWindowCurrent);
         // console.log(playerDashWindow)
 
-        if (videoDashWindow.current) {
-          const video = videoDashWindow.current;
-          var urlDash = 'http://localhost:9100/videos/test/index.mpd';
-          playerDashWindow.current = dashjs.MediaPlayer().create();
 
-          playerDashWindow.current.initialize(video, urlDash, true);
-          playerDashWindow.current.attachView(video);
+        // if (videoDashWindow.current) {
+        //   const video = videoDashWindow.current;
+        //   var urlDash = 'http://localhost:9100/videos/test/index.mpd';
+        //   playerDashWindow.current = dashjs.MediaPlayer().create();
 
-          // console.log(playerDashWindow.current);
+        //   playerDashWindow.current.initialize(video, urlDash, true);
+        //   playerDashWindow.current.attachView(video);
 
-          if (playerDashWindow.current) {
-            playerDashWindow.current.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
-            // console.log(video);
-          }
-          const controlbar = new ControlBar(playerDashWindow.current);
-          //Player is instance of Dash.js MediaPlayer;
-          controlbar.initialize();
-        }
+        //   console.log(playerDashWindow.current);
+
+        //   if (playerDashWindow.current) {
+        //     playerDashWindow.current.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
+        //     console.log(video);
+        //   }
+        //   const controlbar = new ControlBar(playerDashWindow.current);
+        //   // Player is instance of Dash.js MediaPlayer;
+        //   controlbar.initialize();
+        // }
       } catch (error) {
         console.log(error);
         if (playerDashWindow.current) {
@@ -102,11 +108,11 @@ const VideoDemo = () => {
     <React.Fragment>
       <Card className="thread-page__thread">
         {/* <video className="video-js thread-page__thread-video" controls src={source} ref={videoNormal} /> */}
-        {/* <video ref={videoHLS} className="video-js"></video> */}
+        <video ref={videoHLS} className="video-js"></video>
         {/* <video ref={videoDashLinux} className="video-js"></video> */}
-                <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video>
+        {/* <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video> */}
 
-        <div className="dash-video-player">
+        {/* <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
             <video ref={videoDashWindow} loop></video>
             <div id="videoController" className="video-controller unselectable">
@@ -147,7 +153,7 @@ const VideoDemo = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </Card>
     </React.Fragment>
   );
