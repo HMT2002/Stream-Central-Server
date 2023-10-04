@@ -1,5 +1,4 @@
 node_modules
-*/videos/
 */node_modules/
 *.mp4
 *.mkv
@@ -7,3 +6,7 @@ node_modules
 *.vtt
 *.ass
 *.srt
+*.m3u8
+*.ts
+*.m4s
+*.mpd
