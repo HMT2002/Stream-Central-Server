@@ -6,10 +6,12 @@ const router = express.Router();
 
 //ROUTE HANDLER
 router.route('/hls/:filename').get(redirectController.RedirectHls);
-router.route('/dash/:filename').get(redirectController.RedirectDash);
+router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHandler);
+router.route('/dash/:filenamebase/:filename').get(redirectController.RedirectDash);
+
 router.route('/live/:filename').get(redirectController.RedirectLive);
 
-router.route('/replicate/send').post(redirectController.ReplicateRequest);
+router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);
 
 
 

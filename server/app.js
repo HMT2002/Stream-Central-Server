@@ -49,6 +49,7 @@ app.get('/*.ass', videoController.ASSHandler);
 app.get('/*.srt', videoController.SRTHandler);
 app.get('/*.mp4', videoController.MP4MPDHandler);
 app.get('/*.mpd', videoController.MPDHandler);
+app.get('/*.m4s', videoController.M4SHandler);
 
 // #endregion
 

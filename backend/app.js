@@ -5,6 +5,7 @@ const app = express();
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const videoController = require('./controllers/videoController');
+const redirectController = require('./controllers/redirectController');
 
 const cors = require('cors');
 var path = require('path');
@@ -51,7 +52,8 @@ app.get('/*.vtt', videoController.VTTHandler);
 app.get('/*.ass', videoController.ASSHandler);
 app.get('/*.srt', videoController.SRTHandler);
 app.get('/*.mp4', videoController.MP4MPDHandler);
-app.get('/*.mpd', videoController.MPDHandler);
+// app.get('/*.mpd', videoController.MPDHandler);
+// app.get('/*.m4s', redirectController.M4SHandler);
 
 // #endregion
 
