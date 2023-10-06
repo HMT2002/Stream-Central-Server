@@ -57,13 +57,34 @@ const availTestDash = [
   },
 ];
 
+const availTestRTMP = [
+  {
+    url: '192.168.1.99',
+    port: ':1936',
+    videoname: 'stein',
+  },
+];
+
+const availTestDelete = [
+  {
+    url: 'localhost',
+    port: ':9100',
+    videoname: 'steinoptest.mp4',
+  },
+];
+
 const getAvailableHlsUrlAndPort = async () => {
   return availTestHls;
 };
 const getAvailableDashUrlAndPort = async () => {
   return availTestDash;
 };
-
+const getAvailableRTMPUrlAndPort = async () => {
+  return availTestRTMP;
+};
+const getAvailableDeleteUrlAndPort = async () => {
+  return availTestDelete;
+};
 const getVideoAvailableLocation = async () => {
   return availTestHls;
 };
@@ -138,10 +159,12 @@ exports.M4SHandler = catchAsync(async (req, res, next) => {
 
 exports.RedirectLive = catchAsync(async (req, res, next) => {
   console.log('redirect');
-  const availableUrlAndPort = await getAvailableUrlAndPort();
-  const url = availableUrlAndPort[0].url || 'localhost';
-  const port = availableUrlAndPort[0].port || ':9100';
-  res.redirect('http://' + url + port);
+  const availableUrlAndPort = await getAvailableRTMPUrlAndPort();
+  const url = availableUrlAndPort[0].url || '192.168.1.99';
+  const port = availableUrlAndPort[0].port || ':1936';
+  const videoname = availableUrlAndPort[0].videoname || 'steinop';
+  console.log(videoname)
+  res.redirect('rtmp://' + url + port+'/live/'+videoname);
   res.end();
 });
 
@@ -149,9 +172,18 @@ exports.RedirectLive = catchAsync(async (req, res, next) => {
 exports.RedirectReplicateRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post replicate');
   console.log(req.body);
-  const availableUrlAndPort = await getAvailableUrlAndPort();
+  const availableUrlAndPort = await getAvailableHlsUrlAndPort();
   const url = availableUrlAndPort[0].url || 'localhost';
   const port = availableUrlAndPort[0].port || ':9100';
   res.redirect(308,'http://' + url + port + '/api/v1/replicate/send');
+  res.end();
+});
+exports.RedirectDeleteRequest = catchAsync(async (req, res, next) => {
+  console.log('redirect post replicate');
+  console.log(req.body);
+  const availableUrlAndPort = await getAvailableHlsUrlAndPort();
+  const url = availableUrlAndPort[0].url || 'localhost';
+  const port = availableUrlAndPort[0].port || ':9100';
+  res.redirect(308,'http://' + url + port + '/api/v1/delete/');
   res.end();
 });

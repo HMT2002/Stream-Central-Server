@@ -56,6 +56,7 @@ app.get('/*.m4s', videoController.M4SHandler);
 //ROUTES
 const videoRouter = require('./routes/videoRoute');
 const replicateRouter = require('./routes/replicateRoute');
+const deleteRouter = require('./routes/deleteRoute');
 
 const testRouter = require('./routes/testRoute');
 
@@ -63,9 +64,10 @@ const testRouter = require('./routes/testRoute');
 
 
 app.use('/api/test', testRouter);
-
 app.use('/api/v1/video', videoRouter);
 app.use('/api/v1/replicate', replicateRouter);
+app.use('/api/v1/delete', deleteRouter);
+
 
 
 app.all('*', (req, res, next) => {

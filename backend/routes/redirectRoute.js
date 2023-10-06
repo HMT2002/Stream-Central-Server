@@ -10,8 +10,10 @@ router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHan
 router.route('/dash/:filenamebase/:filename').get(redirectController.RedirectDash);
 
 router.route('/live/:filename').get(redirectController.RedirectLive);
+// router.route('/live/:filename').get(redirectController.RedirectLive);
 
 router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);
+router.route('/delete').post(redirectController.RedirectDeleteRequest);
 
 
 

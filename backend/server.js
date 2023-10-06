@@ -7,7 +7,7 @@ const app = require('./app');
 
 const dbVideoSharing = require('./config/database/db_index');
 
-dbVideoSharing.connect();
+// dbVideoSharing.connect();
 
 const hls = require('hls-server');
 const fs=require('fs')
