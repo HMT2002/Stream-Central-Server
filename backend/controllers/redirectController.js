@@ -150,8 +150,8 @@ const _protocol = (url) => {
 };
 
 const getMyNetworkDownloadSpeed = async (url, port, videoname) => {
+  const fileSizeInBytes = 1000000; // ~ 1 mb
   // return new Promise((resolve, reject) => {
-  //   const fileSizeInBytes = 1000000; // ~ 1 mb
   //   var options = {
   //     host: url,
   //     port: Number(port.replace(':', '')),
@@ -180,7 +180,11 @@ const getMyNetworkDownloadSpeed = async (url, port, videoname) => {
     // console.log(data);
     const endTime = new Date().getTime();
     const duration = (endTime - startTime) / 1000;
-    return {data,duration};
+    const bitsLoaded = fileSizeInBytes * 8;
+    const bps = (bitsLoaded / duration).toFixed(2);
+    const kbps = (bps / 1000).toFixed(2);
+    const mbps = (kbps / 1000).toFixed(2);
+    return {data,duration,bps,kbps,mbps};
   } catch (err) {
     const endTime = new Date().getTime();
     const duration = (endTime - startTime) / 1000;
