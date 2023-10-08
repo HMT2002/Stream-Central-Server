@@ -56,14 +56,14 @@ const VideoDemo = () => {
           controls: true,
           loop: true,
         };
-        const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
-          videojs.log('Your player is ready!');
-          const defaultVolume = 0.4;
-          this.volume(defaultVolume);
-          this.on('ended', function () {
-            videojs.log('Awww...over so soon?!');
-          });
-        });
+        // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
+        //   videojs.log('Your player is ready!');
+        //   const defaultVolume = 0.4;
+        //   this.volume(defaultVolume);
+        //   this.on('ended', function () {
+        //     videojs.log('Awww...over so soon?!');
+        //   });
+        // });
 
 
         // const videoDashWindowCurrent=videoDashWindow.current;
@@ -112,7 +112,7 @@ const VideoDemo = () => {
         {/* <video ref={videoDashLinux} className="video-js"></video> */}
         {/* <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video> */}
 
-        {/* <div className="dash-video-player">
+        <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
             <video ref={videoDashWindow} loop ></video>
             <div id="videoController" className="video-controller unselectable">
@@ -153,7 +153,7 @@ const VideoDemo = () => {
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
       </Card>
     </React.Fragment>
   );
