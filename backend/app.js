@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 app.get('/*.vtt', videoController.VTTHandler);
 app.get('/*.ass', videoController.ASSHandler);
 app.get('/*.srt', videoController.SRTHandler);
-app.get('/*.mp4', videoController.MP4MPDHandler);
+// app.get('/*.mp4', videoController.MP4MPDHandler);
 // app.get('/*.mpd', videoController.MPDHandler);
 // app.get('/*.m4s', redirectController.M4SHandler);
 
@@ -62,14 +62,10 @@ const defaultRoute = require('./routes/defaultRoute');
 const threadRouter = require('./routes/threadRoute');
 const userRouter = require('./routes/userRoute');
 const authRouter = require('./routes/authRoute');
-const notificationRouter = require('./routes/notificationRoute');
 const videoRouter = require('./routes/videoRoute');
 const testRouter = require('./routes/testRoute');
 const redirectRouter = require('./routes/redirectRoute');
 
-const lessonRouter = require('./routes/lessonRoute');
-const educationRouter = require('./routes/educationRoute');
-const documentRouter = require('./routes/documentRoute');
 
 //app.use('/', defaultRoute);
 
@@ -77,11 +73,6 @@ app.use('/api/v1/', defaultRoute);
 app.use('/api/v1/threads', threadRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/notification', notificationRouter);
-
-app.use('/api/v1/lesson', lessonRouter);
-app.use('/api/v1/education', educationRouter);
-app.use('/api/v1/document', documentRouter);
 
 app.use('/api/test', testRouter);
 app.use('/api/video', videoRouter);

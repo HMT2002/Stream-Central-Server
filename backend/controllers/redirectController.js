@@ -52,6 +52,21 @@ const availTestHls = [
     port: ':9100',
     videoname: 'medium',
   },
+  {
+    url: 'localhost',
+    port: ':9100',
+    videoname: 'medium2',
+  },
+  {
+    url: 'localhost',
+    port: ':9200',
+    videoname: 'medium2',
+  },
+  {
+    url: 'localhost',
+    port: ':9300',
+    videoname: 'medium2',
+  },
 ];
 
 const availTestDash = [
@@ -84,6 +99,21 @@ const availTestDash = [
     url: 'localhost',
     port: ':9100',
     videoname: 'test2',
+  },
+  {
+    url: 'localhost',
+    port: ':9100',
+    videoname: 'medium2',
+  },
+  {
+    url: 'localhost',
+    port: ':9200',
+    videoname: 'medium2',
+  },
+  {
+    url: 'localhost',
+    port: ':9300',
+    videoname: 'medium2',
   },
 ];
 
@@ -271,15 +301,15 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
 
 exports.RedirectDash = catchAsync(async (req, res, next) => {
   const filename = req.params.filename;
-  // console.log(filename)
-  // console.log('/////////////')
+  console.log(filename)
+  console.log('/////////////')
   const filenamebase = req.params.filenamebase;
   // console.log(filenamebase)
   const availableUrlAndPort = await getAvailableDashUrlAndPort();
   const result = availableUrlAndPort.filter((x) => {
     return x.videoname.toString() === filename;
   });
-  // console.log(result);
+  console.log(result);
   if (result.length == 0) {
     res.status(400).json({
       message: 'not found video',
