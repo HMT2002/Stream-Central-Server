@@ -24,17 +24,15 @@ new hls(server,{
   provider:{
     exists:(req,cb)=>{
       req.url=decodeURIComponent(req.url);
-      req.url=req.url.replace('/redirect/hls','/videos/convert');
       console.log('server js exists'+ req.url)
       // req.url=decodeURIComponent(req.url);
       const ext=req.url.split('.')[1];
       const urlAndFilename=req.url.split('.')[0];
-      console.log(urlAndFilename);
       if(ext!=='m3u8'&&ext!=='ts'){
         //console.log('not manifest or segment file');
         return cb(null,true);
       }
-
+      console.log(urlAndFilename);
 
       fs.access(__dirname+req.url,fs.constants.F_OK,function(err){
         if(err){
@@ -47,14 +45,12 @@ new hls(server,{
     },
     getManifestStream:(req,cb)=>{
       req.url=decodeURIComponent(req.url);
-      req.url=req.url.replace('/redirect/hls','/videos/convert');
       console.log('server js getManifestStream '+ req.url)
       const stream=fs.createReadStream(__dirname+req.url);
       cb(null,stream);
     },
     getSegmentStream:(req,cb)=>{
       req.url=decodeURIComponent(req.url);
-      req.url=req.url.replace('/redirect/hls','/videos/convert');
       console.log('server js getSegmentStream '+ req.url)
       const stream=fs.createReadStream(__dirname+req.url);
       cb(null,stream);

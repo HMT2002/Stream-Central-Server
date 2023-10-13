@@ -29,7 +29,7 @@ Server RTMP có thể được stream trên các port 1935 + SERVERINDEX của s
 
 Khi chạy npm start server thì là bật 1 server host live streaming, muốn có video streaming thì phải tạo luồng (stream) và chiếu lên host đó. Không biết lệnh thì có sẵn command line luôn.
 
-    streamnameip.bat <tên video> localhost:1936
+    rtmpMp4IP.bat <tên video> localhost:1936
 
  Lưu ý là chỉ có các trình duyệt, phần mềm nhất định mới hỗ trợ redirect phương thức HTTP thành RTMP, nghĩa là chỉ có phần mềm chẳng hạn như VLC có thể truy cập vào đường dẫn redirect live stream của backend.
     

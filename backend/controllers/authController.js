@@ -4,6 +4,10 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const User = require('./../models/mongo/User');
+const Log = require('./../models/mongo/Log');
+const Server = require('./../models/mongo/Server');
+const Video = require('./../models/mongo/Video');
+
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
 const APIFeatures = require('./../utils/apiFeatures');

@@ -4,12 +4,14 @@ const users = JSON.parse(fs.readFileSync('./json-resources/users.json'));
 const helperAPI = require('../modules/helperAPI');
 const driveAPI = require('../modules/driveAPI');
 const firebaseAPI = require('../modules/firebaseAPI');
-
-const threads_test = JSON.parse(fs.readFileSync('./json-resources/threads_test.json'));
-
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
+
+const User = require('./../models/mongo/User');
+const Log = require('./../models/mongo/Log');
+const Server = require('./../models/mongo/Server');
+const Video = require('./../models/mongo/Video');
 
 const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -159,6 +161,7 @@ const availTestDelete = [
 ];
 
 const getAvailableHlsUrlAndPort = async () => {
+
   return availTestHls;
 };
 const getAvailableDashUrlAndPort = async () => {
@@ -231,6 +234,27 @@ const checkTestErrorCode=(result)=>{
     return result;
   }
 }
+
+exports.GetAvailableServer = catchAsync(async (req, res, next) => {
+  console.log('check server');
+  console.log(req.query)
+  const video = await Video.findOne({ videoname: req.query.videoName });
+  console.log(video)
+  // const features = new APIFeatures(Server.find({ videos: video }), req.query)
+  // .filter()
+  // .sort()
+  // .limitFields()
+  // .paginate()
+  // .populateObjects()
+  // .category()
+  // .timeline();
+  
+const servers = await Server.find({ videos: video });
+console.log(servers);
+res.status(200).json({
+  servers
+});
+});
 
 exports.CheckSpeed = catchAsync(async (req, res, next) => {
   console.log('check speed');
