@@ -6,7 +6,10 @@ const router = express.Router();
 
 //ROUTE HANDLER
 router.route('/speed-check/:filename').get(redirectController.CheckSpeed);
-router.route('/get-available-server').get(redirectController.GetAvailableServer);
+router.route('/get-available-server/hls').get(redirectController.GetAvailableServerHls);
+router.route('/get-available-server/dash').get(redirectController.GetAvailableServerDash);
+router.route('/recall').get(redirectController.ServerRecall);
+
 
 router.route('/hls/:filename').get(redirectController.RedirectHls);
 router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHandler);

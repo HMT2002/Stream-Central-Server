@@ -23,6 +23,22 @@ let { URL, Url } = require('url');
 const { error } = require('console');
 const axios = require('axios');
 
+const availTestServer = [
+  {
+    url: 'localhost',
+    port: ':9100',
+  },
+
+  {
+    url: 'localhost',
+    port: ':9200',
+  },
+  {
+    url: 'localhost',
+    port: ':9300',
+  },
+];
+
 const availTestHls = [
   {
     url: 'localhost',
@@ -159,9 +175,10 @@ const availTestDelete = [
     videoname: 'steinoptest.mp4',
   },
 ];
-
+const getAvailableServer = async () => {
+  return availTestServer;
+};
 const getAvailableHlsUrlAndPort = async () => {
-
   return availTestHls;
 };
 const getAvailableDashUrlAndPort = async () => {
@@ -204,7 +221,7 @@ const getMyNetworkDownloadSpeed = async (url, port, videoname) => {
   //     resolve(error.code);
   //   });
   // });
-    const startTime = new Date().getTime();
+  const startTime = new Date().getTime();
 
   try {
     const baseUrl = 'http://' + url + port + '/videos/convert/' + videoname + '.m3u8';
@@ -217,43 +234,87 @@ const getMyNetworkDownloadSpeed = async (url, port, videoname) => {
     const bps = (bitsLoaded / duration).toFixed(2);
     const kbps = (bps / 1000).toFixed(2);
     const mbps = (kbps / 1000).toFixed(2);
-    return {data,duration,bps,kbps,mbps};
+    return { data, duration, bps, kbps, mbps };
   } catch (err) {
     const endTime = new Date().getTime();
     const duration = (endTime - startTime) / 1000;
-    return {...err,duration};
-    
+    return { ...err, duration };
   }
 };
 
-const checkTestErrorCode=(result)=>{
-  if(result.code&&result.code==='ECONNREFUSED'){
-    return{url: result.config.url,message:'ECONNREFUSED',duration:result.duration}
-  }
-  else{
+const checkTestErrorCode = (result) => {
+  if (result.code && result.code === 'ECONNREFUSED') {
+    return { url: result.config.url, message: 'ECONNREFUSED', duration: result.duration };
+  } else {
     return result;
   }
-}
+};
 
-exports.GetAvailableServer = catchAsync(async (req, res, next) => {
-  console.log('check server');
-  console.log(req.query)
-  const video = await Video.findOne({ videoname: req.query.videoName });
-  console.log(video)
-  // const features = new APIFeatures(Server.find({ videos: video }), req.query)
-  // .filter()
-  // .sort()
-  // .limitFields()
-  // .paginate()
-  // .populateObjects()
-  // .category()
-  // .timeline();
-  
-const servers = await Server.find({ videos: video });
-console.log(servers);
-res.status(200).json({
-  servers
+exports.GetAvailableServerHls = catchAsync(async (req, res, next) => {
+  console.log('check hls server');
+  console.log(req.query);
+  //   const video = await Video.findOne({ videoname: req.query.videoName });
+  //   console.log(video)
+  //   // const features = new APIFeatures(Server.find({ videos: video }), req.query)
+  //   // .filter()
+  //   // .sort()
+  //   // .limitFields()
+  //   // .paginate()
+  //   // .populateObjects()
+  //   // .category()
+  //   // .timeline();
+  // const servers = await Server.find({ videos: video });
+  // console.log(servers);
+  // res.status(200).json({
+  //   servers
+  // });
+  const availableServer = await getAvailableServer();
+  const url = availableServer[0].url;
+  const port = availableServer[0].port;
+  const videoname = req.query.videoName;
+  const baseUrl = 'http://' + url + port + '/api/default/check/hls/' + videoname;
+
+  const { data } = await axios.get(baseUrl);
+
+  res.status(200).json({
+    ...data,
+  });
+
+  // res.redirect('http://' + url + port + '/api/default/check/hls/' + videoname);
 });
+
+exports.GetAvailableServerDash = catchAsync(async (req, res, next) => {
+  console.log('check dash server');
+  console.log(req.query);
+
+  const availableServer = await getAvailableServer();
+  const url = availableServer[0].url;
+  const port = availableServer[0].port;
+  const videoname = req.query.videoName;
+  const baseUrl = 'http://' + url + port + '/api/default/check/dash/' + videoname;
+
+  const { data } = await axios.get(baseUrl);
+
+  res.status(200).json({
+    ...data,
+  });
+
+  // res.redirect('http://' + url + port + '/api/default/check/dash/' + videoname);
+});
+
+exports.ServerRecall = catchAsync(async (req, res, next) => {
+  console.log('recall server');
+  console.log(req.headers);
+  const referer = req.headers.referer;
+  console.log(referer);
+  const availableServer = await getAvailableServer();
+  const url = availableServer[0].url;
+  const port = availableServer[0].port;
+  const videoname = req.query.videoName;
+  res.status(200).json({
+    recall: 'recall here',
+    path: 'path here',
+  });
 });
 
 exports.CheckSpeed = catchAsync(async (req, res, next) => {
@@ -269,22 +330,15 @@ exports.CheckSpeed = catchAsync(async (req, res, next) => {
   const index2 = 1;
   const index3 = 2;
 
-  const speed1Download =checkTestErrorCode( await getMyNetworkDownloadSpeed(
-    result[index1].url,
-    result[index1].port,
-    result[index1].videoname
-  ));
-  const speed2Download =checkTestErrorCode( await getMyNetworkDownloadSpeed(
-    result[index2].url,
-    result[index2].port,
-    result[index2].videoname
-  ));
-  const speed3Download =checkTestErrorCode( await getMyNetworkDownloadSpeed(
-    result[index3].url,
-    result[index3].port,
-    result[index3].videoname
-  ));
-
+  const speed1Download = checkTestErrorCode(
+    await getMyNetworkDownloadSpeed(result[index1].url, result[index1].port, result[index1].videoname)
+  );
+  const speed2Download = checkTestErrorCode(
+    await getMyNetworkDownloadSpeed(result[index2].url, result[index2].port, result[index2].videoname)
+  );
+  const speed3Download = checkTestErrorCode(
+    await getMyNetworkDownloadSpeed(result[index3].url, result[index3].port, result[index3].videoname)
+  );
 
   if (result.length == 0) {
     res.status(400).json({
@@ -325,8 +379,8 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
 
 exports.RedirectDash = catchAsync(async (req, res, next) => {
   const filename = req.params.filename;
-  console.log(filename)
-  console.log('/////////////')
+  console.log(filename);
+  console.log('/////////////');
   const filenamebase = req.params.filenamebase;
   // console.log(filenamebase)
   const availableUrlAndPort = await getAvailableDashUrlAndPort();
