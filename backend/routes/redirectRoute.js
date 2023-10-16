@@ -24,6 +24,7 @@ router.route('/live/:filename').get(redirectController.RedirectLiveGET);
 router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);
 router.route('/delete').post(redirectController.RedirectDeleteRequest);
 
-
+router.route('/replicate/send-folder').post(redirectController.RedirectReplicateFolderRequest);
+router.route('/delete-folder').post(redirectController.RedirectDeleteFolderRequest);
 
 module.exports = router;

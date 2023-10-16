@@ -491,9 +491,10 @@ exports.RedirectLivePOST = catchAsync(async (req, res, next) => {
 exports.RedirectReplicateRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post replicate');
   console.log(req.body);
-  const availableUrlAndPort = await getAvailableHlsUrlAndPort();
-  const url = availableUrlAndPort[0].url || 'localhost';
-  const port = availableUrlAndPort[0].port || ':9100';
+  const availableServer=await getAvailableServer();
+  const index=0;
+  const url = availableServer[index].URL || 'localhost';
+  const port = availableServer[index].port || ':9100';
   res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send');
   res.end();
 });
@@ -504,5 +505,25 @@ exports.RedirectDeleteRequest = catchAsync(async (req, res, next) => {
   const url = availableUrlAndPort[0].url || 'localhost';
   const port = availableUrlAndPort[0].port || ':9100';
   res.redirect(308, 'http://' + url + port + '/api/v1/delete/');
+  res.end();
+});
+
+exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
+  console.log('redirect post replicate');
+  console.log(req.body);
+  const availableServer=await getAvailableServer();
+  const index=0;
+  const url = availableServer[index].URL || 'localhost';
+  const port = availableServer[index].port || ':9100';
+  res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
+  res.end();
+});
+exports.RedirectDeleteFolderRequest = catchAsync(async (req, res, next) => {
+  console.log('redirect post replicate');
+  console.log(req.body);
+  const availableUrlAndPort = await getAvailableHlsUrlAndPort();
+  const url = availableUrlAndPort[0].url || 'localhost';
+  const port = availableUrlAndPort[0].port || ':9100';
+  res.redirect(308, 'http://' + url + port + '/api/v1/delete/folder');
   res.end();
 });
