@@ -48,6 +48,11 @@ const availTestHls = [
   {
     url: 'localhost',
     port: ':9100',
+    videoname: 'World Domination How-To',
+  },
+  {
+    url: 'localhost',
+    port: ':9100',
     videoname: 'largesttest',
   },
   {
@@ -176,13 +181,16 @@ const availTestDelete = [
   },
 ];
 const getAvailableServer = async () => {
-  return availTestServer;
+  const servers = await Server.find({});
+  return servers;
 };
-const getAvailableHlsUrlAndPort = async () => {
-  return availTestHls;
+const getAvailableHls = async (videoname) => {
+  const availHls = await Video.findOne({ videoname: videoname, type: 'HLS' });
+  return availHls;
 };
-const getAvailableDashUrlAndPort = async () => {
-  return availTestDash;
+const getAvailableDash = async (videoname) => {
+  const availDash = await Video.findOne({ videoname: videoname, type: 'DASH' });
+  return availDash;
 };
 const getAvailableRTMPUrlAndPort = async () => {
   return availTestRTMP;
@@ -199,7 +207,7 @@ const _protocol = (url) => {
   return u.protocol === 'http:' ? http : https;
 };
 
-const getMyNetworkDownloadSpeed = async (url, port, videoname) => {
+const getMyNetworkDownloadSpeedHls = async (url, port, videoname) => {
   const fileSizeInBytes = 1000000; // ~ 1 mb
   // return new Promise((resolve, reject) => {
   //   var options = {
@@ -224,7 +232,7 @@ const getMyNetworkDownloadSpeed = async (url, port, videoname) => {
   const startTime = new Date().getTime();
 
   try {
-    const baseUrl = 'http://' + url + port + '/videos/convert/' + videoname + '.m3u8';
+    const baseUrl = 'http://' + url + port + '/videos/' + videoname + 'Hls/'+videoname+'.m3u8';
 
     const { data } = await axios.get(baseUrl);
     // console.log(data);
@@ -234,7 +242,7 @@ const getMyNetworkDownloadSpeed = async (url, port, videoname) => {
     const bps = (bitsLoaded / duration).toFixed(2);
     const kbps = (bps / 1000).toFixed(2);
     const mbps = (kbps / 1000).toFixed(2);
-    return { data, duration, bps, kbps, mbps };
+    return {  duration, bps, kbps, mbps };
   } catch (err) {
     const endTime = new Date().getTime();
     const duration = (endTime - startTime) / 1000;
@@ -253,8 +261,18 @@ const checkTestErrorCode = (result) => {
 exports.GetAvailableServerHls = catchAsync(async (req, res, next) => {
   console.log('check hls server');
   console.log(req.query);
-  //   const video = await Video.findOne({ videoname: req.query.videoName });
-  //   console.log(video)
+  const videoname = req.query.videoname;
+  const indexServer = req.query.index;
+  if (!indexServer || !videoname) {
+    res.status(200).json({
+      message: 'Index server or videoname missing',
+    });
+    return;
+  }
+  const video = await getAvailableHls(videoname);
+  console.log(video);
+
+  //#region old query code
   //   // const features = new APIFeatures(Server.find({ videos: video }), req.query)
   //   // .filter()
   //   // .sort()
@@ -268,14 +286,27 @@ exports.GetAvailableServerHls = catchAsync(async (req, res, next) => {
   // res.status(200).json({
   //   servers
   // });
+  //#endregion
+
+  if (!video) {
+    res.status(200).json({
+      message: 'Video not found on database, check name',
+    });
+    return;
+  }
   const availableServer = await getAvailableServer();
-  const url = availableServer[0].url;
-  const port = availableServer[0].port;
-  const videoname = req.query.videoName;
+  const numberOfServers = availableServer.length;
+  console.log(numberOfServers);
+  if (numberOfServers <= indexServer) {
+    res.status(200).json({
+      message: 'Server index exceed current available servers',
+    });
+    return;
+  }
+  const url = availableServer[indexServer].URL;
+  const port = availableServer[indexServer].port;
   const baseUrl = 'http://' + url + port + '/api/default/check/hls/' + videoname;
-
   const { data } = await axios.get(baseUrl);
-
   res.status(200).json({
     ...data,
   });
@@ -286,11 +317,32 @@ exports.GetAvailableServerHls = catchAsync(async (req, res, next) => {
 exports.GetAvailableServerDash = catchAsync(async (req, res, next) => {
   console.log('check dash server');
   console.log(req.query);
-
+  const videoname = req.query.videoname;
+  const indexServer = req.query.index;
+  if (!indexServer || !videoname) {
+    res.status(200).json({
+      message: 'Index server or videoname missing',
+    });
+    return;
+  }
+  const video = await getAvailableDash(videoname)
+  console.log(video);
+  if (!video) {
+    res.status(200).json({
+      message: 'Video not found on database, check name',
+    });
+    return;
+  }
   const availableServer = await getAvailableServer();
-  const url = availableServer[0].url;
-  const port = availableServer[0].port;
-  const videoname = req.query.videoName;
+  const numberOfServers = availableServer.length;
+  if (numberOfServers <= indexServer) {
+    res.status(200).json({
+      message: 'Server index exceed current available servers',
+    });
+    return;
+  }
+  const url = availableServer[indexServer].URL;
+  const port = availableServer[indexServer].port;
   const baseUrl = 'http://' + url + port + '/api/default/check/dash/' + videoname;
 
   const { data } = await axios.get(baseUrl);
@@ -304,76 +356,69 @@ exports.GetAvailableServerDash = catchAsync(async (req, res, next) => {
 
 exports.ServerRecall = catchAsync(async (req, res, next) => {
   console.log('recall server');
-  console.log(req.headers);
+  console.log(req.query);
   const referer = req.headers.referer;
   console.log(referer);
-  const availableServer = await getAvailableServer();
-  const url = availableServer[0].url;
-  const port = availableServer[0].port;
-  const videoname = req.query.videoName;
+
+  const urlAndPort = req.query.url.split(':');
+  const url = urlAndPort[0];
+  const port = urlAndPort[1];
+  const videoname = req.query.videoname;
   res.status(200).json({
     recall: 'recall here',
     path: 'path here',
+    url,
+    port,
+    videoname,
   });
 });
 
 exports.CheckSpeed = catchAsync(async (req, res, next) => {
   console.log('check speed');
-  const filename = req.params.filename;
-  console.log(filename);
-  const availableUrlAndPort = await getAvailableHlsUrlAndPort();
-  const result = availableUrlAndPort.filter((x) => {
-    return x.videoname.toString() === filename;
-  });
-  console.log(result);
-  const index1 = 0;
-  const index2 = 1;
-  const index3 = 2;
-
-  const speed1Download = checkTestErrorCode(
-    await getMyNetworkDownloadSpeed(result[index1].url, result[index1].port, result[index1].videoname)
-  );
-  const speed2Download = checkTestErrorCode(
-    await getMyNetworkDownloadSpeed(result[index2].url, result[index2].port, result[index2].videoname)
-  );
-  const speed3Download = checkTestErrorCode(
-    await getMyNetworkDownloadSpeed(result[index3].url, result[index3].port, result[index3].videoname)
-  );
-
-  if (result.length == 0) {
-    res.status(400).json({
-      message: 'not found video',
+  const videoname = req.params.filename;
+  const video = await getAvailableHls(videoname);
+    if (!video) {
+    res.status(200).json({
+      message: 'Video not found on database, check name',
     });
     return;
   }
+  const availableServer=await getAvailableServer();
+  if(availableServer.length===0){
+    res.status(200).json({
+      message: 'Not found any server',
+    });
+    return;
+    }
+  let testResults=[]
+  for (let i = 0; i < availableServer.length; i++) {
+    const speedDownload = checkTestErrorCode(
+      await getMyNetworkDownloadSpeedHls(availableServer[i].URL, availableServer[i].port, video.videoname)
+    );
+    testResults.push(speedDownload);
+  }
+
   res.status(400).json({
     message: 'found video',
-    speedDownload: { speed1Download, speed2Download, speed3Download },
+    downloadSpeeds: testResults,
   });
 });
 
 exports.RedirectHls = catchAsync(async (req, res, next) => {
   console.log('redirect');
   const filename = req.params.filename;
-  console.log(filename);
-  console.log('//////////////');
-  const availableUrlAndPort = await getAvailableHlsUrlAndPort();
-  const result = availableUrlAndPort.filter((x) => {
-    console.log(x.videoname);
-    return x.videoname.toString() === filename;
-  });
-  console.log(result);
-  if (result.length == 0) {
-    res.status(400).json({
-      message: 'not found video',
+  const video = await getAvailableHls(filename);
+  if (!video) {
+    res.status(200).json({
+      message: 'Video not found on database, check name',
     });
     return;
   }
   const index = 0;
   const url = result[index].url || 'localhost';
   const port = result[index].port || ':9100';
-  const videoname = result[index].videoname + '.m3u8' || 'medium.m3u8';
-  res.redirect('http://' + url + port + '/redirect/hls/' + videoname);
+  const videoname = result[index].videoname || 'medium';
+  res.redirect('http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8');
   res.end();
 });
 
