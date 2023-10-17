@@ -232,7 +232,7 @@ const getMyNetworkDownloadSpeedHls = async (url, port, videoname) => {
   const startTime = new Date().getTime();
 
   try {
-    const baseUrl = 'http://' + url + port + '/videos/' + videoname + 'Hls/'+videoname+'.m3u8';
+    const baseUrl = 'http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8';
 
     const { data } = await axios.get(baseUrl);
     // console.log(data);
@@ -242,11 +242,34 @@ const getMyNetworkDownloadSpeedHls = async (url, port, videoname) => {
     const bps = (bitsLoaded / duration).toFixed(2);
     const kbps = (bps / 1000).toFixed(2);
     const mbps = (kbps / 1000).toFixed(2);
-    return {  duration, bps, kbps, mbps };
+    return { duration, bps, kbps, mbps };
   } catch (err) {
+    // const endTime = new Date().getTime();
+    // const duration = (endTime - startTime) / 1000;
+    return { ...err };
+  }
+};
+
+const getMyNetworkDownloadSpeedDash = async (url, port, videoname) => {
+  const fileSizeInBytes = 1000000; // ~ 1 mb
+  const startTime = new Date().getTime();
+
+  try {
+    const baseUrl = 'http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd';
+
+    const { data } = await axios.get(baseUrl);
+    // console.log(data);
     const endTime = new Date().getTime();
     const duration = (endTime - startTime) / 1000;
-    return { ...err, duration };
+    const bitsLoaded = fileSizeInBytes * 8;
+    const bps = (bitsLoaded / duration).toFixed(2);
+    const kbps = (bps / 1000).toFixed(2);
+    const mbps = (kbps / 1000).toFixed(2);
+    return { duration, bps, kbps, mbps };
+  } catch (err) {
+    // const endTime = new Date().getTime();
+    // const duration = (endTime - startTime) / 1000;
+    return { ...err };
   }
 };
 
@@ -325,7 +348,7 @@ exports.GetAvailableServerDash = catchAsync(async (req, res, next) => {
     });
     return;
   }
-  const video = await getAvailableDash(videoname)
+  const video = await getAvailableDash(videoname);
   console.log(video);
   if (!video) {
     res.status(200).json({
@@ -373,29 +396,65 @@ exports.ServerRecall = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.CheckSpeed = catchAsync(async (req, res, next) => {
+const testSpeedHlsResults = async (availableServer, video) => {
+  let testResults = [];
+  for (let i = 0; i < availableServer.length; i++) {
+    const speedDownload = checkTestErrorCode(
+      await getMyNetworkDownloadSpeedHls(availableServer[i].URL, availableServer[i].port, video.videoname)
+    );
+    testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
+  }
+  return testResults;
+};
+
+exports.CheckSpeedHLS = catchAsync(async (req, res, next) => {
   console.log('check speed');
   const videoname = req.params.filename;
   const video = await getAvailableHls(videoname);
-    if (!video) {
+  if (!video) {
     res.status(200).json({
       message: 'Video not found on database, check name',
     });
     return;
   }
-  const availableServer=await getAvailableServer();
-  if(availableServer.length===0){
+  const availableServer = await getAvailableServer();
+  if (availableServer.length === 0) {
     res.status(200).json({
       message: 'Not found any server',
     });
     return;
-    }
-  let testResults=[]
+  }
+  const testResults = await testSpeedHlsResults(availableServer, video);
+
+  res.status(400).json({
+    message: 'found video',
+    downloadSpeeds: testResults,
+  });
+});
+
+exports.CheckSpeedDASH = catchAsync(async (req, res, next) => {
+  console.log('check speed');
+  const videoname = req.params.filename;
+  const video = await getAvailableHls(videoname);
+  if (!video) {
+    res.status(200).json({
+      message: 'Video not found on database, check name',
+    });
+    return;
+  }
+  const availableServer = await getAvailableServer();
+  if (availableServer.length === 0) {
+    res.status(200).json({
+      message: 'Not found any server',
+    });
+    return;
+  }
+  let testResults = [];
   for (let i = 0; i < availableServer.length; i++) {
     const speedDownload = checkTestErrorCode(
-      await getMyNetworkDownloadSpeedHls(availableServer[i].URL, availableServer[i].port, video.videoname)
+      await getMyNetworkDownloadSpeedDash(availableServer[i].URL, availableServer[i].port, video.videoname)
     );
-    testResults.push(speedDownload);
+    testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
   }
 
   res.status(400).json({
@@ -404,20 +463,41 @@ exports.CheckSpeed = catchAsync(async (req, res, next) => {
   });
 });
 
+function checkAvailableVideoOnServer(downloadSpeed) {
+  return downloadSpeed.duration;
+}
 exports.RedirectHls = catchAsync(async (req, res, next) => {
   console.log('redirect');
-  const filename = req.params.filename;
-  const video = await getAvailableHls(filename);
+  const videoname = req.params.filename;
+  const video = await getAvailableHls(videoname);
+  console.log(video);
   if (!video) {
     res.status(200).json({
       message: 'Video not found on database, check name',
     });
     return;
   }
+  const availableServer = await getAvailableServer();
+  if (availableServer.length === 0) {
+    res.status(200).json({
+      message: 'Not found any server',
+    });
+    return;
+  }
+  const testResults = await testSpeedHlsResults(availableServer, video);
+  const availableVideoOnServer = testResults
+    .filter((downloadSpeed) => {
+      return downloadSpeed.duration;
+    })
+    .sort((a, b) => a.duration - b.duration);
+  console.log(availableVideoOnServer);
+  // res.status(200).json({
+  //   availableVideoOnServer
+  // });
+  // return;
   const index = 0;
-  const url = result[index].url || 'localhost';
-  const port = result[index].port || ':9100';
-  const videoname = result[index].videoname || 'medium';
+  const url = availableVideoOnServer[index].URL || 'localhost';
+  const port = availableVideoOnServer[index].port || ':9100';
   res.redirect('http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8');
   res.end();
 });
@@ -491,8 +571,8 @@ exports.RedirectLivePOST = catchAsync(async (req, res, next) => {
 exports.RedirectReplicateRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post replicate');
   console.log(req.body);
-  const availableServer=await getAvailableServer();
-  const index=0;
+  const availableServer = await getAvailableServer();
+  const index = 0;
   const url = availableServer[index].URL || 'localhost';
   const port = availableServer[index].port || ':9100';
   res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send');
@@ -511,8 +591,8 @@ exports.RedirectDeleteRequest = catchAsync(async (req, res, next) => {
 exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post replicate');
   console.log(req.body);
-  const availableServer=await getAvailableServer();
-  const index=0;
+  const availableServer = await getAvailableServer();
+  const index = 0;
   const url = availableServer[index].URL || 'localhost';
   const port = availableServer[index].port || ':9100';
   res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');

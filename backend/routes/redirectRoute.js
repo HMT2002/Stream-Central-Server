@@ -5,7 +5,9 @@ const { upload, uploadVideo, uploadImage } = require('../modules/multerAPI.js');
 const router = express.Router();
 
 //ROUTE HANDLER
-router.route('/speed-check/:filename').get(redirectController.CheckSpeed);
+router.route('/speed-check-hls/:filename').get(redirectController.CheckSpeedHLS);
+router.route('/speed-check-dash/:filename').get(redirectController.CheckSpeedDASH);
+
 router.route('/get-available-server/hls').get(redirectController.GetAvailableServerHls);
 router.route('/get-available-server/dash').get(redirectController.GetAvailableServerDash);
 router.route('/recall').get(redirectController.ServerRecall);
