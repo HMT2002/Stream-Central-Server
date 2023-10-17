@@ -142,7 +142,21 @@ exports.SendFolderFileToOtherNode = catchAsync(async (req, res, next) => {
   const videoPath = 'videos/' + filename + '/';
   const url = req.body.url || 'http://localhost';
   const port = req.body.port || ':9200';
-  if (!fs.existsSync(videoPath)) {
+
+  const baseUrl = url + port + '/api/v1/check/folder/' + filename;
+  console.log(baseUrl)
+  const {data:check} = await axios.get(baseUrl);
+  console.log(check);
+  if(check.existed===true){
+      res.status(200).json({
+    message: 'Folder already existed on sub server',
+    check,
+  });
+  return;
+  }
+
+  
+    if (!fs.existsSync(videoPath)) {
     res.status(200).json({
       message: 'File not found',
       path: videoPath,

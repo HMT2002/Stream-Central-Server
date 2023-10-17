@@ -57,6 +57,7 @@ app.get('/*.m4s', videoController.M4SHandler);
 const videoRoute = require('./routes/videoRoute');
 const replicateRoute = require('./routes/replicateRoute');
 const deleteRoute = require('./routes/deleteRoute');
+const checkRoute = require('./routes/checkRoute');
 
 const testRoute = require('./routes/testRoute');
 const defaultRouter = require('./routes/defaultRoute');
@@ -70,6 +71,7 @@ app.use('/api/default', defaultRouter);
 app.use('/api/v1/video', videoRoute);
 app.use('/api/v1/replicate', replicateRoute);
 app.use('/api/v1/delete', deleteRoute);
+app.use('/api/v1/check', checkRoute);
 
 
 
