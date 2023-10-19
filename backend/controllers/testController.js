@@ -15,8 +15,6 @@ const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
-var bat = require.resolve('../videos/ffmpeg_batch.bat');
-
 exports.CheckID = (req, res, next, value) => {
   console.log('ID value is: ' + value);
   const user = users.find((el) => el._id.$oid === value);
