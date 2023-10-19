@@ -6,6 +6,7 @@ import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt';
 import Card from '../components/UI elements/Card';
 import Hls from 'hls.js';
+import ReactPlayer from 'react-player/youtube';
 import {
   POSTVideoUploadAction,
   POSTThreadAction,
@@ -25,7 +26,7 @@ import '../styles/VideoDemo.css';
 
 const VideoDemo = () => {
   const params = useParams();
-  const filename=params.filename
+  const filename = params.filename;
   const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
   const videoNormal = useRef();
 
@@ -38,12 +39,10 @@ const VideoDemo = () => {
   useEffect(() => {
     const LoadVideo = async () => {
       try {
-
-
         const config = {
           startPosition: 0, // can be any number you want
         };
-        const url='/redirect/hls/'+filename;
+        const url = '/redirect/hls/' + filename;
         const hls = new Hls(config);
         hls.loadSource(url);
         hls.attachMedia(videoHLS.current);
@@ -65,14 +64,12 @@ const VideoDemo = () => {
         //   });
         // });
 
-
         // const videoDashWindowCurrent=videoDashWindow.current;
         // var urlDash = 'http://localhost/tmp_dash/videomusic1080/index.mpd';
         // var playerDashWindow = dashjs.MediaPlayer().create();
         // playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
         // playerDashWindow.current.attachView(videoDashWindowCurrent);
         // console.log(playerDashWindow)
-
 
         // if (videoDashWindow.current) {
         //   const video = videoDashWindow.current;
@@ -106,55 +103,59 @@ const VideoDemo = () => {
 
   return (
     <React.Fragment>
-      <Card className="thread-page__thread">
-        {/* <video className="video-js thread-page__thread-video" controls src={source} ref={videoNormal} /> */}
-        <video ref={videoHLS} className="video-js"></video>
-        {/* <video ref={videoDashLinux} className="video-js"></video> */}
-        {/* <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video> */}
-
-        <div className="dash-video-player">
-          <div className="videoContainer" id="videoContainer">
-            <video ref={videoDashWindow} loop ></video>
-            <div id="videoController" className="video-controller unselectable">
-              <div id="playPauseBtn" className="btn-play-pause" title="Play/Pause">
-                <span id="iconPlayPause" className="icon-play"></span>
-              </div>
-              <span id="videoTime" className="time-display">
-                00:00:00
-              </span>
-              <div id="fullscreenBtn" className="btn-fullscreen control-icon-layout" title="Fullscreen">
-                <span className="icon-fullscreen-enter"></span>
-              </div>
-              <div id="bitrateListBtn" className="control-icon-layout" title="Bitrate List">
-                <span className="icon-bitrate"></span>
-              </div>
-              <input type="range" id="volumebar" className="volumebar" min="0" max="1" step=".01" />
-              <div id="muteBtn" className="btn-mute control-icon-layout" title="Mute">
-                <span id="iconMute" className="icon-mute-off"></span>
-              </div>
-              <div id="trackSwitchBtn" className="control-icon-layout" title="A/V Tracks">
-                <span className="icon-tracks"></span>
-              </div>
-              <div id="captionBtn" className="btn-caption control-icon-layout" title="Closed Caption">
-                <span className="icon-caption"></span>
-              </div>
-              <span id="videoDuration" className="duration-display">
-                00:00:00
-              </span>
-              <div className="seekContainer">
-                <div id="seekbar" className="seekbar seekbar-complete">
-                  <div id="seekbar-buffer" className="seekbar seekbar-buffer"></div>
-                  <div id="seekbar-play" className="seekbar seekbar-play"></div>
+      <div id="video-demo">
+        <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" />
+{/*         
+        <Card className="thread-page__thread">
+          {/* <video className="video-js thread-page__thread-video" controls src={source} ref={videoNormal} /> */}
+          {/* <video ref={videoHLS} className="video-js"></video> */}
+          {/* <video ref={videoDashLinux} className="video-js"></video> */}
+          {/* <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video> */}
+          {/* <div className="dash-video-player">
+            <div className="videoContainer" id="videoContainer">
+              <video ref={videoDashWindow} loop></video>
+              <div id="videoController" className="video-controller unselectable">
+                <div id="playPauseBtn" className="btn-play-pause" title="Play/Pause">
+                  <span id="iconPlayPause" className="icon-play"></span>
                 </div>
-              </div>
-              <div id="thumbnail-container" className="thumbnail-container">
-                <div id="thumbnail-elem" className="thumbnail-elem"></div>
-                <div id="thumbnail-time-label" className="thumbnail-time-label"></div>
+                <span id="videoTime" className="time-display">
+                  00:00:00
+                </span>
+                <div id="fullscreenBtn" className="btn-fullscreen control-icon-layout" title="Fullscreen">
+                  <span className="icon-fullscreen-enter"></span>
+                </div>
+                <div id="bitrateListBtn" className="control-icon-layout" title="Bitrate List">
+                  <span className="icon-bitrate"></span>
+                </div>
+                <input type="range" id="volumebar" className="volumebar" min="0" max="1" step=".01" />
+                <div id="muteBtn" className="btn-mute control-icon-layout" title="Mute">
+                  <span id="iconMute" className="icon-mute-off"></span>
+                </div>
+                <div id="trackSwitchBtn" className="control-icon-layout" title="A/V Tracks">
+                  <span className="icon-tracks"></span>
+                </div>
+                <div id="captionBtn" className="btn-caption control-icon-layout" title="Closed Caption">
+                  <span className="icon-caption"></span>
+                </div>
+                <span id="videoDuration" className="duration-display">
+                  00:00:00
+                </span>
+                <div className="seekContainer">
+                  <div id="seekbar" className="seekbar seekbar-complete">
+                    <div id="seekbar-buffer" className="seekbar seekbar-buffer"></div>
+                    <div id="seekbar-play" className="seekbar seekbar-play"></div>
+                  </div>
+                </div>
+                <div id="thumbnail-container" className="thumbnail-container">
+                  <div id="thumbnail-elem" className="thumbnail-elem"></div>
+                  <div id="thumbnail-time-label" className="thumbnail-time-label"></div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </Card>
+        </Card>        */}
+
+      </div>
     </React.Fragment>
   );
 };
