@@ -16,6 +16,7 @@ import {
 import Button from '../components/UI elements/Button';
 
 import Utils from '../Utils';
+import ReactPlayer from 'react-player'
 
 import dashjs from 'dashjs';
 import ControlBar from '../components/dashControlBar/ControlBar';
@@ -25,7 +26,7 @@ import '../styles/VideoDemo.css';
 
 const VideoDemo = () => {
   const params = useParams();
-  const filename=params.filename
+  const filename = params.filename;
   const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
   const videoNormal = useRef();
 
@@ -38,17 +39,14 @@ const VideoDemo = () => {
   useEffect(() => {
     const LoadVideo = async () => {
       try {
-
-
         const config = {
           startPosition: 0, // can be any number you want
         };
-        const url='/redirect/hls/'+filename;
+        const url='http://localhost:9100/videos/'+filename+'Hls/'+filename+'.m3u8';
         const hls = new Hls(config);
         hls.loadSource(url);
         hls.attachMedia(videoHLS.current);
         hls.subtitleDisplay = true;
-
         var obj_play_HLS = {
           fill: true,
           fluid: true,
@@ -66,24 +64,20 @@ const VideoDemo = () => {
         });
 
 
+        
         // const videoDashWindowCurrent=videoDashWindow.current;
         // var urlDash = 'http://localhost/tmp_dash/videomusic1080/index.mpd';
         // var playerDashWindow = dashjs.MediaPlayer().create();
         // playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
         // playerDashWindow.current.attachView(videoDashWindowCurrent);
         // console.log(playerDashWindow)
-
-
         // if (videoDashWindow.current) {
         //   const video = videoDashWindow.current;
         //   var urlDash = '/redirect/dash/'+filename+'/'+filename;
         //   playerDashWindow.current = dashjs.MediaPlayer().create();
-
         //   playerDashWindow.current.initialize(video, urlDash, true);
         //   playerDashWindow.current.attachView(video);
-
         //   console.log(playerDashWindow.current);
-
         //   if (playerDashWindow.current) {
         //     playerDashWindow.current.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
         //     console.log(video);
@@ -112,7 +106,7 @@ const VideoDemo = () => {
         {/* <video ref={videoDashLinux} className="video-js"></video> */}
         {/* <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video> */}
 
-        <div className="dash-video-player">
+        {/* <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
             <video ref={videoDashWindow} loop ></video>
             <div id="videoController" className="video-controller unselectable">
@@ -153,7 +147,17 @@ const VideoDemo = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
+{/* 
+        <ReactPlayer
+          url='http://localhost:9100/videos/World Domination How-ToHls/World Domination How-To.m3u8'
+          config={{
+
+            file:{
+              forceHLS:true
+            }
+          }}
+        /> */}
       </Card>
     </React.Fragment>
   );

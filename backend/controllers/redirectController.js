@@ -491,7 +491,7 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
   const videoname = req.params.filename;
   console.log(videoname)
   const video = await getAvailableHls(videoname);
-  console.log(video);
+  // console.log(video);
   if (!video) {
     res.status(200).json({
       message: 'Video not found on database, check name',
@@ -515,7 +515,7 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
   const index = 0;
   const url = availableVideoOnServer[index].URL || 'localhost';
   const port = availableVideoOnServer[index].port || ':9100';
-  res.redirect('http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8');
+  res.redirect(308,'http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8');
   res.end();
 });
 
