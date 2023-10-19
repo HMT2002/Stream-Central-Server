@@ -15,6 +15,8 @@ router.route('/recall').get(redirectController.ServerRecall);
 
 
 router.route('/hls/:filename').get(redirectController.RedirectHls);
+//cái thứ DASH này ngu thật sự, nó nghĩ để chung folder gốc hết cmnl hay gì
+//bắt buộc phải làm kiểu này, đường dẫn đến file phải ghi lại đến 2 lần
 router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHandler);
 router.route('/dash/:filenamebase/:filename').get(redirectController.RedirectDash);
 

@@ -275,7 +275,7 @@ const getMyNetworkDownloadSpeedDash = async (url, port, videoname) => {
 
 const checkTestErrorCode = (result) => {
   if (result.code && result.code === 'ECONNREFUSED') {
-    return { url: result.config.url, message: 'ECONNREFUSED', duration: result.duration };
+    return { url: result.config.url, message: 'ECONNREFUSED' };
   } else {
     return result;
   }
@@ -407,6 +407,17 @@ const testSpeedHlsResults = async (availableServer, video) => {
   return testResults;
 };
 
+const testSpeedDashResults = async (availableServer, video) => {
+  let testResults = [];
+  for (let i = 0; i < availableServer.length; i++) {
+    const speedDownload = checkTestErrorCode(
+      await getMyNetworkDownloadSpeedDash(availableServer[i].URL, availableServer[i].port, video.videoname)
+    );
+    testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
+  }
+  return testResults;
+};
+
 exports.CheckSpeedHLS = catchAsync(async (req, res, next) => {
   console.log('check speed');
   const videoname = req.params.filename;
@@ -466,9 +477,19 @@ exports.CheckSpeedDASH = catchAsync(async (req, res, next) => {
 function checkAvailableVideoOnServer(downloadSpeed) {
   return downloadSpeed.duration;
 }
+
+const sortAvailableVideoOnServer=(results)=>{
+  return results
+  .filter((downloadSpeed) => {
+    return downloadSpeed.duration;
+  })
+  .sort((a, b) => a.duration - b.duration);
+}
+
 exports.RedirectHls = catchAsync(async (req, res, next) => {
   console.log('redirect');
   const videoname = req.params.filename;
+  console.log(videoname)
   const video = await getAvailableHls(videoname);
   console.log(video);
   if (!video) {
@@ -485,11 +506,7 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
     return;
   }
   const testResults = await testSpeedHlsResults(availableServer, video);
-  const availableVideoOnServer = testResults
-    .filter((downloadSpeed) => {
-      return downloadSpeed.duration;
-    })
-    .sort((a, b) => a.duration - b.duration);
+  const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
   console.log(availableVideoOnServer);
   // res.status(200).json({
   //   availableVideoOnServer
@@ -503,41 +520,50 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
 });
 
 exports.RedirectDash = catchAsync(async (req, res, next) => {
-  const filename = req.params.filename;
-  console.log(filename);
-  console.log('/////////////');
-  const filenamebase = req.params.filenamebase;
-  // console.log(filenamebase)
-  const availableUrlAndPort = await getAvailableDashUrlAndPort();
-  const result = availableUrlAndPort.filter((x) => {
-    return x.videoname.toString() === filename;
-  });
-  console.log(result);
-  if (result.length == 0) {
-    res.status(400).json({
-      message: 'not found video',
+  const videoname = req.params.filename;
+  const video = await getAvailableDash(videoname);
+  if (!video) {
+    res.status(200).json({
+      message: 'Video not found on database, check name',
     });
     return;
   }
+  const availableServer = await getAvailableServer();
+  if (availableServer.length === 0) {
+    res.status(200).json({
+      message: 'Not found any server',
+    });
+    return;
+  }
+  const testResults = await testSpeedDashResults(availableServer, video);
+  const availableVideoOnServer = sortAvailableVideoOnServer(testResults)
+  console.log(availableVideoOnServer);
+  // res.status(200).json({
+  //   availableVideoOnServer
+  // });
+  // return;
   const index = 0;
-  const url = result[index].url || 'localhost';
-  const port = result[index].port || ':9100';
-  const videoname = result[index].videoname || 'medium';
-  console.log('http://' + url + port + '/videos/' + videoname + '/init.mpd');
-  res.redirect('http://' + url + port + '/videos/' + videoname + '/init.mpd');
+  const url = availableVideoOnServer[index].URL || 'localhost';
+  const port = availableVideoOnServer[index].port || ':9100';
+  console.log('http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd');
+  res.redirect('http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd');
   res.end();
 });
 
+const countVideoAccessing=async(videoname,url,port,type)=>{
+  console.log('Accessing video ' + videoname+' on ' + url + port +' with type '+type  );
+
+}
+
 exports.M4SHandler = catchAsync(async (req, res, next) => {
   console.log('m4s handler');
-  // console.log('/////////////')
   const url = 'localhost';
   const port = ':9100';
-  const videoname = req.params.filenamebase;
+  const filebasename=req.params.filenamebase;
+  console.log(req.url)
   req.url = req.url.replace('/dash/', '/videos/');
-  // console.log('here is the m4s url')
+  req.url = req.url.replace(filebasename, filebasename+'Dash');
   console.log('http://' + url + port + req.url);
-
   res.redirect('http://' + url + port + req.url);
 });
 

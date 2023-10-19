@@ -56,14 +56,14 @@ const VideoDemo = () => {
           controls: true,
           loop: true,
         };
-        // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
-        //   videojs.log('Your player is ready!');
-        //   const defaultVolume = 0.4;
-        //   this.volume(defaultVolume);
-        //   this.on('ended', function () {
-        //     videojs.log('Awww...over so soon?!');
-        //   });
-        // });
+        const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
+          videojs.log('Your player is ready!');
+          const defaultVolume = 0.4;
+          this.volume(defaultVolume);
+          this.on('ended', function () {
+            videojs.log('Awww...over so soon?!');
+          });
+        });
 
 
         // const videoDashWindowCurrent=videoDashWindow.current;
