@@ -144,8 +144,8 @@ const LoginPage = () => {
         className="app-header__logo"
         style={{
           position: 'fixed',
-          top: 50,
-          left: 100,
+          top: 0,
+          left: 0,
           fontSize: '2.5rem',
           fontWeight: 800,
         }}

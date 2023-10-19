@@ -6,7 +6,7 @@ import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt';
 import Card from '../components/UI elements/Card';
 import Hls from 'hls.js';
-import ReactPlayer from 'react-player/youtube';
+import ReactPlayer from 'react-player';
 import {
   POSTVideoUploadAction,
   POSTThreadAction,
@@ -42,7 +42,8 @@ const VideoDemo = () => {
         const config = {
           startPosition: 0, // can be any number you want
         };
-        const url = '/redirect/hls/' + filename;
+        const url =
+          'https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8';
         const hls = new Hls(config);
         hls.loadSource(url);
         hls.attachMedia(videoHLS.current);
@@ -104,14 +105,21 @@ const VideoDemo = () => {
   return (
     <React.Fragment>
       <div id="video-demo">
-        <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" />
-{/*         
+        {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" /> */}
+        <ReactPlayer
+          url="https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8"
+          width="60%"
+          height="500px"
+          autoplay
+          controls
+        />
+        {/* {/*          */}
         <Card className="thread-page__thread">
-          {/* <video className="video-js thread-page__thread-video" controls src={source} ref={videoNormal} /> */}
-          {/* <video ref={videoHLS} className="video-js"></video> */}
-          {/* <video ref={videoDashLinux} className="video-js"></video> */}
+          <video className="video-js thread-page__thread-video" controls src={source} ref={videoNormal} />
+          <video ref={videoHLS} className="video-js"></video>
+          <video ref={videoDashLinux} className="video-js"></video>
           {/* <video className="video-js" src='http://localhost:9100/videos/aa.mp4' autoPlay loop controls></video> */}
-          {/* <div className="dash-video-player">
+          <div className="dash-video-player">
             <div className="videoContainer" id="videoContainer">
               <video ref={videoDashWindow} loop></video>
               <div id="videoController" className="video-controller unselectable">
@@ -153,8 +161,7 @@ const VideoDemo = () => {
               </div>
             </div>
           </div>
-        </Card>        */}
-
+        </Card>
       </div>
     </React.Fragment>
   );
