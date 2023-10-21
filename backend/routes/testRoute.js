@@ -15,7 +15,8 @@ router.route('/mutilpart-upload').post(uploadVideo, testController.UploadNewFile
 router.route('/upload-video').post(uploadVideo, testController.UploadNewFile);
 router.route('/upload-video-large').post(uploadVideo, testController.UploadNewFileLarge);
 router.route('/upload-video-large-mutilpart').post(uploadMultipartFileChunk, testController.UploadNewFileLargeMultilpart);
-router.route('/upload-video-large-mutilpart-concatenate').post( testController.UploadNewFileLargeMultilpartConcatenate,testController.UploadNewFileLargeGetVideoThumbnail);
+// router.route('/upload-video-large-mutilpart-concatenate').post( testController.UploadNewFileLargeMultilpartConcatenate,testController.UploadNewFileLargeGetVideoThumbnail);
+router.route('/upload-video-large-mutilpart-concatenate').post( testController.UploadNewFileLargeMultilpartConcatenate,testController.UploadNewFileLargeConvertToHls);
 
 router.route('/threads').get(testController.GetAllThreads).post(testController.CreateNewThread);
 router.route('/ffmpeg').post(testController.FFmpeg);

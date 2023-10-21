@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const redirectController = require('../controllers/redirectController');
-const { upload, uploadVideo, uploadImage } = require('../modules/multerAPI.js');
+const { upload, uploadVideo, uploadImage,uploadMultipartFile ,uploadMultipartFileChunk} = require('../modules/multerAPI.js');
 const router = express.Router();
 
 //ROUTE HANDLER
@@ -14,7 +14,7 @@ router.route('/recall').get(redirectController.ServerRecall);
 // router.route('/recall').post(redirectController.ServerRecall);
 
 
-router.route('/hls/:filename').get(redirectController.RedirectHls);
+router.route('/hls/:filename').options(redirectController.RedirectHls).get(redirectController.RedirectHls);
 //cái thứ DASH này ngu thật sự, nó nghĩ để chung folder gốc hết cmnl hay gì
 //bắt buộc phải làm kiểu này, đường dẫn đến file phải ghi lại đến 2 lần
 router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHandler);
@@ -30,5 +30,11 @@ router.route('/delete').post(redirectController.RedirectDeleteRequest);
 
 router.route('/replicate/send-folder').post(redirectController.RedirectReplicateFolderRequest);
 router.route('/delete-folder').post(redirectController.RedirectDeleteFolderRequest);
+
+
+router.route('/upload-video-large-mutilpart').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpart);
+// router.route('/upload-video-large-mutilpart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeGetVideoThumbnail);
+router.route('/upload-video-large-mutilpart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeConvertToHls);
+
 
 module.exports = router;

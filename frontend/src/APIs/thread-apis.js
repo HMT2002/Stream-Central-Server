@@ -99,7 +99,7 @@ export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunk
   if (!formData) {
     return { status: 'fail' };
   }
-  const response = await fetch('/api/test/upload-video-large-mutilpart', {
+  const response = await fetch('/redirect/upload-video-large-mutilpart', {
     method: 'POST',
     body: formData,
     headers: {
@@ -121,6 +121,7 @@ export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkN
     method: 'POST',
     body:JSON.stringify( {
       arraychunkname:arrayChunkName,
+      
     }),
     headers: {
       'Content-Type': 'application/json',
@@ -134,9 +135,30 @@ export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkN
   return data;
 };
 
-export const POSTLargeVideoMutilpartUploadConcatenateActionTest = async (arrayChunkName, filename, destination,ext) => {
-  const response = await fetch('/api/test/upload-video-large-mutilpart-concatenate', {
-    method: 'POST',
+export const OPTIONSLargeVideoMutilpartUploadAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
+  if (!formData) {
+    return { status: 'fail' };
+  }
+  const response = await fetch('/redirect/upload-video-large-mutilpart', {
+    method: 'OPTIONS',
+    body: formData,
+    headers: {
+      type: 'blob',
+      index: index,
+      chunkname: chunkName,
+      filename: filename,
+      arrayChunkName,
+      ext,
+    },
+  });
+  const data = await response.json();
+  // console.log(data);
+  return data;
+};
+
+export const OPTIONSLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
+  const response = await fetch('/redirect/upload-video-large-mutilpart-concatenate', {
+    method: 'OPTIONS',
     body:JSON.stringify( {
       arraychunkname:arrayChunkName,
     }),
@@ -151,6 +173,24 @@ export const POSTLargeVideoMutilpartUploadConcatenateActionTest = async (arrayCh
   // console.log(data);
   return data;
 };
+
+// export const POSTLargeVideoMutilpartUploadConcatenateActionTest = async (arrayChunkName, filename, destination,ext) => {
+//   const response = await fetch('/api/test/upload-video-large-mutilpart-concatenate', {
+//     method: 'POST',
+//     body:JSON.stringify( {
+//       arraychunkname:arrayChunkName,
+//     }),
+//     headers: {
+//       'Content-Type': 'application/json',
+//       filename,
+//       destination,
+//       ext,
+//     },
+//   });
+//   const data = await response.json();
+//   // console.log(data);
+//   return data;
+// };
 
 
 export const DELETEThreadAction = async (token, payload) => {
@@ -265,7 +305,8 @@ const threadAPIs = {
   POSTLargeVideoUploadAction,
   POSTLargeVideoMutilpartUploadAction,
   POSTLargeVideoMutilpartUploadConcatenateAction,
-  POSTLargeVideoMutilpartUploadConcatenateActionTest,
+  OPTIONSLargeVideoMutilpartUploadAction,
+  OPTIONSLargeVideoMutilpartUploadConcatenateAction,
 };
 
 export default threadAPIs;
