@@ -29,7 +29,7 @@ const storageChunk = multer.diskStorage({
     cb(null, req.headers.chunkname);
   },
 });
-const mutilpartMaxSize = 35 * 1024 * 1024; //35mb
+const multipartMaxSize = 35 * 1024 * 1024; //35mb
 const maxSize = 300 * 1024 * 1024; //300mb
 const maxSizeVideo = 300 * 1024 * 1024; //300mb
 const maxSizeImage = 15 * 1024 * 1024; //10mb
@@ -62,13 +62,13 @@ const uploadFile = multer({
 
 const uploadMultipartFile = multer({
   storage: storage,
-  limits: { fileSize: mutilpartMaxSize },
+  limits: { fileSize: multipartMaxSize },
 }).single('myMultilPartFile');
 
 
 const uploadMultipartFileChunk = multer({
   storage: storageChunk,
-  limits: { fileSize: mutilpartMaxSize },
+  limits: { fileSize: multipartMaxSize },
 }).single('myMultilPartFileChunk');
 
 const uploadArrayFile = multer({

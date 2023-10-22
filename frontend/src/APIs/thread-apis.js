@@ -95,11 +95,11 @@ export const POSTLargeVideoUploadAction = async (formData) => {
   return data;
 };
 
-export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
+export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
   if (!formData) {
     return { status: 'fail' };
   }
-  const response = await fetch('/redirect/upload-video-large-mutilpart', {
+  const response = await fetch('/redirect/upload-video-large-multipart-hls', {
     method: 'POST',
     body: formData,
     headers: {
@@ -116,8 +116,29 @@ export const POSTLargeVideoMutilpartUploadAction = async (formData, index, chunk
   return data;
 };
 
-export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
-  const response = await fetch('/api/test/upload-video-large-mutilpart-concatenate', {
+export const POSTLargeVideoMultipartUploadDashAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
+  if (!formData) {
+    return { status: 'fail' };
+  }
+  const response = await fetch('/redirect/upload-video-large-multipart-dash', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      type: 'blob',
+      index: index,
+      chunkname: chunkName,
+      filename: filename,
+      arrayChunkName,
+      ext,
+    },
+  });
+  const data = await response.json();
+  // console.log(data);
+  return data;
+};
+
+export const POSTLargeVideoMultipartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
+  const response = await fetch('/api/test/upload-video-large-multipart-concatenate', {
     method: 'POST',
     body:JSON.stringify( {
       arraychunkname:arrayChunkName,
@@ -135,11 +156,11 @@ export const POSTLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkN
   return data;
 };
 
-export const OPTIONSLargeVideoMutilpartUploadAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
+export const OPTIONSLargeVideoMultipartUploadAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
   if (!formData) {
     return { status: 'fail' };
   }
-  const response = await fetch('/redirect/upload-video-large-mutilpart', {
+  const response = await fetch('/redirect/upload-video-large-multipart', {
     method: 'OPTIONS',
     body: formData,
     headers: {
@@ -156,8 +177,8 @@ export const OPTIONSLargeVideoMutilpartUploadAction = async (formData, index, ch
   return data;
 };
 
-export const OPTIONSLargeVideoMutilpartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
-  const response = await fetch('/redirect/upload-video-large-mutilpart-concatenate', {
+export const OPTIONSLargeVideoMultipartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
+  const response = await fetch('/redirect/upload-video-large-multipart-concatenate', {
     method: 'OPTIONS',
     body:JSON.stringify( {
       arraychunkname:arrayChunkName,
@@ -174,8 +195,8 @@ export const OPTIONSLargeVideoMutilpartUploadConcatenateAction = async (arrayChu
   return data;
 };
 
-// export const POSTLargeVideoMutilpartUploadConcatenateActionTest = async (arrayChunkName, filename, destination,ext) => {
-//   const response = await fetch('/api/test/upload-video-large-mutilpart-concatenate', {
+// export const POSTLargeVideoMultipartUploadConcatenateActionTest = async (arrayChunkName, filename, destination,ext) => {
+//   const response = await fetch('/api/test/upload-video-large-multipart-concatenate', {
 //     method: 'POST',
 //     body:JSON.stringify( {
 //       arraychunkname:arrayChunkName,
@@ -303,10 +324,12 @@ const threadAPIs = {
   DELETEThreadAction,
   PATCHThreadUpdateAction,
   POSTLargeVideoUploadAction,
-  POSTLargeVideoMutilpartUploadAction,
-  POSTLargeVideoMutilpartUploadConcatenateAction,
-  OPTIONSLargeVideoMutilpartUploadAction,
-  OPTIONSLargeVideoMutilpartUploadConcatenateAction,
+  POSTLargeVideoMultipartUploadHlsAction,
+  POSTLargeVideoMultipartUploadDashAction,
+
+  POSTLargeVideoMultipartUploadConcatenateAction,
+  OPTIONSLargeVideoMultipartUploadAction,
+  OPTIONSLargeVideoMultipartUploadConcatenateAction,
 };
 
 export default threadAPIs;

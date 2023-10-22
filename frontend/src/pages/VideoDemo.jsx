@@ -10,8 +10,8 @@ import {
   POSTVideoUploadAction,
   POSTThreadAction,
   POSTLargeVideoUploadAction,
-  POSTLargeVideoMutilpartUploadAction,
-  POSTLargeVideoMutilpartUploadConcatenateAction,
+  POSTLargeVideoMultipartUploadAction,
+  POSTLargeVideoMultipartUploadConcatenateAction,
 } from '../APIs/thread-apis';
 import Button from '../components/UI elements/Button';
 

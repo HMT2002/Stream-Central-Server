@@ -32,9 +32,11 @@ router.route('/replicate/send-folder').post(redirectController.RedirectReplicate
 router.route('/delete-folder').post(redirectController.RedirectDeleteFolderRequest);
 
 
-router.route('/upload-video-large-mutilpart').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpart);
-// router.route('/upload-video-large-mutilpart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeGetVideoThumbnail);
-router.route('/upload-video-large-mutilpart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeConvertToHls);
+router.route('/upload-video-large-multipart-hls').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartHls);
+router.route('/upload-video-large-multipart-dash').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartDash);
+
+// router.route('/upload-video-large-multipart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeGetVideoThumbnail);
+// router.route('/upload-video-large-multipart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeConvertToHls);
 
 
 module.exports = router;
