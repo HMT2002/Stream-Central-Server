@@ -219,23 +219,25 @@ const VideoPageVer2 = () => {
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
       const totalChunks = Math.ceil(file.size / chunkSize);
-      let chunkNameHls = Utils.RandomString(7);
-      let arrayChunkNameHls = [];
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        arrayChunkNameHls.push(chunkNameHls + '_' + chunkIndex);
-      }
 
-      // Iterate over the chunks and upload them sequentially
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        const start = chunkIndex * chunkSize;
-        const end = Math.min(start + chunkSize, file.size);
-        const chunk = file.slice(start, end);
-        console.log(start);
-        console.log(end);
-        // Make an API call to upload the chunk to the backend
-        const ext = file.name.split('.')[1];
-        await uploadChunkHls(chunk, chunkIndex, arrayChunkNameHls[chunkIndex], arrayChunkNameHls, chunkNameHls, ext);
-      }
+      
+      // let chunkNameHls = Utils.RandomString(7);
+      // let arrayChunkNameHls = [];
+      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      //   arrayChunkNameHls.push(chunkNameHls + '_' + chunkIndex);
+      // }
+
+      // // Iterate over the chunks and upload them sequentially
+      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      //   const start = chunkIndex * chunkSize;
+      //   const end = Math.min(start + chunkSize, file.size);
+      //   const chunk = file.slice(start, end);
+      //   console.log(start);
+      //   console.log(end);
+      //   // Make an API call to upload the chunk to the backend
+      //   const ext = file.name.split('.')[1];
+      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkNameHls[chunkIndex], arrayChunkNameHls, chunkNameHls, ext);
+      // }
 
       let chunkNameDash = Utils.RandomString(7);
       let arrayChunkName = [];

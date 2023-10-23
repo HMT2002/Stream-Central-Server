@@ -27,13 +27,33 @@ router.route('/live/:filename').get(redirectController.RedirectLiveGET);
 
 router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);
 router.route('/delete').post(redirectController.RedirectDeleteRequest);
-
 router.route('/replicate/send-folder').post(redirectController.RedirectReplicateFolderRequest);
 router.route('/delete-folder').post(redirectController.RedirectDeleteFolderRequest);
-
+//4 cái trên đều truyền vào body json như này
+// {
+//     "filename":"2wR6bkUHls",
+//     "url":"http://localhost",
+//     "port":":9100"
+// }
 
 router.route('/upload-video-large-multipart-hls').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartHls);
 router.route('/upload-video-large-multipart-dash').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartDash);
+// 2 cái trên thì có formData và headers hơi nhức đầu tí
+// const formData = new FormData();
+// formData.append('myMultilPartFileChunk', chunk);
+// formData.append('myMultilPartFileChunkIndex', chunkIndex);
+// formData.append('arraychunkname', arrayChunkName);
+//     {
+//     method: 'POST',
+//     body: formData,
+//     headers: {
+//       type: 'blob',
+//       index: index,
+//       chunkname: chunkName,
+//       filename: filename,
+//       arrayChunkName,
+//       ext,
+//     },
 
 // router.route('/upload-video-large-multipart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeGetVideoThumbnail);
 // router.route('/upload-video-large-multipart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeConvertToHls);
