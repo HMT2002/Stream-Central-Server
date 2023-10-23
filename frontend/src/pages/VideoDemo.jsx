@@ -46,8 +46,8 @@ const VideoDemo = () => {
         const url = '/redirect/hls/' + filename;
         const hls = new Hls(config);
         hls.loadSource(url);
-        // hls.attachMedia(videoHLS.current);
-        hls.attachMedia(videoReactPlayer.current);
+        hls.attachMedia(videoHLS.current);
+        // hls.attachMedia(videoReactPlayer.current);
 
         hls.subtitleDisplay = true;
         var obj_play_HLS = {
@@ -57,14 +57,14 @@ const VideoDemo = () => {
           controls: true,
           loop: true,
         };
-        // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
-        //   videojs.log('Your player is ready!');
-        //   const defaultVolume = 0.4;
-        //   this.volume(defaultVolume);
-        //   this.on('ended', function () {
-        //     videojs.log('Awww...over so soon?!');
-        //   });
-        // });
+        const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
+          videojs.log('Your player is ready!');
+          const defaultVolume = 0.4;
+          this.volume(defaultVolume);
+          this.on('ended', function () {
+            videojs.log('Awww...over so soon?!');
+          });
+        });
 
         // const videoDashWindowCurrent=videoDashWindow.current;
         // var urlDash = 'http://localhost/tmp_dash/videomusic1080/index.mpd';
@@ -99,17 +99,17 @@ const VideoDemo = () => {
       }
     };
 
-    // LoadVideo();
+    LoadVideo();
   }, []);
 
   return (
     <React.Fragment>
       <div id="video-demo">
-        {/* <video ref={videoHLS} className="video-js"></video> */}
+        <video ref={videoHLS} className="video-js"></video>
 
         {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" /> */}
-        <ReactPlayer
-          url="http://localhost:9000/redirect/hls/medium"
+        {/* <ReactPlayer
+          url="http://localhost:9000/redirect/hls/GSpR1T8"
           width="60%"
           height="500px"
           autoPlay
@@ -117,7 +117,7 @@ const VideoDemo = () => {
           config={{
             forceHLS: true,
           }}
-        />
+        /> */}
       </div>
     </React.Fragment>
   );
