@@ -504,6 +504,9 @@ function checkAvailableVideoOnServer(downloadSpeed) {
 }
 
 const sortAvailableVideoOnServer = (results) => {
+  if(results===null||results.length===0){
+    return null
+  }
   try{
   return results
     .filter((downloadSpeed) => {
