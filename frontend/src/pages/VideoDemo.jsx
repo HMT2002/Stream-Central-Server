@@ -6,6 +6,8 @@ import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt';
 import Card from '../components/UI elements/Card';
 import Hls from 'hls.js';
+import axios from 'axios';
+
 import {
   POSTVideoUploadAction,
   POSTThreadAction,
@@ -24,10 +26,38 @@ import '../components/dashControlBar/controlbar.css';
 import '../components/dashControlBar/icomoon.ttf';
 import '../styles/VideoDemo.css';
 
+const getHlsUrl=async (filename)=>{
+  console.log(filename)
+  var url = '/redirect/hls/' + filename ;
+
+  const { data } = await axios({
+    method: 'get',
+    url: url,
+    headers: { myaxiosfetch: '123' },
+  });
+  console.log(data);
+  var url = data.subserverurl || 'http://localhost:9100/videos/GSpR1T8Hls/GSpR1T8.m3u8';
+  return url
+}
+const getDashUrl=async(filename)=>{
+  var url = '/redirect/dash/' + filename + '/' + filename;
+
+  const { data } = await axios({
+    method: 'get',
+    url: url,
+    headers: { myaxiosfetch: '123' },
+  });
+  console.log(data);
+  var url = data.subserverurl || 'http://localhost:9100/videos/l8NSKXODash/init.mpd';
+  return url
+}
+
 const VideoDemo = () => {
   const params = useParams();
   const filename = params.filename;
   const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
+  const [reactPlayerURL, setReactPlayerURL] = useState('');
+
   const videoNormal = useRef();
 
   const videoDashLinux = useRef();
@@ -64,29 +94,39 @@ const VideoDemo = () => {
         //   });
         // });
 
-        const videoDashWindowCurrent=videoDashWindow.current;
-        var urlDash = '/redirect/dash/'+filename+'/'+filename;
-        var playerDashWindow = dashjs.MediaPlayer().create();
-        playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
-        playerDashWindow.attachView(videoDashWindowCurrent);
-        console.log(playerDashWindow)
+        // const videoDashWindowCurrent = videoDashWindow.current;
 
-        if (videoDashWindowCurrent) {
-          // const video = videoDashWindow.current;
-          // var urlDash = '/redirect/dash/'+filename+'/'+filename;
-          // playerDashWindow.current = dashjs.MediaPlayer().create();
 
-          // playerDashWindow.current.initialize(video, urlDash, true);
-          // playerDashWindow.current.attachView(video);
+        // if (videoDashWindowCurrent) {
+        //   var urlDash = '/redirect/dash/' + filename + '/' + filename;
 
-          playerDashWindow.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
-          console.log(playerDashWindow);
+        //   const { data } = await axios({
+        //     method: 'get',
+        //     url: urlDash,
+        //     headers: { myaxiosfetch: '123' },
+        //   });
+        //   console.log(data);
+        //   //djtme đùa tao vcl
+        //   var urlDash = data.subserverurl || 'http://172.30.50.78:9100/videos/l8NSKXODash/init.mpd';
 
-          const controlbar = new ControlBar(playerDashWindow);
-          // Player is instance of Dash.js MediaPlayer;
-          controlbar.initialize();
-        }
-        console.log(videoReactPlayer);
+        //   var playerDashWindow = dashjs.MediaPlayer().create();
+        //   playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
+        //   playerDashWindow.attachView(videoDashWindowCurrent);
+        //   console.log(playerDashWindow);
+
+        //   playerDashWindow.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
+        //   console.log(playerDashWindow);
+
+        //   const controlbar = new ControlBar(playerDashWindow);
+        //   // Player is instance of Dash.js MediaPlayer;
+        //   controlbar.initialize();
+        // }
+
+          var url=await getHlsUrl(filename);
+        setReactPlayerURL(()=>{
+          return url;
+        })
+
       } catch (error) {
         console.log(error);
         if (playerDashWindow.current) {
@@ -102,7 +142,7 @@ const VideoDemo = () => {
   return (
     <React.Fragment>
       <div id="video-demo">
-        <video ref={videoHLS} className="video-js"></video>
+        {/* <video ref={videoHLS} className="video-js"></video> */}
 
         {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" /> */}
         {/* <ReactPlayer
@@ -116,9 +156,22 @@ const VideoDemo = () => {
           }}
         /> */}
 
-<div className="dash-video-player">
+                <ReactPlayer
+                ref={videoReactPlayer}
+          // url='http://localhost:9100/videos/l8NSKXODash/init.mpd'
+          url={reactPlayerURL}
+          width="60%"
+          height="500px"
+          autoPlay
+          controls
+          config={{
+            forceDASH: true,
+          }}
+        />
+
+        {/* <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
-            <video ref={videoDashWindow} loop ></video>
+            <video ref={videoDashWindow} autoPlay loop></video>
             <div id="videoController" className="video-controller unselectable">
               <div id="playPauseBtn" className="btn-play-pause" title="Play/Pause">
                 <span id="iconPlayPause" className="icon-play"></span>
@@ -157,7 +210,7 @@ const VideoDemo = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </React.Fragment>
   );

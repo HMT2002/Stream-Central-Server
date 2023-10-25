@@ -613,7 +613,6 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
   // const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
   // console.log(availableVideoOnServer);
   const server =await availableVideoOnServer(videoname,'DASH');
-  console.log(server)
   if(server.length===0){
     res.status(200).json({
       message: 'Not found Server with Video, check name or server connections',
@@ -625,15 +624,16 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
   const port = server[index].port || ':9100';
   const oriURL='http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd';
   if(req.headers.myaxiosfetch){
+    console.log('req.headers.myaxiosfetch existed')
+    console.log(oriURL)
     res.status(200).json({
-      url: oriURL,
+      subserverurl: oriURL,
     });
-    res.end();
+    res.end()
     return;
   }
-    console.log(oriURL);
-  res.redirect( oriURL);
-
+  console.log(oriURL);
+  res.redirect(oriURL);
   res.end();
 });
 
