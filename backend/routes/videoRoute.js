@@ -1,8 +1,9 @@
 const express = require('express');
 const fs = require('fs');
 const videoController = require('../controllers/videoController');
+const redirectController = require('../controllers/redirectController');
 
-const { upload, uploadVideo, uploadImage } = require('../modules/multerAPI.js');
+const { upload, uploadVideo, uploadImage,uploadMultipartFile ,uploadMultipartFileChunk} = require('../modules/multerAPI.js');
 const router = express.Router();
 const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 
@@ -27,5 +28,11 @@ router.route('/template-hls/:filename').get(videoController.VideoTemplateHLSStre
   res.end(output);
   return;
 });
+
+// bê từ redirect qua
+router.route('/upload-video-large-multipart-hls').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartHls);
+router.route('/upload-video-large-multipart-dash').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartDash);
+router.route('/get-available-storage').post( redirectController.GetAvailableStorageForVideo);
+
 
 module.exports = router;

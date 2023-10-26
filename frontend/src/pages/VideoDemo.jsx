@@ -56,7 +56,8 @@ const VideoDemo = () => {
   const params = useParams();
   const filename = params.filename;
   const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
-  const [reactPlayerURL, setReactPlayerURL] = useState('');
+  const [reactPlayerURLDash, setReactPlayerURLDash] = useState('');
+  const [reactPlayerURLHls, setReactPlayerURLHls] = useState('');
 
   const videoNormal = useRef();
 
@@ -122,10 +123,15 @@ const VideoDemo = () => {
         //   controlbar.initialize();
         // }
 
-          var url=await getHlsUrl(filename);
-        setReactPlayerURL(()=>{
-          return url;
+          var urlDash=await getDashUrl(filename);
+          setReactPlayerURLDash(()=>{
+          return urlDash;
         })
+
+        var urlHls=await getHlsUrl(filename);
+        setReactPlayerURLHls(()=>{
+        return urlHls;
+      })
 
       } catch (error) {
         console.log(error);
@@ -145,8 +151,8 @@ const VideoDemo = () => {
         {/* <video ref={videoHLS} className="video-js"></video> */}
 
         {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" /> */}
-        {/* <ReactPlayer
-          url="http://localhost:9000/redirect/hls/GSpR1T8"
+        <ReactPlayer
+          url={reactPlayerURLHls}
           width="60%"
           height="500px"
           autoPlay
@@ -154,12 +160,12 @@ const VideoDemo = () => {
           config={{
             forceHLS: true,
           }}
-        /> */}
+        />
 
                 <ReactPlayer
                 ref={videoReactPlayer}
           // url='http://localhost:9100/videos/l8NSKXODash/init.mpd'
-          url={reactPlayerURL}
+          url={reactPlayerURLDash}
           width="60%"
           height="500px"
           autoPlay

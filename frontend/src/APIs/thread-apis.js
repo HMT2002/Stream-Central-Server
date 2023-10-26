@@ -99,7 +99,7 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, ch
   if (!formData) {
     return { status: 'fail' };
   }
-  const response = await fetch('/redirect/upload-video-large-multipart-hls', {
+  const response = await fetch('/api/v1/video/upload-video-large-multipart-hls', {
     method: 'POST',
     body: formData,
     headers: {
@@ -120,7 +120,7 @@ export const POSTLargeVideoMultipartUploadDashAction = async (formData, index, c
   if (!formData) {
     return { status: 'fail' };
   }
-  const response = await fetch('/redirect/upload-video-large-multipart-dash', {
+  const response = await fetch('/api/v1/video/upload-video-large-multipart-dash', {
     method: 'POST',
     body: formData,
     headers: {
