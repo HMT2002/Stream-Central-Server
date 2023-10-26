@@ -69,7 +69,7 @@ const getAllServers = async () => {
 };
 
 const availableStorageTest = async (videoname, type) => {
-  const video = await getAvailableVideoAndType(videoname, type);
+  // const video = await getAvailableVideoAndType(videoname, type);
   // if (!video) {
   //   console.log('Video not found on database, check name');
   //   return null;
@@ -415,8 +415,8 @@ const availableVideoOnServer = async (videoname, type) => {
 };
 
 const availableStorageOnServer = async (videoname, type) => {
-  const availableStorageOnServer = await availableStorageTest(videoname, type);
-  // const availableStorageOnServer =await availableStorage(videoname,type);
+  // const availableStorageOnServer = await availableStorageTest(videoname, type);
+  const availableStorageOnServer =await availableStorage(videoname,type);
   console.log('2222222222222222222222222');
   console.log(availableStorageOnServer);
   if (availableStorageOnServer === null) {
@@ -785,11 +785,17 @@ const createServer = async (URL, port) => {
   return server;
 };
 
-const addToServer = async (video, server) => {
-  const fullServer = await Server.findOne({ _id: server._id });
-  const fullVideo = await Video.findOne({ _id: video._id });
+const getServerWithURLAndPort=async(URL,port)=>{
+  console.log('87897')
+  console.log({URL,port})
+  const server = await Server.findOne({ URL,port});
+  console.log(server)
+  return server;
+}
 
-  fullServer.videos.push(fullVideo);
+const addToServer = async (video, URL,port) => {
+  const fullServer = await getServerWithURLAndPort( URL,port);
+  fullServer.videos.push(video);
   await fullServer.save()
   return fullServer;
 };
@@ -817,18 +823,18 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
     }
   });
 
-  const availableStoreServer= await availableStorageOnServer(req.headers.filename,'HLS');
-  if(availableStoreServer.length===0){
-    res.status(200).json({
-      message: 'File is everywhere on the servers system!',
-    });
-    return;
-  }
+  // const availableStoreServer= await availableStorageOnServer(req.headers.filename,'HLS');
+  // if(availableStoreServer.length===0){
+  //   res.status(200).json({
+  //     message: 'File is everywhere on the servers system!',
+  //   });
+  //   return;
+  // }
   const index = 0;
-  // const url = req.body.url || 'http://localhost';
-  // const port = req.body.port || ':9100';
-  const url = availableStoreServer[index].URL || 'http://localhost';
-  const port = availableStoreServer[index].port || ':9100';
+  const url = req.body.url || 'http://localhost';
+  const port = req.body.port || ':9100';
+  // const url = availableStoreServer[index].URL || 'http://localhost';
+  // const port = availableStoreServer[index].port || ':9100';
   const baseUrl = url + port + '/api/v1/check/folder/' + filename + 'Hls';
   const check=await checkFolderOnServer(baseUrl);
   if (check.existed === true) {
@@ -847,13 +853,15 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
     });
 
     const newVideo = await createVideo(req.headers.filename, 'HLS');
+    const addVideoToServer=await addToServer(newVideo,url.split('//')[1],port);
+
 
     res.status(201).json({
       message: 'success full upload',
       filename,
       destination,
       full: true,
-      newVideo,
+      addVideoToServer,
     });
   } else {
     console.log('file is not completed');
@@ -886,29 +894,28 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
     }
   });
 
-  const availableStoreServer= await availableStorageOnServer(req.headers.filename,'DASH');
-  if(availableStoreServer.length===0){
-    res.status(200).json({
-      message: 'File is everywhere on the servers system!',
-    });
-    return;
-  }
-  const index = 0;
-  // const url = req.body.url || 'http://localhost';
-  // const port = req.body.port || ':9100';
-  const url = availableStoreServer[index].URL || 'http://localhost';
-  const port = availableStoreServer[index].port || ':9100';
-  // const baseUrl = url + port + '/api/v1/check/folder/' + filename + 'Dash';
-  // const check=await checkFolderOnServer(baseUrl);
-  // if (check.existed === true) {
+  // const availableStoreServer= await availableStorageOnServer(req.headers.filename,'DASH');
+  // if(availableStoreServer.length===0){
   //   res.status(200).json({
-  //     message: 'Folder already existed on sub server',
-  //     check,
+  //     message: 'File is everywhere on the servers system!',
   //   });
   //   return;
   // }
+  const index = 0;
+  const url = req.body.url || 'http://localhost';
+  const port = req.body.port || ':9100';
+  // const url = availableStoreServer[index].URL || 'http://localhost';
+  // const port = availableStoreServer[index].port || ':9100';
 
-
+  const baseUrl = url + port + '/api/v1/check/folder/' + filename + 'Dash';
+  const check=await checkFolderOnServer(baseUrl);
+  if (check.existed === true) {
+    res.status(200).json({
+      message: 'Folder already existed on sub server',
+      check,
+    });
+    return;
+  }
   if (flag) {
     console.log('file is completed');
     arrayChunkName.forEach(async (chunkName) => {
@@ -917,13 +924,15 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
     });
 
     const newVideo = await createVideo(req.headers.filename, 'DASH');
+    const addVideoToServer=await addToServer(newVideo,url.split('//')[1],port);
+
 
     res.status(201).json({
       message: 'success full upload',
       filename,
       destination,
       full: true,
-      newVideo,
+      addVideoToServer,
     });
   } else {
     console.log('file is not completed');

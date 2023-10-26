@@ -88,7 +88,7 @@ async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, fil
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
     console.log(arrayChunkName);
-    const responseDash = await POSTLargeVideoMultipartUploadDashAction(
+    const responseDash = await POSTLargeVideoMultipartUploadHlsAction(
       formData,
       chunkIndex,
       chunkName,
