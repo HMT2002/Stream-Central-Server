@@ -15,7 +15,7 @@ const VideoPage = () => {
   useEffect(() => {
     const LoadVideo = async () => {
       try {
-        //   const response = await fetch('/api/video/video-proc/convert-stream/'+params.videoname, {
+        //   const response = await fetch('/api/v1/video/video-proc/convert-stream/'+params.videoname, {
         //     method: 'GET'
         // });
         // const data = await response.json();

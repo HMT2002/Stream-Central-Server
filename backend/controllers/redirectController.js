@@ -173,6 +173,20 @@ const calculateTimeStorage = async (baseUrl) => {
   }
 };
 
+const checkConditionAndFilter = async (baseUrl) => {
+  try {
+    console.log(baseUrl)
+    const { data } = await axios.get(baseUrl, {
+      timeout: 500, // Set a timeout of 0,3 seconds
+    });
+    console.log(baseUrl)
+    return { data };
+  } catch (err) {
+    // console.log( { ...err })
+    return null;
+  }
+};
+
 const getMyNetworkDownloadSpeedHls = async (url, port, videoname) => {
   // return new Promise((resolve, reject) => {
   //   var options = {
@@ -208,13 +222,21 @@ const getMyNetworkStorageSpeed = async (url, port, videofolder) => {
   return calculateTimeStorage(baseUrl);
 };
 
+const getMyNetworkAliveCondition = async (url, port) => {
+
+  const baseUrl = 'http://' + url + port + '/is-this-alive';
+  return checkConditionAndFilter(baseUrl);
+};
+
 const checkTestErrorCode = (result) => {
   if (result.code && result.code === 'ECONNREFUSED') {
-    return { url: result.config.url, message: 'ECONNREFUSED' };
+    console.log({ url: result.config.url, message: 'ECONNREFUSED' })
+    return null;
   } else {
     return result;
   }
 };
+
 
 exports.GetAvailableServerHls = catchAsync(async (req, res, next) => {
   console.log('check hls server');
@@ -360,11 +382,32 @@ const testSpeedResults = async (videoname, type) => {
         await getMyNetworkDownloadSpeedDash(availableServer[i].URL, availableServer[i].port, videoname)
       );
     }
+    if(speedDownload!==null){
+      testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
+    }
 
-    testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
   }
   return testResults;
 };
+
+const testServerIsFckingAlive = async () => {
+
+  const availableServer = await getAllServers();
+  if (availableServer.length === 0) {
+    console.log('Not found any server');
+    return null;
+  }
+  let testResults = [];
+  for (let i = 0; i < availableServer.length; i++) {
+    condition = await getMyNetworkAliveCondition(availableServer[i].URL, availableServer[i].port); 
+    console.log({URL:availableServer[i].URL, port:availableServer[i].port,...condition})   
+    if(condition!==null){
+      testResults.push({ ...condition, URL: availableServer[i].URL, port: availableServer[i].port });
+    }
+  }
+  return testResults;
+};
+
 
 exports.CheckSpeedHLS = catchAsync(async (req, res, next) => {
   console.log('check speed');
@@ -485,9 +528,18 @@ const countVideoAccessing = async (videoname, url, port, type) => {
 
 exports.M4SHandler = catchAsync(async (req, res, next) => {
   console.log('m4s handler');
-  const url = 'localhost';
-  const port = ':9100';
+  // console.log(req);
   const filebasename = req.params.filenamebase;
+  const server = await availableVideoOnServer(filebasename, 'DASH');
+  if (server.length === 0) {
+    res.status(200).json({
+      message: 'Not found Server with Video, check name or server connections',
+    });
+    return;
+  }
+  const index = 0;
+  const url = server[index].URL || 'localhost';
+  const port = server[index].port || ':9100';
   req.url = req.url.replace('/dash/', '/videos/');
   req.url = req.url.replace(filebasename, filebasename + 'Dash');
   const oriURL = 'http://' + url + port + req.url;
@@ -554,16 +606,17 @@ exports.RedirectDeleteRequest = catchAsync(async (req, res, next) => {
 exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post replicate');
   console.log(req.body);
-  const availableServer = await getAvailableServer();
-  const index = 0;
-  // const url = availableServer[index].URL || 'localhost';
-  // const port = availableServer[index].port || ':9100';
-  const url ='localhost';
-  const port =':9100';
+  
   const filename = req.body.filename||'mkvmediumHls';
   const videoname=filename.split('Hls')[0].split('Dash')[0];
   console.log(videoname)
   const video=await Video.findOne({videoname});
+  const availableServer = await getAvailableServer(video);
+  const index = 0;
+  // const url = availableServer[index].URL || 'localhost';
+  // const port = availableServer[index].port || ':9100';
+  const url =availableServer[index].URL||'localhost';
+  const port =availableServer[index].port||':9100';
   // nên nhớ 2 port này khác nhau
   await addToServer(video,req.body.url,req.body.port);
   res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
@@ -753,8 +806,9 @@ const getServerWithURLAndPort=async(URL,port)=>{
 }
 
 const addToServer = async (video, URL,port) => {
+  console.log(video)
   const server = await getServerWithURLAndPort( URL,port);
-  console.log(server.videos)
+  console.log(server)
   if(server.videos.includes(video._id)){
     console.log('Video already on server');
     return server;
@@ -794,9 +848,12 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
   //   });
   //   return;
   // }
+  const aliveServers=await testServerIsFckingAlive();
+  console.log('fadsjfadsfjadsfiadshferigherwuigdshijhdgijdr')
+  console.log(aliveServers)
   const index = 0;
-  const url = req.body.url || 'localhost';
-  const port = req.body.port || ':9100';
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || ':9100';
   // const url = availableStoreServer[index].URL || 'http://localhost';
   // const port = availableStoreServer[index].port || ':9100';
   const baseUrl ='http://'+ url + port + '/api/v1/check/folder/' + filename + 'Hls';
@@ -864,9 +921,11 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   //   });
   //   return;
   // }
+  const aliveServers=await testServerIsFckingAlive();
+  console.log(aliveServers)
   const index = 0;
-  const url = req.body.url || 'localhost';
-  const port = req.body.port || ':9100';
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || ':9100';
   // const url = availableStoreServer[index].URL || 'localhost';
   // const port = availableStoreServer[index].port || ':9100';
 

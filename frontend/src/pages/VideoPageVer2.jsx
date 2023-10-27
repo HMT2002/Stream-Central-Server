@@ -254,7 +254,7 @@ const VideoPageVer2 = () => {
         console.log(end);
         // Make an API call to upload the chunk to the backend
         const ext = file.name.split('.')[1];
-        await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkNameDash, ext);
+        await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkNameDash, ext);
       }
 
       // const formData = new FormData();
@@ -275,7 +275,7 @@ const VideoPageVer2 = () => {
 
   useEffect(() => {
     const CheckVideoAndEncode = async () => {
-      const response = await fetch('/api/video/video-proc/convert-stream/' + params.videoname, {
+      const response = await fetch('/api/v1/video/video-proc/convert-stream/' + params.videoname, {
         method: 'GET',
         headers: {
           // 'Content-Type': 'application/json',
@@ -511,7 +511,7 @@ const VideoPageVer2 = () => {
           hls.attachMedia(videoNode.current);
           hls.subtitleDisplay = true;
         } else {
-          const response = await fetch('/api/video/video-proc/convert-stream/' + params.videoname, {
+          const response = await fetch('/api/v1/video/video-proc/convert-stream/' + params.videoname, {
             method: 'GET',
             headers: {
               // 'Content-Type': 'application/json',

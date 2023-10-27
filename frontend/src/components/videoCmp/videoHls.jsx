@@ -200,7 +200,7 @@ const VideoHls = (props) => {
   };
   const loadVideo = async (player) => {
     var url = '';
-    const encodeUri = encodeURI('/api/video/video-proc/convert-stream/' + props.videoname);
+    const encodeUri = encodeURI('/api/v1/video/video-proc/convert-stream/' + props.videoname);
     const response = await fetch(encodeUri, {
       method: 'GET',
       headers: {
