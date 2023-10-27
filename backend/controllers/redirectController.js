@@ -429,24 +429,6 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
   console.log('redirect');
   const videoname = req.params.filename;
   console.log(videoname);
-  // const video = await getAvailableHls(videoname);
-  // // console.log(video);
-  // if (!video) {
-  //   res.status(200).json({
-  //     message: 'Video not found on database, check name',
-  //   });
-  //   return;
-  // }
-  // const availableServer = await getAvailableServer();
-  // if (availableServer.length === 0) {
-  //   res.status(200).json({
-  //     message: 'Not found any server',
-  //   });
-  //   return;
-  // }
-  // const testResults = await testSpeedHlsResults(availableServer, video);
-  // const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
-  // console.log(availableVideoOnServer);
   const server = await availableVideoOnServer(videoname, 'HLS');
   if (server.length === 0) {
     res.status(200).json({
@@ -461,7 +443,7 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
   const oriURL = 'http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8';
   if (req.headers.myaxiosfetch) {
     res.status(200).json({
-      url: oriURL,
+      subserverurl: oriURL,
     });
     res.end();
     return;
@@ -472,23 +454,6 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
 
 exports.RedirectDash = catchAsync(async (req, res, next) => {
   const videoname = req.params.filename;
-  // const video = await getAvailableDash(videoname);
-  // if (!video) {
-  //   res.status(200).json({
-  //     message: 'Video not found on database, check name',
-  //   });
-  //   return;
-  // }
-  // const availableServer = await getAvailableServer();
-  // if (availableServer.length === 0) {
-  //   res.status(200).json({
-  //     message: 'Not found any server',
-  //   });
-  //   return;
-  // }
-  // const testResults = await testSpeedDashResults(availableServer, video);
-  // const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
-  // console.log(availableVideoOnServer);
   const server = await availableVideoOnServer(videoname, 'DASH');
   if (server.length === 0) {
     res.status(200).json({
@@ -593,8 +558,14 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   const index = 0;
   // const url = availableServer[index].URL || 'localhost';
   // const port = availableServer[index].port || ':9100';
-  const url = 'localhost';
-  const port = ':9100';
+  const url ='localhost';
+  const port =':9100';
+  const filename = req.body.filename||'mkvmediumHls';
+  const videoname=filename.split('Hls')[0].split('Dash')[0];
+  console.log(videoname)
+  const video=await Video.findOne({videoname});
+  // nên nhớ 2 port này khác nhau
+  await addToServer(video,req.body.url,req.body.port);
   res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
   res.end();
 });
@@ -710,24 +681,14 @@ const SendFileToOtherNodeAndConvertToDash = async (
   try {
     const filePath = './' + destination + filename;
     console.log('sending file ' + filePath);
-
-    console.log(filePath);
-    console.log(fs.existsSync(filePath));
     const readStream = fs.createReadStream(filePath);
     var form = new FormData();
     form.append('myMultilPartFileChunk', readStream);
     form.append('arraychunkname', JSON.stringify(arrayChunkName));
 
-    // const { data } = await axios({
-    //   method: 'post',
-    //   url: url + port + '/api/v1/replicate/receive',
-    //   data: form,
-    //   headers: { ...form.getHeaders(), chunkname: filename, ext },
-    //   maxContentLength: Infinity,
-    //   maxBodyLength: Infinity,
-    // });
-
     console.log('begin send to other node');
+    console.log('qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqq')
+    console.log({url,port})
 
     await axios({
       method: 'post',
@@ -753,7 +714,7 @@ const SendFileToOtherNodeAndConvertToDash = async (
     fs.unlinkSync(filePath);
     console.log('complete delete ' + filePath);
   } catch (err) {
-    console.timeLog(err);
+    // console.timeLog(err);
   }
 };
 
@@ -786,18 +747,21 @@ const createServer = async (URL, port) => {
 };
 
 const getServerWithURLAndPort=async(URL,port)=>{
-  console.log('87897')
   console.log({URL,port})
   const server = await Server.findOne({ URL,port});
-  console.log(server)
   return server;
 }
 
 const addToServer = async (video, URL,port) => {
-  const fullServer = await getServerWithURLAndPort( URL,port);
-  fullServer.videos.push(video);
-  await fullServer.save()
-  return fullServer;
+  const server = await getServerWithURLAndPort( URL,port);
+  console.log(server.videos)
+  if(server.videos.includes(video._id)){
+    console.log('Video already on server');
+    return server;
+  }
+  server.videos.push(video);
+  await server.save()
+  return server;
 };
 
 const checkFolderOnServer=async(baseUrl)=>{
@@ -831,11 +795,11 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
   //   return;
   // }
   const index = 0;
-  const url = req.body.url || 'http://localhost';
+  const url = req.body.url || 'localhost';
   const port = req.body.port || ':9100';
   // const url = availableStoreServer[index].URL || 'http://localhost';
   // const port = availableStoreServer[index].port || ':9100';
-  const baseUrl = url + port + '/api/v1/check/folder/' + filename + 'Hls';
+  const baseUrl ='http://'+ url + port + '/api/v1/check/folder/' + filename + 'Hls';
   const check=await checkFolderOnServer(baseUrl);
   if (check.existed === true) {
     res.status(200).json({
@@ -849,11 +813,10 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
     console.log('file is completed');
     arrayChunkName.forEach(async (chunkName) => {
       console.log({ index, url, port, chunkName, ext, destination, orginalname });
-      await SendFileToOtherNodeAndConvertToHls(url, port, arrayChunkName, chunkName, destination, ext, orginalname);
+      await SendFileToOtherNodeAndConvertToHls('http://'+ url, port, arrayChunkName, chunkName, destination, ext, orginalname);
     });
-
     const newVideo = await createVideo(req.headers.filename, 'HLS');
-    const addVideoToServer=await addToServer(newVideo,url.split('//')[1],port);
+    const addVideoToServer=await addToServer(newVideo,url,port);
 
 
     res.status(201).json({
@@ -902,13 +865,14 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   //   return;
   // }
   const index = 0;
-  const url = req.body.url || 'http://localhost';
+  const url = req.body.url || 'localhost';
   const port = req.body.port || ':9100';
-  // const url = availableStoreServer[index].URL || 'http://localhost';
+  // const url = availableStoreServer[index].URL || 'localhost';
   // const port = availableStoreServer[index].port || ':9100';
 
-  const baseUrl = url + port + '/api/v1/check/folder/' + filename + 'Dash';
+  const baseUrl ='http://'+ url + port + '/api/v1/check/folder/' + filename + 'Dash';
   const check=await checkFolderOnServer(baseUrl);
+  console.log(check)
   if (check.existed === true) {
     res.status(200).json({
       message: 'Folder already existed on sub server',
@@ -920,11 +884,11 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
     console.log('file is completed');
     arrayChunkName.forEach(async (chunkName) => {
       console.log({ index, url, port, chunkName, ext, destination, orginalname });
-      await SendFileToOtherNodeAndConvertToDash(url, port, arrayChunkName, chunkName, destination, ext, orginalname);
+      await SendFileToOtherNodeAndConvertToDash('http://'+url, port, arrayChunkName, chunkName, destination, ext, orginalname);
     });
 
     const newVideo = await createVideo(req.headers.filename, 'DASH');
-    const addVideoToServer=await addToServer(newVideo,url.split('//')[1],port);
+    const addVideoToServer=await addToServer(newVideo,url,port);
 
 
     res.status(201).json({

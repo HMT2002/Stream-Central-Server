@@ -26,9 +26,9 @@ import '../components/dashControlBar/controlbar.css';
 import '../components/dashControlBar/icomoon.ttf';
 import '../styles/VideoDemo.css';
 
-const getHlsUrl=async (filename)=>{
-  console.log(filename)
-  var url = '/redirect/hls/' + filename ;
+const getHlsUrl = async (filename) => {
+  console.log(filename);
+  var url = '/redirect/hls/' + filename;
 
   const { data } = await axios({
     method: 'get',
@@ -37,9 +37,9 @@ const getHlsUrl=async (filename)=>{
   });
   console.log(data);
   var url = data.subserverurl || 'http://localhost:9100/videos/GSpR1T8Hls/GSpR1T8.m3u8';
-  return url
-}
-const getDashUrl=async(filename)=>{
+  return url;
+};
+const getDashUrl = async (filename) => {
   var url = '/redirect/dash/' + filename + '/' + filename;
 
   const { data } = await axios({
@@ -49,8 +49,8 @@ const getDashUrl=async(filename)=>{
   });
   console.log(data);
   var url = data.subserverurl || 'http://localhost:9100/videos/l8NSKXODash/init.mpd';
-  return url
-}
+  return url;
+};
 
 const VideoDemo = () => {
   const params = useParams();
@@ -97,7 +97,6 @@ const VideoDemo = () => {
 
         // const videoDashWindowCurrent = videoDashWindow.current;
 
-
         // if (videoDashWindowCurrent) {
         //   var urlDash = '/redirect/dash/' + filename + '/' + filename;
 
@@ -123,16 +122,15 @@ const VideoDemo = () => {
         //   controlbar.initialize();
         // }
 
-          var urlDash=await getDashUrl(filename);
-          setReactPlayerURLDash(()=>{
+        var urlDash = await getDashUrl(filename);
+        setReactPlayerURLDash(() => {
           return urlDash;
-        })
+        });
 
-        var urlHls=await getHlsUrl(filename);
-        setReactPlayerURLHls(()=>{
-        return urlHls;
-      })
-
+        var urlHls = await getHlsUrl(filename);
+        setReactPlayerURLHls(() => {
+          return urlHls;
+        });
       } catch (error) {
         console.log(error);
         if (playerDashWindow.current) {
@@ -162,9 +160,7 @@ const VideoDemo = () => {
           }}
         />
 
-                <ReactPlayer
-                ref={videoReactPlayer}
-          // url='http://localhost:9100/videos/l8NSKXODash/init.mpd'
+        <ReactPlayer
           url={reactPlayerURLDash}
           width="60%"
           height="500px"
