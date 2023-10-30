@@ -52,6 +52,7 @@ const getDashUrl = async (filename) => {
   return url;
 };
 
+
 const VideoDemo = () => {
   const params = useParams();
   const filename = params.filename;
@@ -59,15 +60,16 @@ const VideoDemo = () => {
   const [reactPlayerURLDash, setReactPlayerURLDash] = useState('');
   const [reactPlayerURLHls, setReactPlayerURLHls] = useState('');
 
-  const videoNormal = useRef();
+  const [isPlayingDash, setIsPlayingDash] = useState(false);
+  const [isPlayingHls, setIsPlayingHls] = useState(false);
 
-  const videoDashLinux = useRef();
-  const videoDashWindow = useRef(null);
   const playerDashWindow = useRef(null);
 
-  const videoHLS = useRef();
 
   const videoReactPlayer = useRef();
+  const videoReactPlayerHls = useRef();
+  const videoReactPlayerDash = useRef();
+
   useEffect(() => {
     const LoadVideo = async () => {
       try {
@@ -126,6 +128,9 @@ const VideoDemo = () => {
         setReactPlayerURLDash(() => {
           return urlDash;
         });
+        setIsPlayingDash(()=>{
+          return true;
+        })
 
         var urlHls = await getHlsUrl(filename);
         setReactPlayerURLHls(() => {
@@ -150,6 +155,7 @@ const VideoDemo = () => {
 
         {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" /> */}
         <ReactPlayer
+        ref={videoReactPlayerHls}
           url={reactPlayerURLHls}
           width="60%"
           height="500px"
@@ -161,11 +167,39 @@ const VideoDemo = () => {
         />
 
         <ReactPlayer
+        ref={videoReactPlayerDash}
           url={reactPlayerURLDash}
-          width="60%"
+              width="60%"
           height="500px"
           autoPlay
           controls
+          playing={isPlayingDash}
+          onSeek={() => console.log("Seeking!")}
+          onBuffer={()=>console.log("onBuffer")}
+          onBufferEnd={()=>console.log("onBufferEnd")}
+
+          onError={async(event, data, instance, global) => {
+            console.log({event, data, instance, global})
+            if(event.error){
+              console.log('There are Error in videoReactPlayerDash')
+              console.log(event.error)
+              console.log('videoReactPlayerDash ref')
+              console.log(videoReactPlayerDash)
+              var urlDash = await getDashUrl(filename);
+              setReactPlayerURLDash(() => {
+                return urlDash;
+              });
+              setIsPlayingDash(()=>{
+                return false;
+              })/// dòng này thì chạy đc
+              const duration=videoReactPlayerDash.current.getDuration()
+              console.log(duration);
+              videoReactPlayerDash.current.seekTo(300);/// cái dòng này không seekTo cái khúc đang coi dở
+              setIsPlayingDash(()=>{
+                return true;/// dòng này thì chạy đc
+              })
+            }
+          }}
           config={{
             forceDASH: true,
           }}

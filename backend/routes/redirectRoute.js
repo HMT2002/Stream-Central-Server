@@ -11,7 +11,9 @@ router.route('/speed-check-dash/:filename').get(redirectController.CheckSpeedDAS
 router.route('/get-available-server/hls').get(redirectController.GetAvailableServerHls);
 router.route('/get-available-server/dash').get(redirectController.GetAvailableServerDash);
 router.route('/recall').get(redirectController.ServerRecall);
-// router.route('/recall').post(redirectController.ServerRecall);
+
+router.route('/get-available-server-for-video/hls/:filename').get(redirectController.AvailableServerForVideoHls);
+router.route('/get-available-server-for-video/dash/:filename').get(redirectController.AvailableServerForVideoDash);
 
 
 router.route('/hls/:filename').get(redirectController.RedirectHls);
@@ -20,10 +22,6 @@ router.route('/hls/:filename').get(redirectController.RedirectHls);
 router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHandler);
 router.route('/dash/:filenamebase/:filename').get(redirectController.RedirectDash);
 
-router.route('/live/:filename').get(redirectController.RedirectLiveGET);
-// router.route('/live/:filename').post(redirectController.RedirectLivePOST);
-
-// router.route('/live/:filename').get(redirectController.RedirectLive);
 
 router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);
 router.route('/delete').post(redirectController.RedirectDeleteRequest);
@@ -54,9 +52,6 @@ router.route('/upload-video-large-multipart-dash').post(uploadMultipartFileChunk
 //       arrayChunkName,
 //       ext,
 //     },
-
-// router.route('/upload-video-large-multipart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeGetVideoThumbnail);
-// router.route('/upload-video-large-multipart-concatenate').post( redirectController.UploadNewFileLargeMultilpartConcatenate,redirectController.UploadNewFileLargeConvertToHls);
 
 
 module.exports = router;
