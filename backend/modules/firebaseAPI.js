@@ -37,7 +37,7 @@ const metadata = {
 module.exports = async (file,filebuffer) => {
   // 'file' comes from the Blob or File API
   console.log(file)
-  const storageRef = ref(storage, 'somevideos/'+Date.now()+file.originalname);
+  const storageRef = ref(storage, 'somevideos/'+Date.now+file.originalname);
 
   const snapshot=await uploadBytesResumable(storageRef, filebuffer,file.mimetype);
   console.log(snapshot);

@@ -25,8 +25,8 @@ const userSchema = new mongoose.Schema({
   phone: { type: String, default: '', required: false },
   address: { type: String, default: '', required: false },
   birthday: { type: Date, default: null, required: false },
-  createdDate: { type: Date, default: Date.now() },
-  lastUpdated: { type: Date, default: Date.now() },
+  createdDate: { type: Date, default: Date.now },
+  lastUpdated: { type: Date, default: Date.now },
 
   role: { type: String, enum: ['guest', 'user', 'content-creator', 'admin'], default: 'guest' },
   photo: {
@@ -64,7 +64,7 @@ userSchema.pre('save', async function (next) {
   if (!this.isModified('password') || this.isNew) {
     return next();
   }
-  this.passwordChangedAt = Date.now() - 3000;
+  this.passwordChangedAt = Date.now - 3000;
   next();
 });
 
@@ -98,7 +98,7 @@ userSchema.methods.createPasswordResetToken = function () {
 
   console.log({ resetToken }, this.passwordResetToken);
 
-  this.passwordResetExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+  this.passwordResetExpires = Date.now + 10 * 60 * 1000; // 10 minutes
 
   return resetToken;
 };

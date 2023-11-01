@@ -6,8 +6,8 @@ const logSchema = new mongoose.Schema({
   name: { type: String,required: [true, 'Yêu cầu cần có tên log'] },
   description: {  type: Object},
   speed: { type: Number, default: 0 * 1 },
-  createdDate: { type: Date, default: Date.now() },
-  lastUpdated: { type: Date, default: Date.now() },
+  createdDate: { type: Date, default: Date.now },
+  lastUpdated: { type: Date, default: Date.now },
 });
 
 

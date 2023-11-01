@@ -45,7 +45,7 @@ const ThreadPage = () => {
         const threadSlug = params.slug;
         const commentData = {
             content: comment,
-            createDate: Date.now(),
+            createDate: Date.now,
             thread: thread,
         };
 

@@ -2321,7 +2321,7 @@ function setMainLoop(browserIterationFunc, fps, simulateInfiniteLoop, arg, noSet
   Browser.mainLoop.runner = function Browser_mainLoop_runner() {
     if (ABORT) return;
     if (Browser.mainLoop.queue.length > 0) {
-      var start = Date.now();
+      var start = Date.now;
       var blocker = Browser.mainLoop.queue.shift();
       blocker.func(blocker.arg);
       if (Browser.mainLoop.remainingBlockers) {
@@ -2334,7 +2334,7 @@ function setMainLoop(browserIterationFunc, fps, simulateInfiniteLoop, arg, noSet
           Browser.mainLoop.remainingBlockers = (8 * remaining + next) / 9;
         }
       }
-      out('main loop blocker "' + blocker.name + '" took ' + (Date.now() - start) + ' ms');
+      out('main loop blocker "' + blocker.name + '" took ' + (Date.now - start) + ' ms');
       Browser.mainLoop.updateStatus();
       if (!checkIsRunning()) return;
       setTimeout(Browser.mainLoop.runner, 0);
@@ -2753,7 +2753,7 @@ var Browser = {
   },
   nextRAF: 0,
   fakeRequestAnimationFrame: function (func) {
-    var now = Date.now();
+    var now = Date.now;
     if (Browser.nextRAF === 0) {
       Browser.nextRAF = now + 1e3 / 60;
     } else {
@@ -3198,7 +3198,7 @@ var TTY = {
         buffer[offset + i] = result;
       }
       if (bytesRead) {
-        stream.node.timestamp = Date.now();
+        stream.node.timestamp = Date.now;
       }
       return bytesRead;
     },
@@ -3214,7 +3214,7 @@ var TTY = {
         throw new FS.ErrnoError(29);
       }
       if (length) {
-        stream.node.timestamp = Date.now();
+        stream.node.timestamp = Date.now;
       }
       return i;
     },
@@ -3349,7 +3349,7 @@ var MEMFS = {
       node.node_ops = MEMFS.ops_table.chrdev.node;
       node.stream_ops = MEMFS.ops_table.chrdev.stream;
     }
-    node.timestamp = Date.now();
+    node.timestamp = Date.now;
     if (parent) {
       parent.contents[name] = node;
       parent.timestamp = node.timestamp;
@@ -3441,7 +3441,7 @@ var MEMFS = {
         }
       }
       delete old_node.parent.contents[old_node.name];
-      old_node.parent.timestamp = Date.now();
+      old_node.parent.timestamp = Date.now;
       old_node.name = new_name;
       new_dir.contents[new_name] = old_node;
       new_dir.timestamp = old_node.parent.timestamp;
@@ -3449,7 +3449,7 @@ var MEMFS = {
     },
     unlink: function (parent, name) {
       delete parent.contents[name];
-      parent.timestamp = Date.now();
+      parent.timestamp = Date.now;
     },
     rmdir: function (parent, name) {
       var node = FS.lookupNode(parent, name);
@@ -3457,7 +3457,7 @@ var MEMFS = {
         throw new FS.ErrnoError(55);
       }
       delete parent.contents[name];
-      parent.timestamp = Date.now();
+      parent.timestamp = Date.now;
     },
     readdir: function (node) {
       var entries = ['.', '..'];
@@ -3499,7 +3499,7 @@ var MEMFS = {
       }
       if (!length) return 0;
       var node = stream.node;
-      node.timestamp = Date.now();
+      node.timestamp = Date.now;
       if (buffer.subarray && (!node.contents || node.contents.subarray)) {
         if (canOwn) {
           node.contents = buffer.subarray(offset, offset + length);
@@ -4220,7 +4220,7 @@ var FS = {
     if (!node.node_ops.setattr) {
       throw new FS.ErrnoError(63);
     }
-    node.node_ops.setattr(node, { mode: (mode & 4095) | (node.mode & ~4095), timestamp: Date.now() });
+    node.node_ops.setattr(node, { mode: (mode & 4095) | (node.mode & ~4095), timestamp: Date.now });
   },
   lchmod: (path, mode) => {
     FS.chmod(path, mode, true);
@@ -4243,7 +4243,7 @@ var FS = {
     if (!node.node_ops.setattr) {
       throw new FS.ErrnoError(63);
     }
-    node.node_ops.setattr(node, { timestamp: Date.now() });
+    node.node_ops.setattr(node, { timestamp: Date.now });
   },
   lchown: (path, uid, gid) => {
     FS.chown(path, uid, gid, true);
@@ -4279,7 +4279,7 @@ var FS = {
     if (errCode) {
       throw new FS.ErrnoError(errCode);
     }
-    node.node_ops.setattr(node, { size: len, timestamp: Date.now() });
+    node.node_ops.setattr(node, { size: len, timestamp: Date.now });
   },
   ftruncate: (fd, len) => {
     var stream = FS.getStream(fd);
@@ -4775,7 +4775,7 @@ var FS = {
           buffer[offset + i] = result;
         }
         if (bytesRead) {
-          stream.node.timestamp = Date.now();
+          stream.node.timestamp = Date.now;
         }
         return bytesRead;
       },
@@ -4788,7 +4788,7 @@ var FS = {
           }
         }
         if (length) {
-          stream.node.timestamp = Date.now();
+          stream.node.timestamp = Date.now;
         }
         return i;
       },
@@ -5546,7 +5546,7 @@ function ___syscall_unlinkat(dirfd, path, flags) {
   }
 }
 function __emscripten_date_now() {
-  return Date.now();
+  return Date.now;
 }
 function __emscripten_fs_load_embedded_files(ptr) {
   do {
@@ -8780,7 +8780,7 @@ self.lastCurrentTime = 0;
 self.rate = 1;
 self.rafId = null;
 self.nextIsRaf = false;
-self.lastCurrentTimeReceivedAt = Date.now();
+self.lastCurrentTimeReceivedAt = Date.now;
 self.targetFps = 24;
 self.libassMemoryLimit = 0;
 self.dropAllAnimations = false;
@@ -8862,7 +8862,7 @@ self.resize = function (width, height) {
   self.octObj.resizeCanvas(width, height);
 };
 self.getCurrentTime = function () {
-  var diff = (Date.now() - self.lastCurrentTimeReceivedAt) / 1e3;
+  var diff = (Date.now - self.lastCurrentTimeReceivedAt) / 1e3;
   if (self._isPaused) {
     return self.lastCurrentTime;
   } else {
@@ -8875,7 +8875,7 @@ self.getCurrentTime = function () {
 };
 self.setCurrentTime = function (currentTime) {
   self.lastCurrentTime = currentTime;
-  self.lastCurrentTimeReceivedAt = Date.now();
+  self.lastCurrentTimeReceivedAt = Date.now;
   if (!self.rafId) {
     if (self.nextIsRaf) {
       self.rafId = self.requestAnimationFrame(self.getRenderMethod());
@@ -8900,7 +8900,7 @@ self.setIsPaused = function (isPaused) {
         self.rafId = null;
       }
     } else {
-      self.lastCurrentTimeReceivedAt = Date.now();
+      self.lastCurrentTimeReceivedAt = Date.now;
       self.rafId = self.requestAnimationFrame(self.getRenderMethod());
     }
   }
@@ -8915,7 +8915,7 @@ self.render = function (force) {
     var result = self.buildResult(renderResult);
     var spentTime = performance.now() - startTime;
     postMessage(
-      { target: 'canvas', op: 'renderCanvas', time: Date.now(), spentTime: spentTime, canvases: result[0] },
+      { target: 'canvas', op: 'renderCanvas', time: Date.now, spentTime: spentTime, canvases: result[0] },
       result[1]
     );
   }
@@ -8950,7 +8950,7 @@ self.blendRender = function (force) {
       {
         target: 'canvas',
         op: 'renderCanvas',
-        time: Date.now(),
+        time: Date.now,
         spentTime: performance.now() - startTime,
         blendTime: renderResult.blend_time,
         canvases: canvases,
@@ -8990,7 +8990,7 @@ self.lossyRender = function (force) {
         {
           target: 'canvas',
           op: 'renderFastCanvas',
-          time: Date.now(),
+          time: Date.now,
           libassTime: libassTime,
           decodeTime: decodeTime,
           bitmaps: bitmaps,
@@ -9102,7 +9102,7 @@ function parseAss(content) {
 self.requestAnimationFrame = (function () {
   var nextRAF = 0;
   return function (func) {
-    var now = Date.now();
+    var now = Date.now;
     if (nextRAF === 0) {
       nextRAF = now + 1e3 / self.targetFps;
     } else {
@@ -9269,7 +9269,7 @@ function onMessageFromMainEmscriptenThread(message) {
         };
         events.push(event);
       }
-      postMessage({ target: 'get-events', time: Date.now(), events: events });
+      postMessage({ target: 'get-events', time: Date.now, events: events });
       break;
     case 'set-event':
       var event = message.data.event;
@@ -9322,7 +9322,7 @@ function onMessageFromMainEmscriptenThread(message) {
         };
         styles.push(style);
       }
-      postMessage({ target: 'get-styles', time: Date.now(), styles: styles });
+      postMessage({ target: 'get-styles', time: Date.now, styles: styles });
       break;
     case 'set-style':
       var style = message.data.style;

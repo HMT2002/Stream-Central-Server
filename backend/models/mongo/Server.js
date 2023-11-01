@@ -9,8 +9,8 @@ const serverSchema = new mongoose.Schema({
   numberOfRequest: { type: Number, default: 0 * 1 },
   description: { type: String,default:'no'},
   videos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Video' }],
-  createdDate: { type: Date, default: Date.now() },
-  lastUpdated: { type: Date, default: Date.now() },
+  createdDate: { type: Date, default: Date.now },
+  lastUpdated: { type: Date, default: Date.now },
 });
 
 

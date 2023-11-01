@@ -2,7 +2,7 @@ import { format, getDate } from "date-fns";
 
 class Utils {
     static DateConverter(date) {
-        const today = Date.now();
+        const today = Date.now;
         const offset = getDate(today - date);
 
         if (offset === 0)

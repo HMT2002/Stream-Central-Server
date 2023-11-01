@@ -8,10 +8,11 @@ const router = express.Router();
 router.route('/speed-check-hls/:filename').get(redirectController.CheckSpeedHLS);
 router.route('/speed-check-dash/:filename').get(redirectController.CheckSpeedDASH);
 
-router.route('/get-available-server/hls').get(redirectController.GetAvailableServerHls);
-router.route('/get-available-server/dash').get(redirectController.GetAvailableServerDash);
-router.route('/recall').get(redirectController.ServerRecall);
+// router.route('/get-available-server/hls').get(redirectController.GetAvailableServerHls);
+// router.route('/get-available-server/dash').get(redirectController.GetAvailableServerDash);
+// router.route('/recall').get(redirectController.ServerRecall);
 
+router.route('/get-all-video-in-server').get(redirectController.AllVideoOnServer);
 router.route('/get-available-server-for-video/hls/:filename').get(redirectController.AvailableServerForVideoHls);
 router.route('/get-available-server-for-video/dash/:filename').get(redirectController.AvailableServerForVideoDash);
 

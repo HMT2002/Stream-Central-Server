@@ -8,8 +8,8 @@ const videoSchema = new mongoose.Schema({
   size: { type: Number, default: 0 * 1 },
   numberOfRequest: { type: Number, default: 0 * 1 },
   avarageSpeed: { type: Number, default: 0 * 1 },
-  createdDate: { type: Date, default: Date.now() },
-  lastUpdated: { type: Date, default: Date.now() },
+  createdDate: { type: Date, default: Date.now },
+  lastUpdated: { type: Date, default: Date.now },
 
 });
 

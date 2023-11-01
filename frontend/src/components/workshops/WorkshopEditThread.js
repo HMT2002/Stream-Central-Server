@@ -117,7 +117,7 @@ const WorkshopEditThread = (props) => {
                     vidLink: threadVideoCloudURL,
                     thumbLink: threadVideoThumbnailCloudURL
                 },
-                updateDate: Date.now()
+                updateDate: Date.now
             };
 
             const threadUpdateResponse = await PATCHThreadUpdateAction(props.context.token, slug, payload);

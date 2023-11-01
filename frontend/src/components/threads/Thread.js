@@ -8,7 +8,7 @@ import Card from "../UI elements/Card";
 import "../../styles/Thread.css";
 
 const DateConverter = (date) => {
-  const today = Date.now();
+  const today = Date.now;
   const offset = getDate(today - date);
 
   if (offset === 0) return "Today";

@@ -111,7 +111,7 @@ exports.aliasTop5Threads = (req, res, next) => {
   req.query.limit = '5';
   req.query.sort = '-createDate';
   // req.query.fields = 'createDate,title';
-  req.query.timeline = Date.now();
+  req.query.timeline = Date.now;
 
   next();
 };
@@ -553,7 +553,7 @@ exports.UpdateThread = catchAsync(async (req, res, next) => {
   thread.title = req.body.title;
   thread.slug = req.body.slug;
   thread.tag = req.body.tag;
-  thread.updateDate = Date.now();
+  thread.updateDate = Date.now;
   await thread.save();
 
   console.log(thread);
