@@ -116,11 +116,11 @@
 }
 
 #video-demo {
-  display: flex;
+  /* display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 5%;
   width: 100%;
-  height: 100vh;
+  height: 100vh; */
 
 }
