@@ -74,6 +74,31 @@ router
   .route('/comments/like/:id')
   .get(threadController.CheckCommentID, threadController.UserLikeComment);
 
+  router
+  .route('/tv/search/:query')
+  .get(
+    threadController.QueryTV
+  );
+
+  router
+  .route('/tv/:id')
+  .get(
+    threadController.GetTV
+  );
+
+  router
+  .route('/movie/search/:query')
+  .get(
+    threadController.QueryMovie
+  );
+
+  router
+  .route('/movie/:id')
+  .get(
+    threadController.GetMovie
+  );
+
+
 router
   .route('/:slug/comment')
   .get(threadController.CheckSlug, threadController.GetAllCommentsFromThread)
@@ -130,5 +155,7 @@ router
     threadController.CheckSlug,
     threadController.GetThread
   );
+
+
 
 module.exports = router;

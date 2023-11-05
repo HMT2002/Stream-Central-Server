@@ -22,6 +22,7 @@ const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
 const ffmpeg = require('ffmpeg');
+const axios = require('axios');
 
 exports.CheckSlug = catchAsync(async (req, res, next) => {
   // console.log('Slug value is: ' + req.params.slug);
@@ -283,6 +284,77 @@ exports.GetThread = catchAsync(async (req, res, next) => {
     },
   });
 });
+
+exports.GetTV = catchAsync(async (req, res, next) => {
+
+  const baseUrl = 'https://api.themoviedb.org/3/tv/'+req.params.id+'?language=en-US';
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ZjI3NmIxYTFmMjY4YmMzMTRhZDYwNTUwNTZkMmI3OCIsInN1YiI6IjY1M2Y1MmM3NTkwN2RlMDBhYzAyNWUxMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PotdEPOO-3gllIB-zv01LrmAUSSlr7g_6mwiEngvMmE'
+    }
+  };
+const { data:tv } = await axios.get(baseUrl,options);
+
+  res.status(200).json({
+    status: 'ok',
+    data: tv,
+  });
+});
+
+exports.QueryTV = catchAsync(async (req, res, next) => {
+
+  const baseUrl = 'https://api.themoviedb.org/3/search/tv?query='+req.params.query+'&include_adult=false&language=en-US&page=1';
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ZjI3NmIxYTFmMjY4YmMzMTRhZDYwNTUwNTZkMmI3OCIsInN1YiI6IjY1M2Y1MmM3NTkwN2RlMDBhYzAyNWUxMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PotdEPOO-3gllIB-zv01LrmAUSSlr7g_6mwiEngvMmE'
+    }
+  };
+const { data:tv } = await axios.get(baseUrl,options);
+  res.status(200).json({
+    status: 'ok',
+    data: tv,
+  });
+});
+
+exports.GetMovie = catchAsync(async (req, res, next) => {
+
+  const baseUrl =  'https://api.themoviedb.org/3/movie/'+req.params.id+'?language=en-US';
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ZjI3NmIxYTFmMjY4YmMzMTRhZDYwNTUwNTZkMmI3OCIsInN1YiI6IjY1M2Y1MmM3NTkwN2RlMDBhYzAyNWUxMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PotdEPOO-3gllIB-zv01LrmAUSSlr7g_6mwiEngvMmE'
+    }
+  };
+const { data:movie } = await axios.get(baseUrl,options);
+
+  res.status(200).json({
+    status: 'ok',
+    data: movie,
+  });
+});
+
+exports.QueryMovie = catchAsync(async (req, res, next) => {
+
+  const baseUrl = 'https://api.themoviedb.org/3/search/movie?query='+req.params.query+'&include_adult=false&language=en-US&page=1';
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ZjI3NmIxYTFmMjY4YmMzMTRhZDYwNTUwNTZkMmI3OCIsInN1YiI6IjY1M2Y1MmM3NTkwN2RlMDBhYzAyNWUxMCIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.PotdEPOO-3gllIB-zv01LrmAUSSlr7g_6mwiEngvMmE'
+    }
+  };
+const { data:movie } = await axios.get(baseUrl,options);
+  res.status(200).json({
+    status: 'ok',
+    data: movie,
+  });
+});
+
 
 exports.CreateNewThread = catchAsync(async (req, res, next) => {
   console.log('api/v1/threads');
