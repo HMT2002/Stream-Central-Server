@@ -63,6 +63,8 @@ const threadRouter = require('./routes/threadRoute');
 const userRouter = require('./routes/userRoute');
 const authRouter = require('./routes/authRoute');
 const videoRouter = require('./routes/videoRoute');
+const infoRouter = require('./routes/infoRoute');
+
 const testRouter = require('./routes/testRoute');
 const redirectRouter = require('./routes/redirectRoute');
 
@@ -73,9 +75,11 @@ app.use('/api/v1/', defaultRoute);
 app.use('/api/v1/threads', threadRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
+app.use('/api/v1/info', infoRouter);
 
 app.use('/api/test', testRouter);
 app.use('/api/video', videoRouter);
+
 app.use('/redirect', redirectRouter);
 
 
