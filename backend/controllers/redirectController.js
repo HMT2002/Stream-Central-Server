@@ -518,18 +518,46 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   }
   if (flag) {
     console.log('file is completed');
-    arrayChunkName.forEach(async (chunkName) => {
-      console.log({ index, url, port, chunkName, ext, destination, orginalname });
-      await redirectAPI.SendFileToOtherNodeAndConvertToDash(
-        'http://' + url,
-        port,
-        arrayChunkName,
-        chunkName,
-        destination,
-        ext,
-        orginalname
-      );
-    });
+    // arrayChunkName.forEach(async (chunkName) => {
+    //   console.log({ index, url, port, chunkName, ext, destination, orginalname });
+    //   await redirectAPI.SendFileToOtherNodeAndConvertToDash(
+    //     'http://' + url,
+    //     port,
+    //     arrayChunkName,
+    //     chunkName,
+    //     destination,
+    //     ext,
+    //     orginalname
+    //   );
+    // });
+
+
+    var chunkIndex = 0;
+    async function uploadLoop() {
+      //  create a loop function
+      setTimeout(async function () {
+        //  call a 3s setTimeout when the loop is called
+        console.log('looping'); //  your code here
+        console.log({ index, url, port, chunkName: arrayChunkName[chunkIndex], ext, destination, orginalname });
+        await redirectAPI.SendFileToOtherNodeAndConvertToDash(
+          'http://' + url,
+          port,
+          arrayChunkName,
+          arrayChunkName[chunkIndex],
+          destination,
+          ext,
+          orginalname
+        );
+
+        chunkIndex++; //  increment the counter
+        if (chunkIndex < arrayChunkName.length) {
+          //  if the counter < totalChunks, call the loop function
+          uploadLoop(); //  ..  again which will trigger another
+        } //  ..  setTimeout()
+      }, 500);
+    }
+    await uploadLoop();
+
 
     const newVideo = await redirectAPI.createVideo(req.headers.filename, 'DASH');
     const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);

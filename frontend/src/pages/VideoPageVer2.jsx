@@ -216,7 +216,7 @@ const VideoPageVer2 = () => {
 
   const CreateNewThreadHandler = async () => {
     try {
-      console.log('press create new thread btn')
+      console.log('press create new thread btn');
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
       const totalChunks = Math.ceil(file.size / chunkSize);
@@ -239,10 +239,10 @@ const VideoPageVer2 = () => {
       //   await uploadChunkHls(chunk, chunkIndex, arrayChunkNameHls[chunkIndex], arrayChunkNameHls, chunkNameHls, ext);
       // }
 
-      let chunkNameDash = Utils.RandomString(7);
+      let chunkName = Utils.RandomString(7);
       let arrayChunkName = [];
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        arrayChunkName.push(chunkNameDash + '_' + chunkIndex);
+        arrayChunkName.push(chunkName + '_' + chunkIndex);
       }
 
       // // Iterate over the chunks and upload them sequentially
@@ -255,7 +255,7 @@ const VideoPageVer2 = () => {
       //   // Make an API call to upload the chunk to the backend
       //   const ext = file.name.split('.')[1];
 
-      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkNameDash, ext);
+      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
       // }
 
       var chunkIndex = 0;
@@ -273,7 +273,8 @@ const VideoPageVer2 = () => {
           // Make an API call to upload the chunk to the backend
           const ext = file.name.split('.')[1];
 
-          await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkNameDash, ext);
+          await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
+          // await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
 
           chunkIndex++; //  increment the counter
           if (chunkIndex < totalChunks) {
