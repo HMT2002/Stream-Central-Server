@@ -7,6 +7,7 @@ import toWebVTT from 'srt-webvtt';
 import Card from '../components/UI elements/Card';
 import Hls from 'hls.js';
 import axios from 'axios';
+import logo from '../assets/img/ben10.jpg';
 
 import {
   POSTVideoUploadAction,
@@ -25,6 +26,7 @@ import ControlBar from '../components/dashControlBar/ControlBar';
 import '../components/dashControlBar/controlbar.css';
 import '../components/dashControlBar/icomoon.ttf';
 import '../styles/VideoDemo.css';
+import MovieItem from '../components/movieItem/MovieItem';
 
 const getHlsUrl = async (filename) => {
   console.log(filename);
@@ -52,7 +54,6 @@ const getDashUrl = async (filename) => {
   return url;
 };
 
-
 const VideoDemo = () => {
   const params = useParams();
   const filename = params.filename;
@@ -64,7 +65,6 @@ const VideoDemo = () => {
   const [isPlayingHls, setIsPlayingHls] = useState(false);
 
   const playerDashWindow = useRef(null);
-
 
   const videoReactPlayer = useRef();
   const videoReactPlayerHls = useRef();
@@ -128,9 +128,9 @@ const VideoDemo = () => {
         setReactPlayerURLDash(() => {
           return urlDash;
         });
-        setIsPlayingDash(()=>{
+        setIsPlayingDash(() => {
           return true;
-        })
+        });
 
         var urlHls = await getHlsUrl(filename);
         setReactPlayerURLHls(() => {
@@ -150,62 +150,64 @@ const VideoDemo = () => {
 
   return (
     <React.Fragment>
-      <div id="video-demo">
-        {/* <video ref={videoHLS} className="video-js"></video> */}
+      <div className="flex flex-col">
+        <div className="w-full bg-black h-3/5" id="video-demo">
+          {/* <video ref={videoHLS} className="video-js"></video> */}
+          <div id="video-section" className="mt-10 flex justify-center">
+            <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" />
+          </div>
+          <div id="change-server-section"></div>
+          <div id="episode-section"></div>
+          <ReactPlayer
+            ref={videoReactPlayerHls}
+            url={reactPlayerURLHls}
+            width="60%"
+            height="500px"
+            autoPlay
+            controls
+            config={{
+              forceHLS: true,
+            }}
+          />
+          <ReactPlayer
+            ref={videoReactPlayerDash}
+            url={reactPlayerURLDash}
+            width="60%"
+            height="500px"
+            autoPlay
+            controls
+            playing={isPlayingDash}
+            onSeek={() => console.log('Seeking!')}
+            onBuffer={() => console.log('onBuffer')}
+            onBufferEnd={() => console.log('onBufferEnd')}
+            onError={async (event, data, instance, global) => {
+              console.log({ event, data, instance, global });
+              if (event.error) {
+                console.log('There are Error in videoReactPlayerDash');
+                console.log(event.error);
+                console.log('videoReactPlayerDash ref');
+                console.log(videoReactPlayerDash);
+                var urlDash = await getDashUrl(filename);
+                setReactPlayerURLDash(() => {
+                  return urlDash;
+                });
+                setIsPlayingDash(() => {
+                  return false;
+                }); /// dòng này thì chạy đc
+                const duration = videoReactPlayerDash.current.getDuration();
+                console.log(duration);
+                videoReactPlayerDash.current.seekTo(300); /// cái dòng này không seekTo cái khúc đang coi dở
+                setIsPlayingDash(() => {
+                  return true; /// dòng này thì chạy đc
+                });
+              }
+            }}
+            config={{
+              forceDASH: true,
+            }}
+          />
 
-        {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="60%" height="500px" /> */}
-        <ReactPlayer
-        ref={videoReactPlayerHls}
-          url={reactPlayerURLHls}
-          width="60%"
-          height="500px"
-          autoPlay
-          controls
-          config={{
-            forceHLS: true,
-          }}
-        />
-
-        <ReactPlayer
-        ref={videoReactPlayerDash}
-          url={reactPlayerURLDash}
-              width="60%"
-          height="500px"
-          autoPlay
-          controls
-          playing={isPlayingDash}
-          onSeek={() => console.log("Seeking!")}
-          onBuffer={()=>console.log("onBuffer")}
-          onBufferEnd={()=>console.log("onBufferEnd")}
-
-          onError={async(event, data, instance, global) => {
-            console.log({event, data, instance, global})
-            if(event.error){
-              console.log('There are Error in videoReactPlayerDash')
-              console.log(event.error)
-              console.log('videoReactPlayerDash ref')
-              console.log(videoReactPlayerDash)
-              var urlDash = await getDashUrl(filename);
-              setReactPlayerURLDash(() => {
-                return urlDash;
-              });
-              setIsPlayingDash(()=>{
-                return false;
-              })/// dòng này thì chạy đc
-              const duration=videoReactPlayerDash.current.getDuration()
-              console.log(duration);
-              videoReactPlayerDash.current.seekTo(300);/// cái dòng này không seekTo cái khúc đang coi dở
-              setIsPlayingDash(()=>{
-                return true;/// dòng này thì chạy đc
-              })
-            }
-          }}
-          config={{
-            forceDASH: true,
-          }}
-        />
-
-        {/* <div className="dash-video-player">
+          {/* <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
             <video ref={videoDashWindow} autoPlay loop></video>
             <div id="videoController" className="video-controller unselectable">
@@ -247,6 +249,70 @@ const VideoDemo = () => {
             </div>
           </div>
         </div> */}
+        </div>
+        <div className="flex flex-col p-6 bg-slate-400">
+          <div className="w-full mx-auto md:flex">
+            <div className="w-full">
+              <img className="mx-auto" src={logo} alt="ben-10-image" />
+            </div>
+            <div>
+              <h2 className="text-center font-bold text-2xl md:text-left">Ben 10: Alien Force</h2>
+              <div className="flex justify-around my-7 md:justify-start md:gap-10">
+                <p className="px-2 rounded-md border-black border-2 border-solid">HD</p>
+                <p>Trailer</p>
+                <p>IMDB: 7.3</p>
+                <p>23 min</p>
+              </div>
+              <div>
+                <h5 className="font-semibold my-4">Overview:</h5>
+                <p>
+                  Five years later, 15-year-old Ben Tennyson chooses to once again put on the OMNITRIX and discovers
+                  that it has reconfigured his DNA and can now transform him into 10 brand new aliens. Joined by his
+                  super-powered cousin Gwen Tennyson and his equally powerful former enemy Kevin Levin, Ben is on a
+                  mission to find his missing Grandpa Max. In order to save his Grandpa, Ben must defeat the evil
+                  DNALIENS, a powerful alien race intent on destroying the galaxy, starting with planet Earth.
+                </p>
+              </div>
+              <div className="mt-4 md:flex md:gap-10">
+                <div>
+                  <p>
+                    <span className="font-semibold">Released:</span> 2008-04-18
+                  </p>
+                  <p>
+                    <span className="font-semibold">Genre:</span> Action & Adventure, Animation, Family
+                  </p>
+                  <p>
+                    <span className="font-semibold">Casts:</span> Yuri Lowenthal, Greg Cipes, Dee Bradley Baker, Ashley
+                    Johnson
+                  </p>
+                </div>
+                <div>
+                  <p>
+                    <span className="font-semibold">Duration:</span> 23 min
+                  </p>
+                  <p>
+                    <span className="font-semibold">Country:</span> United States of America
+                  </p>
+                  <p>
+                    <span className="font-semibold">Production:</span> Cartoon Network Studios
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="mb-5">
+          <h2 className="font-semibold my-4">Related Movies</h2>
+          <div className="flex w-4/5 mx-auto flex-wrap gap-5">
+            <MovieItem />
+            <MovieItem />
+            <MovieItem />
+            <MovieItem />
+            <MovieItem />
+            <MovieItem />
+            <MovieItem />
+          </div>
+        </div>
       </div>
     </React.Fragment>
   );
