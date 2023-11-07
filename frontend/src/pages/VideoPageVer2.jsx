@@ -216,11 +216,11 @@ const VideoPageVer2 = () => {
 
   const CreateNewThreadHandler = async () => {
     try {
+      console.log('press create new thread btn')
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
       const totalChunks = Math.ceil(file.size / chunkSize);
 
-      
       // let chunkNameHls = Utils.RandomString(7);
       // let arrayChunkNameHls = [];
       // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
@@ -245,18 +245,44 @@ const VideoPageVer2 = () => {
         arrayChunkName.push(chunkNameDash + '_' + chunkIndex);
       }
 
-      // Iterate over the chunks and upload them sequentially
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        const start = chunkIndex * chunkSize;
-        const end = Math.min(start + chunkSize, file.size);
-        const chunk = file.slice(start, end);
-        console.log(start);
-        console.log(end);
-        // Make an API call to upload the chunk to the backend
-        const ext = file.name.split('.')[1];
-        await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkNameDash, ext);
-      }
+      // // Iterate over the chunks and upload them sequentially
+      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      //   const start = chunkIndex * chunkSize;
+      //   const end = Math.min(start + chunkSize, file.size);
+      //   const chunk = file.slice(start, end);
+      //   console.log(start);
+      //   console.log(end);
+      //   // Make an API call to upload the chunk to the backend
+      //   const ext = file.name.split('.')[1];
 
+      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkNameDash, ext);
+      // }
+
+      var chunkIndex = 0;
+      async function uploadLoop() {
+        //  create a loop function
+        setTimeout(async function () {
+          //  call a 3s setTimeout when the loop is called
+          console.log('looping'); //  your code here
+
+          const start = chunkIndex * chunkSize;
+          const end = Math.min(start + chunkSize, file.size);
+          const chunk = file.slice(start, end);
+          console.log(start);
+          console.log(end);
+          // Make an API call to upload the chunk to the backend
+          const ext = file.name.split('.')[1];
+
+          await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkNameDash, ext);
+
+          chunkIndex++; //  increment the counter
+          if (chunkIndex < totalChunks) {
+            //  if the counter < totalChunks, call the loop function
+            uploadLoop(); //  ..  again which will trigger another
+          } //  ..  setTimeout()
+        }, 500);
+      }
+      uploadLoop();
       // const formData = new FormData();
       // formData.append('myMultilPartFile', threadVideo);
       // const response = await POSTLargeVideoMultipartUploadAction(formData);

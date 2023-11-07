@@ -101,13 +101,25 @@ exports.QueryMovie = catchAsync(async (req, res, next) => {
 });
 
 exports.CreateInfo = catchAsync(async (req, res, next) => {
-  try {
     const infoID = req.body.infoID;
     const baseUrlTV = 'https://api.themoviedb.org/3/tv/' + infoID + '?language=en-US';
     const baseUrlMovie = 'https://api.themoviedb.org/3/movie/' + infoID + '?language=en-US';
     const type = req.body.type;
     const videoname = req.body.videoname;
     const filmType = req.headers.type;
+    const video =await redirectAPI.getAvailableVideo( videoname, type );
+    req.body.video = video;
+    const testInfo=await Info.findOne({video:video._id});
+    if(testInfo){
+      next(new AppError('There already have an info of this video.', 409));
+
+      return
+    }
+    const user = req.user;
+    req.body.user = user;
+
+  try {
+
     const options = {
       method: 'GET',
       headers: {
@@ -123,13 +135,7 @@ exports.CreateInfo = catchAsync(async (req, res, next) => {
       const { data } = await axios.get(baseUrlMovie, options);
       req.body.details = data;
     }
-    // console.log(req.body.details);
-    const video =await redirectAPI.getAvailableVideo( videoname, type );
-    req.body.video = video;
-    const user = req.user;
-    req.body.user = user;
-    console.log('////////////////////')
-    console.log(user)
+
     const newInfo = await Info.create({ ...req.body });
 
     res.status(200).json({
