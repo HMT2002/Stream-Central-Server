@@ -22,6 +22,7 @@ const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
 const ffmpeg = require('ffmpeg');
+const axios = require('axios');
 
 exports.CheckSlug = catchAsync(async (req, res, next) => {
   // console.log('Slug value is: ' + req.params.slug);
