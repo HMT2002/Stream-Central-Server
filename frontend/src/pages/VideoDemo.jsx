@@ -168,6 +168,7 @@ const VideoDemo = () => {
           <div id="episode-section"></div>
 
           <ReactPlayer
+            className="w-full bg-gray-700 h-3/5"
             ref={videoReactPlayerHls}
             url={reactPlayerURLHls}
             width="60%"
@@ -179,6 +180,7 @@ const VideoDemo = () => {
             }}
           />
           <ReactPlayer
+            className="w-full bg-gray-700 h-3/5"
             ref={videoReactPlayerDash}
             url={reactPlayerURLDash}
             width="60%"
@@ -310,10 +312,9 @@ const VideoDemo = () => {
             </div>
           </div>
         </div>
-        <div className="mb-5">
-          <h2 className="font-semibold my-4">Related Movies</h2>
-          <div className="flex w-4/5 mx-auto flex-wrap gap-5">
-            <MovieItem />
+        <div className="mb-5 p-5">
+          <h1 className="font-semibold my-4">Related Movies</h1>
+          <div className="flex justify-around mx-auto flex-wrap gap-5">
             <MovieItem />
             <MovieItem />
             <MovieItem />

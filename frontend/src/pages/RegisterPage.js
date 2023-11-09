@@ -176,8 +176,8 @@ const RegisterPage = () => {
       <Link
         className="app-header__logo m-5 w-full"
         style={{
-          top: 50,
-          left: 100,
+          // top: 50,
+          // left: 100,
           fontSize: '2.5rem',
           fontWeight: 800,
         }}
