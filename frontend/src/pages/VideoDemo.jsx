@@ -27,6 +27,7 @@ import '../components/dashControlBar/controlbar.css';
 import '../components/dashControlBar/icomoon.ttf';
 import '../styles/VideoDemo.css';
 import MovieItem from '../components/movieItem/MovieItem';
+import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 
 const getHlsUrl = async (filename) => {
   console.log(filename);
@@ -165,7 +166,9 @@ const VideoDemo = () => {
             <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" />
           </div>
           <div id="change-server-section"></div>
-          <div id="episode-section"></div>
+          <div id="episode-section" className="mt-10">
+            <SwiperEspisode />
+          </div>
 
           <ReactPlayer
             className="w-full bg-gray-900 h-3/5"
