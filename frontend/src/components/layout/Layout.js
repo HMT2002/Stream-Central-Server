@@ -17,12 +17,16 @@ const Layout = (props) => {
   return (
     <React.Fragment>
       <main className="app-layout flex flex-col">
-        {/* <Sidebar className="app-layout__sidebar absolute bg-black w-full mt-16" /> */}
-        {/* // {isLoginOrRegisterPage && <Sidebar className="app-layout__sidebar absolute bg-black " />} */}
         {isLoginOrRegisterPage && <Header openState={openSidebar} handleClick={handleSidebarClick} />}
         <div className="flex">
           {isLoginOrRegisterPage && (
-            <Sidebar className={`app-layout__sidebar bg-black ${openSidebar ? 'block' : 'hidden'}`} />
+            <Sidebar
+              openState={openSidebar}
+              handleClick={handleSidebarClick}
+              className={`app-layout__sidebar transition-all duration-200 absolute bg-black ${
+                openSidebar ? 'block left-0' : 'hidden left-[-500px]'
+              }`}
+            />
           )}
           <div className="app-layout__page">{props.children}</div>
         </div>
