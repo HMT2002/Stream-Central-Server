@@ -10,6 +10,7 @@ const videoSchema = new mongoose.Schema({
   avarageSpeed: { type: Number, default: 0 * 1 },
   createdDate: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
+  title: {  type: String, default: 'no default title'},
 
 });
 

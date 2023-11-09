@@ -95,7 +95,7 @@ export const POSTLargeVideoUploadAction = async (formData) => {
   return data;
 };
 
-export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
+export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, chunkName, arrayChunkName, filename,ext,title) => {
   if (!formData) {
     return { status: 'fail' };
   }
@@ -109,6 +109,7 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, ch
       filename: filename,
       arrayChunkName,
       ext,
+      title,
     },
   });
   const data = await response.json();
@@ -116,7 +117,7 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, ch
   return data;
 };
 
-export const POSTLargeVideoMultipartUploadDashAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
+export const POSTLargeVideoMultipartUploadDashAction = async (formData, index, chunkName, arrayChunkName, filename,ext,title) => {
   if (!formData) {
     return { status: 'fail' };
   }
@@ -130,6 +131,7 @@ export const POSTLargeVideoMultipartUploadDashAction = async (formData, index, c
       filename: filename,
       arrayChunkName,
       ext,
+      title,
     },
   });
   const data = await response.json();

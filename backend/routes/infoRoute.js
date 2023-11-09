@@ -11,7 +11,7 @@ const router = express.Router();
 
 //ROUTE HANDLER
 router
-.route('/')
+.route('/').get(infoController.GetAll)
 .post(
   authController.protect,
   infoController.CreateInfo

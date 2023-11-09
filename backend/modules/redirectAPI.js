@@ -19,6 +19,11 @@ fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 const axios = require('axios');
 
+const getAvailableVideoID = async (id) => {
+  const availVideo = await Video.findOne({_id:id });
+  return availVideo;
+};
+
 const getAvailableServer = async (video) => {
   const servers = await Server.find({ videos: video });
   return servers;
@@ -418,8 +423,8 @@ const SendFileToOtherNodeAndConvertToDash = async (
   }
 };
 
-const createVideo = async (videoname, type) => {
-  const video = await Video.create({ videoname, type });
+const createVideo = async (videoname, type,title) => {
+  const video = await Video.create({ videoname, type ,title});
   return video;
 };
 
@@ -466,4 +471,5 @@ module.exports = {
   getAvailableVideoAndType,
   getAvailableVideo,
   getAvailableServer,
+  getAvailableVideoID,
 };

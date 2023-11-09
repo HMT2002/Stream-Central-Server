@@ -53,7 +53,7 @@ const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, e
   return formData;
 };
 
-async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) {
+async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title) {
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
 
@@ -84,7 +84,7 @@ async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, file
   }
 }
 
-async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) {
+async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title) {
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
     console.log(arrayChunkName);
@@ -94,7 +94,8 @@ async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, fil
       chunkName,
       arrayChunkName,
       filename,
-      ext
+      ext,
+      title
     );
     console.log(responseDash);
 

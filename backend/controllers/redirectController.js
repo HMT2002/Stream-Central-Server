@@ -457,7 +457,7 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
     }
     await uploadLoop();
 
-    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'HLS');
+    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'HLS',req.headers.title);
     const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
 
     res.status(201).json({
@@ -559,7 +559,7 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
     await uploadLoop();
 
 
-    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'DASH');
+    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'DASH',req.headers.title);
     const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
 
     res.status(201).json({
