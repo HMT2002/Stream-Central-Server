@@ -157,7 +157,7 @@ const VideoDemo = () => {
   return (
     <React.Fragment>
       <div className="flex flex-col">
-        <div className="w-full bg-gray-700 h-3/5" id="video-demo">
+        <div className="w-full bg-gray-900 h-3/5" id="video-demo">
           {/* <video ref={videoHLS} className="video-js"></video> */}
 
           {/* ReactPlayer lấy video từ ytb để test UI */}
@@ -168,7 +168,7 @@ const VideoDemo = () => {
           <div id="episode-section"></div>
 
           <ReactPlayer
-            className="w-full bg-gray-700 h-3/5"
+            className="w-full bg-gray-900 h-3/5"
             ref={videoReactPlayerHls}
             url={reactPlayerURLHls}
             width="60%"
@@ -180,7 +180,7 @@ const VideoDemo = () => {
             }}
           />
           <ReactPlayer
-            className="w-full bg-gray-700 h-3/5"
+            className="w-full bg-gray-900 h-3/5"
             ref={videoReactPlayerDash}
             url={reactPlayerURLDash}
             width="60%"
