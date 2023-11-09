@@ -98,6 +98,28 @@ const getMovie = async (id) => {
   }
 };
 
+exports.GetFilm = async (id) => {
+    return await getFilm(id);
+  };
+
+const getFilm = async (id) => {
+    try {
+      const info = await Info.findOne({_id:id}, null, { lean: 'toObject' }).populate('videos');
+        let filmInfo;
+        if (info.filmType === 'TV') {
+          filmInfo = await getTV(info.filmID);
+        } else {
+          filmInfo = await getMovie(info.filmID);
+        }
+        info.filmInfo = filmInfo;
+      
+      return { info };
+    } catch (err) {
+      console.log(err);
+      return { message: 'There is error', isError: true, err };
+    }
+  };
+
 exports.QueryMovie = async (query) => {
   try {
     const baseUrl =

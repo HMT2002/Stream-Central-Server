@@ -56,6 +56,15 @@ exports.GetMovie = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.GetFilm = catchAsync(async (req, res, next) => {
+  const movie = await infoAPI.GetFilm(req.params.id);
+
+  res.status(200).json({
+    status: 'ok',
+    data: movie,
+  });
+});
+
 exports.QueryMovie = catchAsync(async (req, res, next) => {
   const movie = await infoAPI.QueryMovie(req.params.query);
 
