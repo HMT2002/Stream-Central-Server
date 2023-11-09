@@ -42,22 +42,22 @@ const LoginPage = () => {
   const passwordRef = useRef();
 
   const LoginGoogle = useGoogleLogin({
-    onSuccess: async(codeResponse) => {        
-    console.log(codeResponse);
-    const response = await fetch(
-      'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + codeResponse.access_token,
-      {
-        method: 'GET',
-        mode: 'cors',
-        headers: {
-          Authorization: 'Bearer ' + codeResponse.access_token,
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-        },
-      }
-    );
-    const data = await response.json();
-    console.log(data);
+    onSuccess: async (codeResponse) => {
+      console.log(codeResponse);
+      const response = await fetch(
+        'https://www.googleapis.com/oauth2/v1/userinfo?access_token=' + codeResponse.access_token,
+        {
+          method: 'GET',
+          mode: 'cors',
+          headers: {
+            Authorization: 'Bearer ' + codeResponse.access_token,
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+        }
+      );
+      const data = await response.json();
+      console.log(data);
     },
     onError: (error) => console.log('Login Failed:', error),
   });
@@ -139,11 +139,10 @@ const LoginPage = () => {
   if (authContext.isAuthorized) return navigate('/');
 
   return (
-    <Card className="login-form">
+    <div>
       <Link
-        className="app-header__logo"
+        className="app-header__logo m-5 w-full"
         style={{
-          position: 'fixed',
           top: 0,
           left: 0,
           fontSize: '2.5rem',
@@ -153,46 +152,64 @@ const LoginPage = () => {
       >
         Logo
       </Link>
-      <form onSubmit={LoginSubmitHandler}>
-        <h1 className="login-form__title">Account Login</h1>
-        {loginMessage !== '' && <div className="login-form__message">{loginMessage}</div>}
-        <Input
-          ref={usernameRef}
-          className="login-form__input"
-          label="Username"
-          variant="standard"
-          onChange={UsernameInputChangeHandler}
-          onBlur={UsernameInputBlurHandler}
-          isValid={usernameValidation !== false}
-          helperText={'Username must not be empty!'}
-        />
-        <Input
-          ref={passwordRef}
-          className="login-form__input"
-          label="Password"
-          variant="standard"
-          type="password"
-          onChange={PasswordInputChangeHandler}
-          onBlur={PasswordInputBlurHandler}
-          isValid={passwordValidation !== false}
-          helperText={'Password must be 6 characters or above!'}
-          passwordToggle="true"
-        />
-        <div className="login-form__additional flex">
-          <FormControlLabel
-            control={<Checkbox onChange={StaySignedInChangeHandler} defaultChecked size="small" />}
-            label="Keep me logged in"
-          />
-          {/* <Link className="login-form__forget-password" to="/">Forgot password?</Link> */}
-        </div>
-        <Button className="login-form__button" type="submit" content="LOGIN" />
+      <Card className="login-form w-4/5 mx-auto p-5 max-w-md min-w-max">
+        <form onSubmit={LoginSubmitHandler}>
+          <div className="flex justify-between items-center">
+            <h1 className="login-form__title">Sign In</h1>
+            <p>
+              <Link to="/create-new-account" className=" text-red-400">
+                {' '}
+                Create Account{' '}
+              </Link>
+              instead ?
+            </p>
+          </div>
 
-        <Link className="button login-form__button register" to="/create-new-account">
-          CREATE NEW ACCOUNT
-        </Link>
-      </form>
-      <Button className="login-form__button" content="LOGINGoogle" onClick={LoginGoogle} />
-    </Card>
+          {loginMessage !== '' && <div className="login-form__message">{loginMessage}</div>}
+          <Input
+            ref={usernameRef}
+            className="login-form__input"
+            label="Username"
+            variant="standard"
+            onChange={UsernameInputChangeHandler}
+            onBlur={UsernameInputBlurHandler}
+            isValid={usernameValidation !== false}
+            helperText={'Username must not be empty!'}
+          />
+          <Input
+            ref={passwordRef}
+            className="login-form__input"
+            label="Password"
+            variant="standard"
+            type="password"
+            onChange={PasswordInputChangeHandler}
+            onBlur={PasswordInputBlurHandler}
+            isValid={passwordValidation !== false}
+            helperText={'Password must be 6 characters or above!'}
+            passwordToggle="true"
+          />
+          <div className="login-form__additional flex justify-between">
+            <FormControlLabel
+              control={<Checkbox onChange={StaySignedInChangeHandler} defaultChecked size="small" />}
+              label="Keep you logged in ?"
+            />
+            <Link className="login-form__forget-password text-red-400" to="/">
+              Forgot password ?
+            </Link>
+          </div>
+          <Button className="login-form__button bg-red-400 w-full" type="submit" content="LOGIN" />
+
+          {/* <Link className="button login-form__button register" to="/create-new-account">
+            CREATE NEW ACCOUNT
+          </Link> */}
+        </form>
+        <Button
+          className="login-form__button w-full text-red-400 bg-white border-2 border-solid border-red-400 mt-4"
+          content="Sign In with Google"
+          onClick={LoginGoogle}
+        />
+      </Card>
+    </div>
   );
 };
 

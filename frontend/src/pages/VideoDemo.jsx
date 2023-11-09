@@ -148,16 +148,25 @@ const VideoDemo = () => {
     LoadVideo();
   }, []);
 
+  function checkTypeVideo() {
+    switch (1) {
+      case 'dash':
+        return;
+    }
+  }
   return (
     <React.Fragment>
       <div className="flex flex-col">
-        <div className="w-full bg-black h-3/5" id="video-demo">
+        <div className="w-full bg-gray-700 h-3/5" id="video-demo">
           {/* <video ref={videoHLS} className="video-js"></video> */}
+
+          {/* ReactPlayer lấy video từ ytb để test UI */}
           <div id="video-section" className="mt-10 flex justify-center">
             <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" />
           </div>
           <div id="change-server-section"></div>
           <div id="episode-section"></div>
+
           <ReactPlayer
             ref={videoReactPlayerHls}
             url={reactPlayerURLHls}
