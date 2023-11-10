@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from 'react';
 
-import SectionList from "../components/sections/SectionList";
-import ReactLoading from "react-loading";
+import SectionList from '../components/sections/SectionList';
+import ReactLoading from 'react-loading';
 
-import { GETAllThreadAction } from "../APIs/thread-apis";
+import { GETAllThreadAction } from '../APIs/thread-apis';
+import axios from 'axios';
 
 const HomePage = () => {
   const tags = [
     // "Popular",
-    "Daily life",
-    "Technique",
-    "Art",
-    "Cruisine",
-    "Traveling",
+    'Trending',
+    'Latest Movies',
+    'Latest TV Shows',
+    'Coming Soon',
   ];
 
   const [threads, setThreads] = useState([]); // all threads in loaded in homepage
@@ -21,8 +21,8 @@ const HomePage = () => {
     try {
       const response = await GETAllThreadAction();
 
-      if (response.status === "success") {
-        setThreads(response.data.threads);
+      if (response.status === 'ok') {
+        setThreads(response.data.allInfo);
       }
     } catch (error) {
       console.log(error);
@@ -37,7 +37,11 @@ const HomePage = () => {
 
   return (
     <React.Fragment>
-      {threads.length === 0 && <div className="account-page__loading"><ReactLoading type="spin" width="50px" height="50px" color="#13088e" /></div>}
+      {threads.length === 0 && (
+        <div className="account-page__loading">
+          <ReactLoading type="spin" width="50px" height="50px" color="#13088e" />
+        </div>
+      )}
       {threads.length > 0 && <SectionList labels={tags} threads={threads} />}
     </React.Fragment>
   );

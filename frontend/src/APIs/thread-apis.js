@@ -20,7 +20,7 @@ export const GETThreadAction = async (slug) => {
 
 export const GETAllThreadAction = async () => {
   const storedToken = localStorage.getItem('token');
-  const response = await fetch('/api/v1/threads', {
+  const response = await fetch('/api/v1/info', {
     method: 'GET',
     headers: {
       // 'Content-Type': 'application/json',
@@ -31,7 +31,7 @@ export const GETAllThreadAction = async () => {
     throw new Error('Something went wrong!');
   }
   const data = await response.json();
-  //   console.log(data);
+  // console.log(response.status);
   return data;
 };
 
@@ -95,7 +95,15 @@ export const POSTLargeVideoUploadAction = async (formData) => {
   return data;
 };
 
-export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, chunkName, arrayChunkName, filename,ext,title) => {
+export const POSTLargeVideoMultipartUploadHlsAction = async (
+  formData,
+  index,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext,
+  title
+) => {
   if (!formData) {
     return { status: 'fail' };
   }
@@ -117,7 +125,15 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (formData, index, ch
   return data;
 };
 
-export const POSTLargeVideoMultipartUploadDashAction = async (formData, index, chunkName, arrayChunkName, filename,ext,title) => {
+export const POSTLargeVideoMultipartUploadDashAction = async (
+  formData,
+  index,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext,
+  title
+) => {
   if (!formData) {
     return { status: 'fail' };
   }
@@ -139,12 +155,11 @@ export const POSTLargeVideoMultipartUploadDashAction = async (formData, index, c
   return data;
 };
 
-export const POSTLargeVideoMultipartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
+export const POSTLargeVideoMultipartUploadConcatenateAction = async (arrayChunkName, filename, destination, ext) => {
   const response = await fetch('/api/test/upload-video-large-multipart-concatenate', {
     method: 'POST',
-    body:JSON.stringify( {
-      arraychunkname:arrayChunkName,
-      
+    body: JSON.stringify({
+      arraychunkname: arrayChunkName,
     }),
     headers: {
       'Content-Type': 'application/json',
@@ -158,7 +173,14 @@ export const POSTLargeVideoMultipartUploadConcatenateAction = async (arrayChunkN
   return data;
 };
 
-export const OPTIONSLargeVideoMultipartUploadAction = async (formData, index, chunkName, arrayChunkName, filename,ext) => {
+export const OPTIONSLargeVideoMultipartUploadAction = async (
+  formData,
+  index,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext
+) => {
   if (!formData) {
     return { status: 'fail' };
   }
@@ -179,11 +201,11 @@ export const OPTIONSLargeVideoMultipartUploadAction = async (formData, index, ch
   return data;
 };
 
-export const OPTIONSLargeVideoMultipartUploadConcatenateAction = async (arrayChunkName, filename, destination,ext) => {
+export const OPTIONSLargeVideoMultipartUploadConcatenateAction = async (arrayChunkName, filename, destination, ext) => {
   const response = await fetch('/redirect/upload-video-large-multipart-concatenate', {
     method: 'OPTIONS',
-    body:JSON.stringify( {
-      arraychunkname:arrayChunkName,
+    body: JSON.stringify({
+      arraychunkname: arrayChunkName,
     }),
     headers: {
       'Content-Type': 'application/json',
@@ -214,7 +236,6 @@ export const OPTIONSLargeVideoMultipartUploadConcatenateAction = async (arrayChu
 //   // console.log(data);
 //   return data;
 // };
-
 
 export const DELETEThreadAction = async (token, payload) => {
   try {

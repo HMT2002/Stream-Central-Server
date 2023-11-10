@@ -26,7 +26,7 @@ import ControlBar from '../components/dashControlBar/ControlBar';
 import '../components/dashControlBar/controlbar.css';
 import '../components/dashControlBar/icomoon.ttf';
 import '../styles/VideoDemo.css';
-import MovieItem from '../components/movieItem/MovieItem';
+import MovieItem from '../components/movieItem/MovieItem.jsx';
 import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 
 const getHlsUrl = async (filename) => {
