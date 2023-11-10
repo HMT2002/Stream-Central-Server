@@ -28,7 +28,7 @@ const SectionList = (props) => {
 
   return (
     <React.Fragment>
-      <ul className="centered">{videoSections}</ul>
+      <ul className="centered mt-5">{videoSections}</ul>
     </React.Fragment>
   );
 };

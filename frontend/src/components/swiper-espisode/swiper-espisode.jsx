@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
-import SwiperItems from '../swiper-items/swiper-items';
+import SwiperItems from '../swiper-items/swiper-item';
 
 const SwiperEspisode = () => {
   return (
