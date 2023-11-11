@@ -4,8 +4,8 @@ import Button from '../UI elements/Button';
 import { Link, useNavigate } from 'react-router-dom';
 
 const MovieItem = (props) => {
-  console.log(props.video);
   const video = props.video;
+  console.log(video);
   return (
     <div className=" w-60 shadow-lg hover:shadow-2xl text-sm gap-2">
       <img src={video.img != null ? video.img : './logo'} alt="video-image" />
@@ -16,7 +16,7 @@ const MovieItem = (props) => {
         </div>
         <p className="font-semibold ">{video.title != null ? video.title : 'Ben 10: Alien Force'}</p>
         <Button className="bg-red-400 w-full rounded-sm py-1">
-          <Link className="login-form__forget-password" to="/video-demo/Neon-Genesis-Evangelion">
+          <Link className="login-form__forget-password" to="/video-demo/eva_ep26">
             Watch now
           </Link>
         </Button>

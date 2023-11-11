@@ -318,12 +318,12 @@ const VideoDemo = () => {
         <div className="mb-5 p-5">
           <h1 className="font-semibold my-4">Related Movies</h1>
           <div className="flex justify-around mx-auto flex-wrap gap-5">
+            {/* <MovieItem />
             <MovieItem />
             <MovieItem />
             <MovieItem />
             <MovieItem />
-            <MovieItem />
-            <MovieItem />
+            <MovieItem /> */}
           </div>
         </div>
       </div>
