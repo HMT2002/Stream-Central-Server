@@ -163,7 +163,7 @@ const VideoDemo = () => {
 
           {/* ReactPlayer lấy video từ ytb để test UI */}
           <div id="video-section" className="mt-10 flex justify-center">
-            <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" />
+            {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" /> */}
           </div>
           <div id="change-server-section"></div>
           <div id="episode-section" className="mt-10">
@@ -182,7 +182,7 @@ const VideoDemo = () => {
               forceHLS: true,
             }}
           />
-          <ReactPlayer
+          {/* <ReactPlayer
             className="w-full bg-gray-900 h-3/5"
             ref={videoReactPlayerDash}
             url={reactPlayerURLDash}
@@ -219,7 +219,7 @@ const VideoDemo = () => {
             config={{
               forceDASH: true,
             }}
-          />
+          /> */}
 
           {/* <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
@@ -318,12 +318,12 @@ const VideoDemo = () => {
         <div className="mb-5 p-5">
           <h1 className="font-semibold my-4">Related Movies</h1>
           <div className="flex justify-around mx-auto flex-wrap gap-5">
+            {/* <MovieItem />
             <MovieItem />
             <MovieItem />
             <MovieItem />
             <MovieItem />
-            <MovieItem />
-            <MovieItem />
+            <MovieItem /> */}
           </div>
         </div>
       </div>

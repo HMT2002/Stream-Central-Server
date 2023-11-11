@@ -88,7 +88,7 @@ async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, fil
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
     console.log(arrayChunkName);
-    const responseDash = await POSTLargeVideoMultipartUploadHlsAction(
+    const responseDash = await POSTLargeVideoMultipartUploadDashAction(
       formData,
       chunkIndex,
       chunkName,
@@ -274,8 +274,8 @@ const VideoPageVer2 = () => {
           // Make an API call to upload the chunk to the backend
           const ext = file.name.split('.')[1];
 
-          await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
-          // await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
+          // await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
+          await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
 
           chunkIndex++; //  increment the counter
           if (chunkIndex < totalChunks) {
