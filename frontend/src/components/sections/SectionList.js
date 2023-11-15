@@ -19,7 +19,8 @@ const SectionList = (props) => {
       thread.filmInfo.name,
       thread.filmInfo.first_air_date,
       thread.filmInfo.poster_path,
-      thread.filmType
+      thread.filmType,
+      thread._id
     );
 
     return <MovieItem video={video} />;

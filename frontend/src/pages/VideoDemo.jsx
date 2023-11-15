@@ -29,7 +29,7 @@ import '../styles/VideoDemo.css';
 import MovieItem from '../components/movieItem/MovieItem.jsx';
 import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 
-import {GETFilmInfo} from '../APIs/thread-apis.js'
+import { GETFilmInfo } from '../APIs/thread-apis.js';
 
 const getHlsUrl = async (filename) => {
   console.log(filename);
@@ -44,7 +44,6 @@ const getHlsUrl = async (filename) => {
   var subserverurl = data.subserverurl;
   return subserverurl;
 };
-
 
 const getDashUrl = async (filename) => {
   var url = '/redirect/dash/' + filename + '/' + filename;
@@ -61,7 +60,8 @@ const getDashUrl = async (filename) => {
 
 const VideoDemo = () => {
   const params = useParams();
-  const infoID=params.filename;
+  const infoID = params.filename;
+  console.log(infoID);
   // const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
   // const [reactPlayerURLDash, setReactPlayerURLDash] = useState('');
   // const [reactPlayerURLHls, setReactPlayerURLHls] = useState('');
@@ -69,7 +69,7 @@ const VideoDemo = () => {
 
   const [isPlayingDash, setIsPlaying] = useState(false);
   const [isPlayingHls, setIsPlayingHls] = useState(false);
-  const [info, setInfo] = useState({videos:[]});
+  const [info, setInfo] = useState({ videos: [] });
 
   const playerDashWindow = useRef(null);
 
@@ -130,13 +130,13 @@ const VideoDemo = () => {
         //   controlbar.initialize();
         // }
 
-        const fetchInfo=await GETFilmInfo(infoID);
+        const fetchInfo = await GETFilmInfo(infoID);
 
-        setInfo(()=>{
-          return fetchInfo
-        })
-        console.log(fetchInfo)
-        const index=0;
+        setInfo(() => {
+          return fetchInfo;
+        });
+        console.log(fetchInfo);
+        const index = 0;
         const filename = fetchInfo.videos[index].videoname;
 
         var urlDash = await getDashUrl(filename);
@@ -151,7 +151,6 @@ const VideoDemo = () => {
             return urlHls;
           });
         }
-
       } catch (error) {
         console.log(error);
         if (playerDashWindow.current) {
@@ -170,6 +169,7 @@ const VideoDemo = () => {
         return;
     }
   }
+  console.log(info.videos);
   return (
     <React.Fragment>
       <div className="flex flex-col">
@@ -214,7 +214,7 @@ const VideoDemo = () => {
                   setIsPlaying(() => {
                     return false;
                   }); /// dòng này thì chạy đc
-                  const index=0;
+                  const index = 0;
                   const filename = info.videos[index].videoname;
                   var urlDash = await getDashUrl(filename);
                   var urlHls = await getHlsUrl(filename);
@@ -242,7 +242,7 @@ const VideoDemo = () => {
               }}
               config={{
                 forceDASH: true,
-                forceHLS:true,
+                forceHLS: true,
               }}
             />
           </div>
@@ -261,7 +261,19 @@ const VideoDemo = () => {
             </div>
           </div>
           <div id="episode-section" className="mt-10">
-            <SwiperEspisode />
+            {info.filmInfo !== undefined ? (
+              info.filmInfo.seasons.map((season) => {
+                return (
+                  <div className="text-active p-3 border-white border-2 max-w-max rounded-md hover:cursor-pointer">
+                    {season.name}
+                  </div>
+                );
+              })
+            ) : (
+              <div></div>
+            )}
+
+            <SwiperEspisode episodes={info.videos} />
           </div>
 
           {/* <div className="dash-video-player">
