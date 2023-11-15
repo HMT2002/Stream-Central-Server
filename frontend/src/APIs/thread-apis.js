@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export const GETThreadAction = async (slug) => {
   if (!slug) {
     return { status: 'fail' };
@@ -18,7 +20,7 @@ export const GETThreadAction = async (slug) => {
   return data;
 };
 
-export const GETAllThreadAction = async () => {
+export const GETAllInfoAction = async () => {
   const storedToken = localStorage.getItem('token');
   const response = await fetch('/api/v1/info', {
     method: 'GET',
@@ -31,8 +33,21 @@ export const GETAllThreadAction = async () => {
     throw new Error('Something went wrong!');
   }
   const data = await response.json();
-  // console.log(response.status);
+  console.log(data)
   return data;
+};
+
+export const GETFilmInfo = async (infoID) => {
+  console.log(infoID)
+  var url = '/api/v1/info/film/'+infoID
+  const { data } = await axios({
+    method: 'get',
+    url: url,
+    headers: { myaxiosfetch: '123' },
+  });
+  console.log(data);
+  var info=data.data.info;
+  return info;
 };
 
 export const GETAllThreadsByUserAction = async (account, token) => {
@@ -342,7 +357,7 @@ export const GETAllThreadsByUserIdAction = async (id) => {
 
 const threadAPIs = {
   GETThreadAction,
-  GETAllThreadAction,
+  GETAllInfoAction,
   GETAllThreadsByUserAction,
   GETAllThreadsByUserIdAction,
   GETAllThreadsByTitleAction,

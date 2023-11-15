@@ -9,7 +9,7 @@ import 'swiper/css/pagination';
 // import required modules
 import { Pagination } from 'swiper/modules';
 
-import { GETAllThreadAction } from '../APIs/thread-apis';
+import { GETAllInfoAction } from '../APIs/thread-apis';
 import axios from 'axios';
 import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 import SwiperItems from '../components/swiper-items/swiper-item';
@@ -28,7 +28,7 @@ const HomePage = () => {
 
   const fetchThreadsHandler = useCallback(async () => {
     try {
-      const response = await GETAllThreadAction();
+      const response = await GETAllInfoAction();
 
       if (response.status === 'ok') {
         setThreads(response.data.allInfo);

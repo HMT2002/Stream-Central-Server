@@ -29,6 +29,8 @@ import '../styles/VideoDemo.css';
 import MovieItem from '../components/movieItem/MovieItem.jsx';
 import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 
+import {GETFilmInfo} from '../APIs/thread-apis.js'
+
 const getHlsUrl = async (filename) => {
   console.log(filename);
   var url = '/redirect/hls/' + filename;
@@ -39,9 +41,11 @@ const getHlsUrl = async (filename) => {
     headers: { myaxiosfetch: '123' },
   });
   console.log(data);
-  var url = data.subserverurl || 'http://localhost:9100/videos/GSpR1T8Hls/GSpR1T8.m3u8';
-  return url;
+  var subserverurl = data.subserverurl;
+  return subserverurl;
 };
+
+
 const getDashUrl = async (filename) => {
   var url = '/redirect/dash/' + filename + '/' + filename;
 
@@ -51,25 +55,26 @@ const getDashUrl = async (filename) => {
     headers: { myaxiosfetch: '123' },
   });
   console.log(data);
-  var url = data.subserverurl || 'http://localhost:9100/videos/l8NSKXODash/init.mpd';
-  return url;
+  var subserverurl = data.subserverurl;
+  return subserverurl;
 };
 
 const VideoDemo = () => {
   const params = useParams();
-  const filename = params.filename;
-  const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
-  const [reactPlayerURLDash, setReactPlayerURLDash] = useState('');
-  const [reactPlayerURLHls, setReactPlayerURLHls] = useState('');
+  const infoID=params.filename;
+  // const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
+  // const [reactPlayerURLDash, setReactPlayerURLDash] = useState('');
+  // const [reactPlayerURLHls, setReactPlayerURLHls] = useState('');
+  const [reactPlayerURL, setReactPlayerURL] = useState('');
 
-  const [isPlayingDash, setIsPlayingDash] = useState(false);
+  const [isPlayingDash, setIsPlaying] = useState(false);
   const [isPlayingHls, setIsPlayingHls] = useState(false);
+  const [info, setInfo] = useState({videos:[]});
 
   const playerDashWindow = useRef(null);
 
-  const videoReactPlayer = useRef();
   const videoReactPlayerHls = useRef();
-  const videoReactPlayerDash = useRef();
+  const videoReactPlayer = useRef();
 
   useEffect(() => {
     const LoadVideo = async () => {
@@ -125,18 +130,28 @@ const VideoDemo = () => {
         //   controlbar.initialize();
         // }
 
-        var urlDash = await getDashUrl(filename);
-        setReactPlayerURLDash(() => {
-          return urlDash;
-        });
-        setIsPlayingDash(() => {
-          return true;
-        });
+        const fetchInfo=await GETFilmInfo(infoID);
 
+        setInfo(()=>{
+          return fetchInfo
+        })
+        console.log(fetchInfo)
+        const index=0;
+        const filename = fetchInfo.videos[index].videoname;
+
+        var urlDash = await getDashUrl(filename);
         var urlHls = await getHlsUrl(filename);
-        setReactPlayerURLHls(() => {
-          return urlHls;
-        });
+
+        if (urlDash) {
+          setReactPlayerURL(() => {
+            return urlDash;
+          });
+        } else {
+          setReactPlayerURL(() => {
+            return urlHls;
+          });
+        }
+
       } catch (error) {
         console.log(error);
         if (playerDashWindow.current) {
@@ -163,9 +178,9 @@ const VideoDemo = () => {
 
           {/* ReactPlayer lấy video từ ytb để test UI */}
           <div id="video-section" className="mt-10 flex flex-col items-center">
-            <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" />
+            {/* <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" /> */}
 
-            <ReactPlayer
+            {/* <ReactPlayer
               className="w-full bg-gray-900 h-3/5"
               ref={videoReactPlayerHls}
               url={reactPlayerURLHls}
@@ -176,11 +191,11 @@ const VideoDemo = () => {
               config={{
                 forceHLS: true,
               }}
-            />
+            /> */}
             <ReactPlayer
               className="w-full bg-gray-900 h-3/5"
-              ref={videoReactPlayerDash}
-              url={reactPlayerURLDash}
+              ref={videoReactPlayer}
+              url={reactPlayerURL}
               width="80%"
               height="500px"
               autoPlay
@@ -192,27 +207,42 @@ const VideoDemo = () => {
               onError={async (event, data, instance, global) => {
                 console.log({ event, data, instance, global });
                 if (event.error) {
-                  console.log('There are Error in videoReactPlayerDash');
+                  console.log('There are Error in videoReactPlayer');
                   console.log(event.error);
-                  console.log('videoReactPlayerDash ref');
-                  console.log(videoReactPlayerDash);
-                  var urlDash = await getDashUrl(filename);
-                  setReactPlayerURLDash(() => {
-                    return urlDash;
-                  });
-                  setIsPlayingDash(() => {
+                  console.log('videoReactPlayer ref');
+                  console.log(videoReactPlayer);
+                  setIsPlaying(() => {
                     return false;
                   }); /// dòng này thì chạy đc
-                  const duration = videoReactPlayerDash.current.getDuration();
+                  const index=0;
+                  const filename = info.videos[index].videoname;
+                  var urlDash = await getDashUrl(filename);
+                  var urlHls = await getHlsUrl(filename);
+
+                  var urlDash = await getDashUrl(filename);
+                  var urlHls = await getHlsUrl(filename);
+
+                  if (urlDash) {
+                    setReactPlayerURL(() => {
+                      return urlDash;
+                    });
+                  } else {
+                    setReactPlayerURL(() => {
+                      return urlHls;
+                    });
+                  }
+
+                  const duration = videoReactPlayer.current.getDuration();
                   console.log(duration);
-                  videoReactPlayerDash.current.seekTo(300); /// cái dòng này không seekTo cái khúc đang coi dở
-                  setIsPlayingDash(() => {
+                  // videoReactPlayer.current.seekTo(300postma); /// cái dòng này không seekTo cái khúc đang coi dở
+                  setIsPlaying(() => {
                     return true; /// dòng này thì chạy đc
                   });
                 }
               }}
               config={{
                 forceDASH: true,
+                forceHLS:true,
               }}
             />
           </div>
