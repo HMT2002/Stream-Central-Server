@@ -211,6 +211,37 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
   res.end();
 });
 
+exports.RedirectLive = catchAsync(async (req, res, next) => {
+  console.log('redirect live');
+  const videoname = req.params.filename;
+  // console.log(video);
+  // const server = await redirectAPI.availableLiveOnServer(videoname);
+  // if (server.length === 0) {
+  //   res.status(200).json({
+  //     message: 'Not found Live server, check name or server connections',
+  //   });
+  //   return;
+  // }
+
+  const index = 0;
+  // const url = server[index].URL || 'localhost';
+  // const port = server[index].port || ':1936';
+  const url = 'localhost';
+  const port = ':1936';
+  const oriURL = 'rtmp://' + url + port + '/live/' + videoname;
+  if (req.headers.myaxiosfetch) {
+    res.status(200).json({
+      subserverurl: oriURL,
+    });
+    res.end();
+    return;
+  }
+    console.log(oriURL)
+
+  res.redirect(oriURL);
+  // res.end();
+});
+
 exports.AvailableServerForVideoHls = catchAsync(async (req, res, next) => {
   console.log('AvailableServerForVideoHls');
   const videoname = req.params.filename;
@@ -378,87 +409,84 @@ exports.RedirectDeleteFolderRequest = catchAsync(async (req, res, next) => {
 });
 
 exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
+
+  // const result= await redirectAPI.UploadNewFileLargeMultilpartHls(req);
+// res.status(201).json(result);
+
   console.log('Dealing with request UploadNewFileLargeMultilpartHls');
   console.log(req.headers);
-  const file = req.file;
-  const destination = file.destination;
-  const ext = req.headers.ext;
-  let arrayChunkName = req.body.arraychunkname.split(',');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } =redirectAPI.sumUp(req);
+
+  // const file = req.file;
+  // const destination = file.destination;
+  // const ext = req.headers.ext;
+  // let arrayChunkName = req.body.arraychunkname.split(',');
+  // let filename = req.headers.filename + '_' + req.headers.index;
+  // let orginalname = req.headers.filename + '.' + ext;
+  // let chunkname = req.headers.chunkname;
+  // let title=req.headers.title;
+  // let infoID=req.headers.infoID;
+
   let flag = true;
-  let filename = req.headers.filename + '_' + req.headers.index;
-  let orginalname = req.headers.filename + '.' + ext;
-  let chunkname = req.headers.chunkname;
   arrayChunkName.forEach((chunkName) => {
     if (!fs.existsSync(destination + chunkName)) {
       flag = false;
     }
   });
-
-  // const availableStoreServer= await availableStorageOnServer(req.headers.filename,'HLS');
-  // if(availableStoreServer.length===0){
-  //   res.status(200).json({
-  //     message: 'File is everywhere on the servers system!',
-  //   });
-  //   return;
-  // }
-  const aliveServers = await redirectAPI.testServerIsFckingAlive();
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'HLS');
   console.log(aliveServers);
-  const index = 0;
-  const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
-  const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
-  const check = await redirectAPI.checkFolderOnServer(baseUrl);
-  if (check.existed === true) {
+  if (aliveServers.existed === true) {
     res.status(200).json({
       message: 'Folder already existed on sub server',
-      check,
+      aliveServers,
     });
     return;
   }
+  const index = 0;
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || ':9100';
+  // const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
+  // const check = await redirectAPI.checkFolderOnServer(baseUrl);
+  // if (check.existed === true) {
+  //   res.status(200).json({
+  //     message: 'Folder already existed on sub server',
+  //     check,
+  //   });
+  //   return;
+  // }
 
   if (flag) {
     console.log('file is completed');
-    // arrayChunkName.forEach(async (chunkName) => {
-    //   console.log({ index, url, port, chunkName, ext, destination, orginalname });
-    //   await redirectAPI.SendFileToOtherNodeAndConvertToHls(
-    //     'http://' + url,
-    //     port,
-    //     arrayChunkName,
-    //     chunkName,
-    //     destination,
-    //     ext,
-    //     orginalname
-    //   );
-    // });
+    // var chunkIndex = 0;
+    // async function uploadLoop() {
+    //   //  create a loop function
+    //   setTimeout(async function () {
+    //     //  call a 3s setTimeout when the loop is called
+    //     console.log('looping'); //  your code here
+    //     await redirectAPI.SendFileToOtherNodeAndConvertToHls(
+    //       'http://' + url,
+    //       port,
+    //       arrayChunkName,
+    //       arrayChunkName[chunkIndex],
+    //       destination,
+    //       ext,
+    //       orginalname
+    //     );
 
-    var chunkIndex = 0;
-    async function uploadLoop() {
-      //  create a loop function
-      setTimeout(async function () {
-        //  call a 3s setTimeout when the loop is called
-        console.log('looping'); //  your code here
-        console.log({ index, url, port, chunkName: arrayChunkName[chunkIndex], ext, destination, orginalname });
-        await redirectAPI.SendFileToOtherNodeAndConvertToHls(
-          'http://' + url,
-          port,
-          arrayChunkName,
-          arrayChunkName[chunkIndex],
-          destination,
-          ext,
-          orginalname
-        );
+    //     chunkIndex++; //  increment the counter
+    //     if (chunkIndex < arrayChunkName.length) {
+    //       //  if the counter < totalChunks, call the loop function
+    //       uploadLoop(); //  ..  again which will trigger another
+    //     } //  ..  setTimeout()
+    //   }, 500);
+    // }
+    // await uploadLoop();
 
-        chunkIndex++; //  increment the counter
-        if (chunkIndex < arrayChunkName.length) {
-          //  if the counter < totalChunks, call the loop function
-          uploadLoop(); //  ..  again which will trigger another
-        } //  ..  setTimeout()
-      }, 500);
-    }
-    await uploadLoop();
+    await redirectAPI.upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'HLS');
 
-    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'HLS',req.headers.title);
+    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'HLS',title);
     const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
+    const addVideoToInfo = await redirectAPI.addToInfo(newVideo,infoID);
 
     res.status(201).json({
       message: 'success full upload',
@@ -466,6 +494,7 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
       destination,
       full: true,
       addVideoToServer,
+      addVideoToInfo,
     });
   } else {
     console.log('file is not completed');
@@ -484,83 +513,33 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
 exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => {
   console.log('Dealing with request UploadNewFileLargeMultilpartDash');
   console.log(req.headers);
-  const file = req.file;
-  const destination = file.destination;
-  const ext = req.headers.ext;
-  let arrayChunkName = req.body.arraychunkname.split(',');
+
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } =redirectAPI.sumUp(req);
   let flag = true;
-  let filename = req.headers.filename + '_' + req.headers.index;
-  let orginalname = req.headers.filename + '.' + ext;
-  let chunkname = req.headers.chunkname;
   arrayChunkName.forEach((chunkName) => {
     if (!fs.existsSync(destination + chunkName)) {
       flag = false;
     }
   });
-
-  // const availableStoreServer= await availableStorageOnServer(req.headers.filename,'DASH');
-
-  const aliveServers = await redirectAPI.testServerIsFckingAlive();
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
   console.log(aliveServers);
-  const index = 0;
-  const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
-
-  const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Dash';
-  const check = await redirectAPI.checkFolderOnServer(baseUrl);
-  console.log(check);
-  if (check.existed === true) {
+  if (aliveServers.existed === true) {
     res.status(200).json({
       message: 'Folder already existed on sub server',
-      check,
+      aliveServers,
     });
     return;
   }
+  const index = 0;
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || ':9100';
   if (flag) {
     console.log('file is completed');
-    // arrayChunkName.forEach(async (chunkName) => {
-    //   console.log({ index, url, port, chunkName, ext, destination, orginalname });
-    //   await redirectAPI.SendFileToOtherNodeAndConvertToDash(
-    //     'http://' + url,
-    //     port,
-    //     arrayChunkName,
-    //     chunkName,
-    //     destination,
-    //     ext,
-    //     orginalname
-    //   );
-    // });
 
-
-    var chunkIndex = 0;
-    async function uploadLoop() {
-      //  create a loop function
-      setTimeout(async function () {
-        //  call a 3s setTimeout when the loop is called
-        console.log('looping'); //  your code here
-        console.log({ index, url, port, chunkName: arrayChunkName[chunkIndex], ext, destination, orginalname });
-        await redirectAPI.SendFileToOtherNodeAndConvertToDash(
-          'http://' + url,
-          port,
-          arrayChunkName,
-          arrayChunkName[chunkIndex],
-          destination,
-          ext,
-          orginalname
-        );
-
-        chunkIndex++; //  increment the counter
-        if (chunkIndex < arrayChunkName.length) {
-          //  if the counter < totalChunks, call the loop function
-          uploadLoop(); //  ..  again which will trigger another
-        } //  ..  setTimeout()
-      }, 500);
-    }
-    await uploadLoop();
-
-
-    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'DASH',req.headers.title);
+    await redirectAPI.upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'DASH');
+    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'DASH',title);
     const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
+    const addVideoToInfo = await redirectAPI.addToInfo(newVideo,infoID);
 
     res.status(201).json({
       message: 'success full upload',
@@ -568,6 +547,7 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
       destination,
       full: true,
       addVideoToServer,
+      addVideoToInfo
     });
   } else {
     console.log('file is not completed');
@@ -579,6 +559,8 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
       full: false,
     });
   }
+
+
 
   // res.redirect('http://' + url + port + '/api/v1/video/upload-video-large-multipart');
 });

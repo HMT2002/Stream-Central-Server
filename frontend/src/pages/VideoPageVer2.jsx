@@ -53,38 +53,28 @@ const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, e
   return formData;
 };
 
-async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title) {
+async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title,infoID) {
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
-
     console.log(arrayChunkName);
-
     const responseHls = await POSTLargeVideoMultipartUploadHlsAction(
       formData,
       chunkIndex,
       chunkName,
       arrayChunkName,
       filename,
-      ext
+      ext,
+      title,
+      infoID,
     );
     console.log(responseHls);
 
-    // if (response.full) {
-    //   const destination = response.destination;
-    //   const responseConcatenate = await POSTLargeVideoMultipartUploadConcatenateAction(
-    //     arrayChunkName,
-    //     filename,
-    //     destination,
-    //     ext
-    //   );
-    //   console.log(responseConcatenate);
-    // }
   } catch (error) {
     console.log(error);
   }
 }
 
-async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title) {
+async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title,infoID) {
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
     console.log(arrayChunkName);
@@ -95,20 +85,10 @@ async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, fil
       arrayChunkName,
       filename,
       ext,
-      title
+      title,
+      infoID,
     );
     console.log(responseDash);
-
-    // if (response.full) {
-    //   const destination = response.destination;
-    //   const responseConcatenate = await POSTLargeVideoMultipartUploadConcatenateAction(
-    //     arrayChunkName,
-    //     filename,
-    //     destination,
-    //     ext
-    //   );
-    //   console.log(responseConcatenate);
-    // }
   } catch (error) {
     console.log(error);
   }
@@ -273,9 +253,10 @@ const VideoPageVer2 = () => {
           console.log(end);
           // Make an API call to upload the chunk to the backend
           const ext = file.name.split('.')[1];
-
-          // await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
-          await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
+          const title=chunkName;
+          const infoID="654ef92c9f7e923ef27cf32c";
+          await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext,title, infoID);
+          // await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext, title, infoID);
 
           chunkIndex++; //  increment the counter
           if (chunkIndex < totalChunks) {

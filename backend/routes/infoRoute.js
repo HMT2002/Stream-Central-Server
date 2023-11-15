@@ -43,6 +43,10 @@ router
     infoController.GetMovie
   );
 
-
+  router
+  .route('/film/:id')
+  .get(
+    infoController.GetFilm
+  );
 
 module.exports = router;

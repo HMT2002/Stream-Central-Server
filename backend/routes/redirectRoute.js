@@ -22,6 +22,8 @@ router.route('/hls/:filename').get(redirectController.RedirectHls);
 //bắt buộc phải làm kiểu này, đường dẫn đến file phải ghi lại đến 2 lần
 router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHandler);
 router.route('/dash/:filenamebase/:filename').get(redirectController.RedirectDash);
+//bỏ cuộc đi, không rediect sang rtmp đc đâu
+// router.route('/live/:filename').get(redirectController.RedirectLive);
 
 
 router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);

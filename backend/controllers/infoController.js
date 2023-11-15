@@ -22,7 +22,6 @@ const axios = require('axios');
 
 exports.GetAll = catchAsync(async (req, res, next) => {
   const tv = await infoAPI.GetAll();
-
   res.status(200).json({
     status: 'ok',
     data: tv,
@@ -49,6 +48,15 @@ exports.QueryTV = catchAsync(async (req, res, next) => {
 
 exports.GetMovie = catchAsync(async (req, res, next) => {
   const movie = await infoAPI.GetMovie(req.params.id);
+
+  res.status(200).json({
+    status: 'ok',
+    data: movie,
+  });
+});
+
+exports.GetFilm = catchAsync(async (req, res, next) => {
+  const movie = await infoAPI.GetFilm(req.params.id);
 
   res.status(200).json({
     status: 'ok',

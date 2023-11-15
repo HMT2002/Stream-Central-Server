@@ -26,7 +26,7 @@ const Sidebar = (props) => {
   };
   return (
     <React.Fragment>
-      <div className={`${props.className} h-full`}>
+      <div className={`${props.className} h-full z-[1000]`}>
         <div className="app-sidebar__content absolute inset-0">
           <Button className={'m-10'} content="Back" onClick={handleSidebarClick}></Button>
           <div className="flex flex-col justify-between gap-3 mt-2">
