@@ -7,6 +7,7 @@ const videoSchema = new mongoose.Schema({
   type: {  type: String, enum: ['HLS', 'DASH'], default: 'HLS'},
   size: { type: Number, default: 0 * 1 },
   numberOfRequest: { type: Number, default: 0 * 1 },
+  numberOfReplicant: { type: Number, default: 1 * 1 },
   avarageSpeed: { type: Number, default: 0 * 1 },
   createdDate: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },

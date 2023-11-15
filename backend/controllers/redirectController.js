@@ -211,6 +211,37 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
   res.end();
 });
 
+exports.RedirectLive = catchAsync(async (req, res, next) => {
+  console.log('redirect live');
+  const videoname = req.params.filename;
+  // console.log(video);
+  // const server = await redirectAPI.availableLiveOnServer(videoname);
+  // if (server.length === 0) {
+  //   res.status(200).json({
+  //     message: 'Not found Live server, check name or server connections',
+  //   });
+  //   return;
+  // }
+
+  const index = 0;
+  // const url = server[index].URL || 'localhost';
+  // const port = server[index].port || ':1936';
+  const url = 'localhost';
+  const port = ':1936';
+  const oriURL = 'rtmp://' + url + port + '/live/' + videoname;
+  if (req.headers.myaxiosfetch) {
+    res.status(200).json({
+      subserverurl: oriURL,
+    });
+    res.end();
+    return;
+  }
+    console.log(oriURL)
+
+  res.redirect(oriURL);
+  // res.end();
+});
+
 exports.AvailableServerForVideoHls = catchAsync(async (req, res, next) => {
   console.log('AvailableServerForVideoHls');
   const videoname = req.params.filename;

@@ -25,6 +25,11 @@ const getAvailableVideoID = async (id) => {
   return availVideo;
 };
 
+const getAllServer = async () => {
+  const servers = await Server.find({ });
+  return servers;
+};
+
 const getAvailableServer = async (video) => {
   const servers = await Server.find({ videos: video });
   return servers;
@@ -78,7 +83,7 @@ const getAvailableVideoAndType = async (videoname, type) => {
 
 const calculateTime = async (baseUrl) => {
   try {
-    const fileSizeInBytes = 100000; // ~ 0,1 mb
+    const fileSizeInBytes = 200000; // ~ 0,2 mb
     const startTime = new Date().getTime();
     const { data } = await axios.get(baseUrl, {
       timeout: 300, // Set a timeout of 0,3 seconds
@@ -154,6 +159,11 @@ const getMyNetworkDownloadSpeedHls = async (url, port, videoname) => {
   return calculateTime(baseUrl);
 };
 
+const getMyNetworkLiveSpeed = async (url, port) => {
+  const baseUrl = 'rtmp://' + url + port + '/live/';
+  return calculateTime(baseUrl);
+};
+
 const getMyNetworkDownloadSpeedDash = async (url, port, videoname) => {
   const baseUrl = 'http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd';
   return calculateTime(baseUrl);
@@ -176,6 +186,30 @@ const checkTestErrorCode = (result) => {
   } else {
     return result;
   }
+};
+
+const testSpeedLiveResults = async (videoname) => {
+  if (!videoname) {
+    console.log('Video not found on database, check name');
+    return [];
+  }
+  const availableServer = await getAllServer();
+  if (availableServer.length === 0) {
+    console.log('Not found any server');
+    return [];
+  }
+  let testResults = [];
+  for (let i = 0; i < availableServer.length; i++) {
+    let speedDownload;
+      speedDownload = checkTestErrorCode(
+        await getMyNetworkLiveSpeed(availableServer[i].URL, availableServer[i].port)
+      );
+    if (speedDownload !== null) {
+      testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
+    }
+  }
+
+  return testResults;
 };
 
 const testSpeedResults = async (video) => {
@@ -241,6 +275,17 @@ const sortAvailableVideoOnServer = (results) => {
   }
 };
 
+const availableLiveOnServer = async (videoname) => {
+  const testResults = await testSpeedLiveResults(videoname);
+  const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
+  // console.log(availableVideoOnServer);
+  if (availableVideoOnServer === null) {
+    return [];
+  }
+  console.log(testResults);
+  return availableVideoOnServer;
+};
+
 const availableVideoOnServer = async (video) => {
   const testResults = await testSpeedResults(video);
   const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
@@ -274,7 +319,6 @@ const ReplicateWhenEnoughRequest = async (video) => {
   const toURL = availableStorage[index].URL;
   const toPort = availableStorage[index].port;
   const redirectURL = await ReplicateVideoFolder(video.videoname, video.type, toURL, toPort);
-
   const folderType = video.type === 'HLS' ? 'Hls' : 'Dash';
   await axios({
     method: 'post',
@@ -305,6 +349,8 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const port = availableServer[index].port;
   // nên nhớ 2 port này khác nhau
   await addToServer(video, toURL, toPort);
+  await addUpVideoReplicant(video);
+
   return 'http://' + url + port + '/api/v1/replicate/send-folder';
 };
 
@@ -454,6 +500,12 @@ const addToServer = async (video, URL, port) => {
   server.videos.push(video);
   await server.save();
   return server;
+};
+
+const addUpVideoReplicant = async (video) => {
+  video.numberOfReplicant++;
+  await video.save();
+  return video;
 };
 
 const addToInfo = async (video, infoID) => {
@@ -718,4 +770,6 @@ module.exports = {
   sumUp,
   upload,
   checkFileISExistedOnServerYet,
+  availableLiveOnServer,
+  addUpVideoReplicant,
 };
