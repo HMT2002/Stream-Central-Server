@@ -158,14 +158,27 @@ const VideoDemo = () => {
   return (
     <React.Fragment>
       <div className="flex flex-col">
-        <div className="w-full bg-gray-900 h-3/5" id="video-demo">
+        <div className="w-full bg-[#0E0E0E] h-3/5 p-5" id="video-demo">
           {/* <video ref={videoHLS} className="video-js"></video> */}
 
           {/* ReactPlayer lấy video từ ytb để test UI */}
           <div id="video-section" className="mt-10 flex justify-center">
             <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" />
           </div>
-          <div id="change-server-section"></div>
+          <div id="change-server-section" className="flex mt-5 w-full">
+            <div className="text-[#AAAAAA] bg-[#171717] p-10 w-2/5 ">
+              <p>
+                You're watching <span className="text-red-400">Episode 6</span>
+              </p>
+              <p>If current servers doesn't work, please try other servers beside</p>
+            </div>
+            <div className="text-[#777777] w-full px-3 py-2 flex gap-5 items-start bg-[#010101]">
+              <div className="p-2 bg-[#171717] rounded-md hover:text-[#171717] hover:bg-[#777777] transition-all duration-300 delay-100 hover:cursor-pointer">
+                Main Server
+              </div>
+              <div className="p-2 bg-red-400 text-[#EEEEEE] rounded-md hover:cursor-pointer">Sub Server</div>
+            </div>
+          </div>
           <div id="episode-section" className="mt-10">
             <SwiperEspisode />
           </div>
@@ -264,7 +277,7 @@ const VideoDemo = () => {
           </div>
         </div> */}
         </div>
-        <div className="flex flex-col p-6 bg-slate-400">
+        <div className="flex flex-col p-6 bg-black text-gray-400">
           <div className="w-full mx-auto md:flex">
             <div className="w-full">
               <img className="mx-auto" src={logo} alt="ben-10-image" />
