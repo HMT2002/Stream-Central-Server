@@ -66,9 +66,15 @@ const HomePage = () => {
             <SwiperSlide className="">
               <SwiperSection />
             </SwiperSlide>
-            <SwiperSlide>slide 2</SwiperSlide>
-            <SwiperSlide>slide 3</SwiperSlide>
-            <SwiperSlide>slide 4</SwiperSlide>
+            <SwiperSlide className="">
+              <SwiperSection />
+            </SwiperSlide>
+            <SwiperSlide className="">
+              <SwiperSection />
+            </SwiperSlide>
+            <SwiperSlide className="">
+              <SwiperSection />
+            </SwiperSlide>
           </Swiper>
           <SectionList labels={tags} threads={threads} />
         </div>

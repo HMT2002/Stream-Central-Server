@@ -46,7 +46,9 @@ const Layout = (props) => {
               />
             </div>
           )}
-          <div className={`app-layout__page max-w-[1600px] mx-auto my-10 z-0 }`}>{props.children}</div>
+          <div className={`app-layout__page app-layout max-w-[1600px] mx-auto mb-10 z-0 min-h-[100vh] }`}>
+            {props.children}
+          </div>
         </div>
         <div className="max-w-[1600px] mx-auto my-10 gap-3 text-center">
           <div className="flex flex-row justify-around">
