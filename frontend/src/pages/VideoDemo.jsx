@@ -158,68 +158,81 @@ const VideoDemo = () => {
   return (
     <React.Fragment>
       <div className="flex flex-col">
-        <div className="w-full bg-gray-900 h-3/5" id="video-demo">
+        <div className="w-full bg-primary h-3/5 p-5" id="video-demo">
           {/* <video ref={videoHLS} className="video-js"></video> */}
 
           {/* ReactPlayer lấy video từ ytb để test UI */}
-          <div id="video-section" className="mt-10 flex justify-center">
+          <div id="video-section" className="mt-10 flex flex-col items-center">
             <ReactPlayer url="https://www.youtube.com/watch?v=5wiykPlwWIo" width="80%" height="500px" />
+
+            <ReactPlayer
+              className="w-full bg-gray-900 h-3/5"
+              ref={videoReactPlayerHls}
+              url={reactPlayerURLHls}
+              width="80%"
+              height="500px"
+              autoPlay
+              controls
+              config={{
+                forceHLS: true,
+              }}
+            />
+            <ReactPlayer
+              className="w-full bg-gray-900 h-3/5"
+              ref={videoReactPlayerDash}
+              url={reactPlayerURLDash}
+              width="80%"
+              height="500px"
+              autoPlay
+              controls
+              playing={isPlayingDash}
+              onSeek={() => console.log('Seeking!')}
+              onBuffer={() => console.log('onBuffer')}
+              onBufferEnd={() => console.log('onBufferEnd')}
+              onError={async (event, data, instance, global) => {
+                console.log({ event, data, instance, global });
+                if (event.error) {
+                  console.log('There are Error in videoReactPlayerDash');
+                  console.log(event.error);
+                  console.log('videoReactPlayerDash ref');
+                  console.log(videoReactPlayerDash);
+                  var urlDash = await getDashUrl(filename);
+                  setReactPlayerURLDash(() => {
+                    return urlDash;
+                  });
+                  setIsPlayingDash(() => {
+                    return false;
+                  }); /// dòng này thì chạy đc
+                  const duration = videoReactPlayerDash.current.getDuration();
+                  console.log(duration);
+                  videoReactPlayerDash.current.seekTo(300); /// cái dòng này không seekTo cái khúc đang coi dở
+                  setIsPlayingDash(() => {
+                    return true; /// dòng này thì chạy đc
+                  });
+                }
+              }}
+              config={{
+                forceDASH: true,
+              }}
+            />
           </div>
-          <div id="change-server-section"></div>
+          <div id="change-server-section" className="flex mt-5 w-full">
+            <div className="text-[#AAAAAA] bg-[#171717] p-10 w-2/5 ">
+              <p>
+                You're watching <span className="text-red-400">Episode 6</span>
+              </p>
+              <p>If current servers doesn't work, please try other servers beside</p>
+            </div>
+            <div className="text-[#777777] w-full px-3 py-2 flex gap-5 items-start bg-[#010101]">
+              <div className="p-2 bg-[#171717] rounded-md hover:text-[#171717] hover:bg-[#777777] transition-all duration-300 delay-100 hover:cursor-pointer">
+                Main Server
+              </div>
+              <div className="p-2 bg-red-400 text-[#EEEEEE] rounded-md hover:cursor-pointer">Sub Server</div>
+            </div>
+          </div>
           <div id="episode-section" className="mt-10">
             <SwiperEspisode />
           </div>
-
-          <ReactPlayer
-            className="w-full bg-gray-900 h-3/5"
-            ref={videoReactPlayerHls}
-            url={reactPlayerURLHls}
-            width="60%"
-            height="500px"
-            autoPlay
-            controls
-            config={{
-              forceHLS: true,
-            }}
-          />
-          <ReactPlayer
-            className="w-full bg-gray-900 h-3/5"
-            ref={videoReactPlayerDash}
-            url={reactPlayerURLDash}
-            width="60%"
-            height="500px"
-            autoPlay
-            controls
-            playing={isPlayingDash}
-            onSeek={() => console.log('Seeking!')}
-            onBuffer={() => console.log('onBuffer')}
-            onBufferEnd={() => console.log('onBufferEnd')}
-            onError={async (event, data, instance, global) => {
-              console.log({ event, data, instance, global });
-              if (event.error) {
-                console.log('There are Error in videoReactPlayerDash');
-                console.log(event.error);
-                console.log('videoReactPlayerDash ref');
-                console.log(videoReactPlayerDash);
-                var urlDash = await getDashUrl(filename);
-                setReactPlayerURLDash(() => {
-                  return urlDash;
-                });
-                setIsPlayingDash(() => {
-                  return false;
-                }); /// dòng này thì chạy đc
-                const duration = videoReactPlayerDash.current.getDuration();
-                console.log(duration);
-                videoReactPlayerDash.current.seekTo(300); /// cái dòng này không seekTo cái khúc đang coi dở
-                setIsPlayingDash(() => {
-                  return true; /// dòng này thì chạy đc
-                });
-              }
-            }}
-            config={{
-              forceDASH: true,
-            }}
-          />
 
           {/* <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
@@ -264,13 +277,13 @@ const VideoDemo = () => {
           </div>
         </div> */}
         </div>
-        <div className="flex flex-col p-6 bg-slate-400">
-          <div className="w-full mx-auto md:flex">
+        <div className="flex flex-col p-6 bg-[#010101] text-normal">
+          <div className="w-full mx-auto md:flex md:gap-5">
             <div className="w-full">
               <img className="mx-auto" src={logo} alt="ben-10-image" />
             </div>
             <div>
-              <h2 className="text-center font-bold text-2xl md:text-left">Ben 10: Alien Force</h2>
+              <h2 className="text-center font-bold text-2xl md:text-left text-active">Ben 10: Alien Force</h2>
               <div className="flex justify-around my-7 md:justify-start md:gap-10">
                 <p className="px-2 rounded-md border-black border-2 border-solid">HD</p>
                 <p>Trailer</p>
@@ -278,7 +291,7 @@ const VideoDemo = () => {
                 <p>23 min</p>
               </div>
               <div>
-                <h5 className="font-semibold my-4">Overview:</h5>
+                <h5 className="font-semibold my-4 text-active">Overview:</h5>
                 <p>
                   Five years later, 15-year-old Ben Tennyson chooses to once again put on the OMNITRIX and discovers
                   that it has reconfigured his DNA and can now transform him into 10 brand new aliens. Joined by his
@@ -290,25 +303,25 @@ const VideoDemo = () => {
               <div className="mt-4 md:flex md:gap-10">
                 <div>
                   <p>
-                    <span className="font-semibold">Released:</span> 2008-04-18
+                    <span className="font-semibold text-active">Released:</span> 2008-04-18
                   </p>
                   <p>
-                    <span className="font-semibold">Genre:</span> Action & Adventure, Animation, Family
+                    <span className="font-semibold text-active">Genre:</span> Action & Adventure, Animation, Family
                   </p>
                   <p>
-                    <span className="font-semibold">Casts:</span> Yuri Lowenthal, Greg Cipes, Dee Bradley Baker, Ashley
-                    Johnson
+                    <span className="font-semibold text-active">Casts:</span> Yuri Lowenthal, Greg Cipes, Dee Bradley
+                    Baker, Ashley Johnson
                   </p>
                 </div>
                 <div>
                   <p>
-                    <span className="font-semibold">Duration:</span> 23 min
+                    <span className="font-semibold text-active">Duration:</span> 23 min
                   </p>
                   <p>
-                    <span className="font-semibold">Country:</span> United States of America
+                    <span className="font-semibold text-active">Country:</span> United States of America
                   </p>
                   <p>
-                    <span className="font-semibold">Production:</span> Cartoon Network Studios
+                    <span className="font-semibold text-active">Production:</span> Cartoon Network Studios
                   </p>
                 </div>
               </div>
@@ -318,12 +331,12 @@ const VideoDemo = () => {
         <div className="mb-5 p-5">
           <h1 className="font-semibold my-4">Related Movies</h1>
           <div className="flex justify-around mx-auto flex-wrap gap-5">
+            {/* <MovieItem />
             <MovieItem />
             <MovieItem />
             <MovieItem />
             <MovieItem />
-            <MovieItem />
-            <MovieItem />
+            <MovieItem /> */}
           </div>
         </div>
       </div>

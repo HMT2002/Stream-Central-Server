@@ -15,7 +15,6 @@ const SectionList = (props) => {
   });
 
   const videoSections = props.threads.map((thread) => {
-    console.log(thread);
     let video = new videoItem(
       thread.filmInfo.name,
       thread.filmInfo.first_air_date,
@@ -28,7 +27,7 @@ const SectionList = (props) => {
 
   return (
     <React.Fragment>
-      <ul className="centered">{videoSections}</ul>
+      <ul className="centered mt-5 flex gap-5">{videoSections}</ul>
     </React.Fragment>
   );
 };

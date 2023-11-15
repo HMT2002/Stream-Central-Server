@@ -3,7 +3,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
 import 'swiper/css';
-import SwiperItems from '../swiper-items/swiper-items';
+import SwiperItems from '../swiper-items/swiper-item';
 
 const SwiperEspisode = () => {
   return (
@@ -12,7 +12,7 @@ const SwiperEspisode = () => {
       slidesPerView={3}
       onSlideChange={() => console.log('slide change')}
       onSwiper={(swiper) => console.log(swiper)}
-      className=" mx-5 px-3 py-6"
+      className=" py-6 text-[#777777]"
     >
       <SwiperSlide className=" max-w-fit">
         <SwiperItems />
