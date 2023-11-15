@@ -102,11 +102,13 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (
   arrayChunkName,
   filename,
   ext,
-  title
+  title,
+  infoID
 ) => {
   if (!formData) {
     return { status: 'fail' };
   }
+
   const response = await fetch('/api/v1/video/upload-video-large-multipart-hls', {
     method: 'POST',
     body: formData,
@@ -118,6 +120,7 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (
       arrayChunkName,
       ext,
       title,
+      infoID:infoID,
     },
   });
   const data = await response.json();
@@ -132,7 +135,8 @@ export const POSTLargeVideoMultipartUploadDashAction = async (
   arrayChunkName,
   filename,
   ext,
-  title
+  title,
+  infoID
 ) => {
   if (!formData) {
     return { status: 'fail' };
@@ -148,6 +152,7 @@ export const POSTLargeVideoMultipartUploadDashAction = async (
       arrayChunkName,
       ext,
       title,
+      infoID,
     },
   });
   const data = await response.json();
