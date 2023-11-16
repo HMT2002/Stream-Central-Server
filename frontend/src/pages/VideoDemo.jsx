@@ -61,7 +61,6 @@ const getDashUrl = async (filename) => {
 const VideoDemo = () => {
   const params = useParams();
   const infoID = params.filename;
-  console.log(infoID);
   // const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
   // const [reactPlayerURLDash, setReactPlayerURLDash] = useState('');
   // const [reactPlayerURLHls, setReactPlayerURLHls] = useState('');
@@ -169,7 +168,11 @@ const VideoDemo = () => {
         return;
     }
   }
-  console.log(info.videos);
+  function getVideoStatus(status) {
+    if (status === 'Ended') {
+      return <p>Completed</p>;
+    } else return <p>{status}</p>;
+  }
   return (
     <React.Fragment>
       <div className="flex flex-col">
@@ -319,57 +322,92 @@ const VideoDemo = () => {
           </div>
         </div> */}
         </div>
-        <div className="flex flex-col p-6 bg-[#010101] text-normal">
-          <div className="w-full mx-auto md:flex md:gap-5">
-            <div className="w-full">
-              <img className="mx-auto" src={logo} alt="ben-10-image" />
-            </div>
-            <div>
-              <h2 className="text-center font-bold text-2xl md:text-left text-active">Ben 10: Alien Force</h2>
-              <div className="flex justify-around my-7 md:justify-start md:gap-10">
-                <p className="px-2 rounded-md border-black border-2 border-solid">HD</p>
-                <p>Trailer</p>
-                <p>IMDB: 7.3</p>
-                <p>23 min</p>
+        {info.filmInfo !== undefined ? (
+          <div className="flex flex-col p-6 bg-[#010101] text-normal">
+            <div className="w-full mx-auto md:flex md:gap-5">
+              <div className="w-full">
+                <img
+                  className="mx-auto max-w-xs"
+                  src={'https://image.tmdb.org/t/p/w600_and_h900_bestv2/' + info.filmInfo.backdrop_path}
+                  alt="video-banner-image"
+                />
               </div>
               <div>
-                <h5 className="font-semibold my-4 text-active">Overview:</h5>
-                <p>
-                  Five years later, 15-year-old Ben Tennyson chooses to once again put on the OMNITRIX and discovers
-                  that it has reconfigured his DNA and can now transform him into 10 brand new aliens. Joined by his
-                  super-powered cousin Gwen Tennyson and his equally powerful former enemy Kevin Levin, Ben is on a
-                  mission to find his missing Grandpa Max. In order to save his Grandpa, Ben must defeat the evil
-                  DNALIENS, a powerful alien race intent on destroying the galaxy, starting with planet Earth.
-                </p>
-              </div>
-              <div className="mt-4 md:flex md:gap-10">
-                <div>
-                  <p>
-                    <span className="font-semibold text-active">Released:</span> 2008-04-18
-                  </p>
-                  <p>
-                    <span className="font-semibold text-active">Genre:</span> Action & Adventure, Animation, Family
-                  </p>
-                  <p>
-                    <span className="font-semibold text-active">Casts:</span> Yuri Lowenthal, Greg Cipes, Dee Bradley
-                    Baker, Ashley Johnson
-                  </p>
+                <h2 className="text-center font-bold text-2xl md:text-left text-active">{info.filmInfo.name}</h2>
+                <div className="flex justify-around my-7 md:justify-start md:gap-10">
+                  <p className="px-2 rounded-md border-black border-2 border-solid">HD</p>
+                  <p>{info.filmType}</p>
+                  <div>{getVideoStatus(info.filmInfo.status)}</div>
                 </div>
                 <div>
-                  <p>
-                    <span className="font-semibold text-active">Duration:</span> 23 min
-                  </p>
-                  <p>
-                    <span className="font-semibold text-active">Country:</span> United States of America
-                  </p>
-                  <p>
-                    <span className="font-semibold text-active">Production:</span> Cartoon Network Studios
-                  </p>
+                  <h5 className="font-semibold my-4 text-active">Overview:</h5>
+                  <p>{info.filmInfo.overview}</p>
+                </div>
+                <div className="mt-4 md:flex md:gap-10">
+                  <div>
+                    <p>
+                      <span className="font-semibold text-active">Released:</span> {info.filmInfo.first_air_date}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-active">Genre:</span> {}
+                      {info.filmInfo.genres.map((genre) => {
+                        let genreString = '';
+                        if (info.filmInfo.genres[info.filmInfo.genres.length - 1].name === genre.name) {
+                          genreString += genre.name;
+                        } else {
+                          genreString += genre.name + ', ';
+                        }
+                        return <p className="inline-block">{genreString}</p>;
+                      })}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-active">Casts:</span>
+                    </p>
+                  </div>
+                  <div>
+                    <p>
+                      <span className="font-semibold text-active">Duration:</span> {info.filmInfo.episode_run_time[0]}{' '}
+                      mins
+                    </p>
+                    <p>
+                      <span className="font-semibold text-active inline">Country:</span>{' '}
+                      {info.filmInfo.production_countries.map((country) => {
+                        let countryString = '';
+                        if (
+                          info.filmInfo.production_countries[info.filmInfo.production_countries.length - 1].name ===
+                          country.name
+                        ) {
+                          countryString += country.name;
+                        } else {
+                          countryString += country.name + ', ';
+                        }
+                        return <p className="inline-block">{countryString}</p>;
+                      })}
+                    </p>
+                    <p>
+                      <span className="font-semibold text-active">Production:</span>{' '}
+                      {info.filmInfo.production_companies.map((company) => {
+                        let companyString = '';
+                        if (
+                          info.filmInfo.production_companies[info.filmInfo.production_companies.length - 1].name ===
+                          company.name
+                        ) {
+                          companyString += company.name;
+                        } else {
+                          companyString += company.name + ', ';
+                        }
+                        return <p className="inline-block">{companyString}</p>;
+                      })}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        ) : (
+          <div></div>
+        )}
+
         <div className="mb-5 p-5">
           <h1 className="font-semibold my-4">Related Movies</h1>
           <div className="flex justify-around mx-auto flex-wrap gap-5">
