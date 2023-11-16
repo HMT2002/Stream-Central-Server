@@ -22,7 +22,6 @@ const axios = require('axios');
 
 exports.GetAll = catchAsync(async (req, res, next) => {
   const tv = await infoAPI.GetAll();
-
   res.status(200).json({
     status: 'ok',
     data: tv,
