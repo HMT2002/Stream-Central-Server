@@ -55,12 +55,27 @@ exports.GetMovie = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.GetInfoByID = catchAsync(async (req, res, next) => {
+  const info = await infoAPI.GetFilm(req.params.id);
+  req.info=info;
+  next();
+});
+
 exports.GetFilm = catchAsync(async (req, res, next) => {
-  const movie = await infoAPI.GetFilm(req.params.id);
+  const info = req.info
 
   res.status(200).json({
     status: 'ok',
-    data: movie,
+    data: info,
+  });
+});
+
+exports.AddEpisodes = catchAsync(async (req, res, next) => {
+  const result=await infoAPI.AddEpisodes(req);
+
+  res.status(200).json({
+    status: 'ok',
+    data: result,
   });
 });
 
@@ -79,11 +94,19 @@ exports.CreateInfo = catchAsync(async (req, res, next) => {
     const video = await redirectAPI.getAvailableVideoID(id);
     id = video;
   });
+
   const testInfo = await Info.findOne({ filmID });
   if (testInfo) {
     next(new AppError('This info already belong to other film.', 409));
     return;
   }
+  const filmType=req.body.filmType;
+  if (filmType === 'TV') {
+    req.body.filmInfo = await infoAPI.GetTV(filmID);
+  } else {
+    req.body.filmInfo = await infoAPI.GetMovie(filmID);
+  }
+
   const user = req.user;
   req.body.user = user;
 

@@ -31,7 +31,7 @@ const HomePage = () => {
       const response = await GETAllInfoAction();
 
       if (response.status === 'ok') {
-        setThreads(response.data.allInfo);
+        setThreads(response.data);
       }
     } catch (error) {
       console.log(error);
