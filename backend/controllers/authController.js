@@ -51,7 +51,7 @@ exports.SignUp = catchAsync(async (req, res, next) => {
     passwordConfirm: passwordConfirm,
     email: email,
     username: username,
-    passwordChangedAt: Date.now,
+    passwordChangedAt: Date.now(),
     role: role,
     photo: { link: photo.link },
   });

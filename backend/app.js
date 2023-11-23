@@ -67,6 +67,9 @@ const infoRouter = require('./routes/infoRoute');
 
 const testRouter = require('./routes/testRoute');
 const redirectRouter = require('./routes/redirectRoute');
+const actionRoute = require('./routes/actionRoute');
+const commentRoute = require('./routes/commentRoute');
+const playlistRoute = require('./routes/playlistRoute');
 
 
 //app.use('/', defaultRoute);
@@ -77,6 +80,9 @@ app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/info', infoRouter);
 app.use('/api/v1/video', videoRouter);
+// app.use('/api/v1/action', actionRoute);
+app.use('/api/v1/comment', commentRoute);
+app.use('/api/v1/playlist', playlistRoute);
 
 app.use('/api/test', testRouter);
 

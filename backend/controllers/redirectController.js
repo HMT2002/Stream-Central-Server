@@ -177,7 +177,6 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
   console.log('redirect');
   const videoname = req.params.filename;
   const video = await redirectAPI.getAvailableVideoAndType(videoname, 'HLS');
-  // console.log(video);
   const server = await redirectAPI.availableVideoOnServer(video);
   if (server.length === 0) {
     res.status(200).json({
