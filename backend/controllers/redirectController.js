@@ -236,7 +236,7 @@ exports.RedirectLive = catchAsync(async (req, res, next) => {
     res.end();
     return;
   }
-    console.log(oriURL)
+  console.log(oriURL);
 
   res.redirect(oriURL);
   // res.end();
@@ -409,13 +409,13 @@ exports.RedirectDeleteFolderRequest = catchAsync(async (req, res, next) => {
 });
 
 exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
-
   // const result= await redirectAPI.UploadNewFileLargeMultilpartHls(req);
-// res.status(201).json(result);
+  // res.status(201).json(result);
 
   console.log('Dealing with request UploadNewFileLargeMultilpartHls');
   console.log(req.headers);
-  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } =redirectAPI.sumUp(req);
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } =
+    redirectAPI.sumUp(req);
 
   // const file = req.file;
   // const destination = file.destination;
@@ -484,9 +484,9 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
 
     await redirectAPI.upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'HLS');
 
-    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'HLS',title);
+    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'HLS', title);
     const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
-    const addVideoToInfo = await redirectAPI.addToInfo(newVideo,infoID);
+    const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
     res.status(201).json({
       message: 'success full upload',
@@ -514,7 +514,8 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   console.log('Dealing with request UploadNewFileLargeMultilpartDash');
   console.log(req.headers);
 
-  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } =redirectAPI.sumUp(req);
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } =
+    redirectAPI.sumUp(req);
   let flag = true;
   arrayChunkName.forEach((chunkName) => {
     if (!fs.existsSync(destination + chunkName)) {
@@ -537,9 +538,9 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
     console.log('file is completed');
 
     await redirectAPI.upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'DASH');
-    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'DASH',title);
+    const newVideo = await redirectAPI.createVideo(req.headers.filename, 'DASH', title);
     const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
-    const addVideoToInfo = await redirectAPI.addToInfo(newVideo,infoID);
+    const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
     res.status(201).json({
       message: 'success full upload',
@@ -547,7 +548,7 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
       destination,
       full: true,
       addVideoToServer,
-      addVideoToInfo
+      addVideoToInfo,
     });
   } else {
     console.log('file is not completed');
@@ -559,8 +560,6 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
       full: false,
     });
   }
-
-
 
   // res.redirect('http://' + url + port + '/api/v1/video/upload-video-large-multipart');
 });

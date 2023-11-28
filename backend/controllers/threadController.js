@@ -232,7 +232,6 @@ exports.GetAllThreadsByTag = catchAsync(async (req, res) => {
   });
 });
 
-
 // exports.UploadNewFileOnedrive = catchAsync(async (req, res, next) => {
 //   //console.log(req);
 //   const file = req.file;
@@ -268,7 +267,6 @@ exports.GetAllThreadsByTag = catchAsync(async (req, res) => {
 //     link: link,
 //   });
 // });
-
 
 exports.GetThread = catchAsync(async (req, res, next) => {
   // console.log(req.params);

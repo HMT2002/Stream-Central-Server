@@ -1,7 +1,13 @@
 const express = require('express');
 const fs = require('fs');
 const redirectController = require('../controllers/redirectController');
-const { upload, uploadVideo, uploadImage,uploadMultipartFile ,uploadMultipartFileChunk} = require('../modules/multerAPI.js');
+const {
+  upload,
+  uploadVideo,
+  uploadImage,
+  uploadMultipartFile,
+  uploadMultipartFileChunk,
+} = require('../modules/multerAPI.js');
 const router = express.Router();
 
 //ROUTE HANDLER
@@ -16,7 +22,6 @@ router.route('/get-all-video-in-server').get(redirectController.AllVideoOnServer
 router.route('/get-available-server-for-video/hls/:filename').get(redirectController.AvailableServerForVideoHls);
 router.route('/get-available-server-for-video/dash/:filename').get(redirectController.AvailableServerForVideoDash);
 
-
 router.route('/hls/:filename').get(redirectController.RedirectHls);
 //cái thứ DASH này ngu thật sự, nó nghĩ để chung folder gốc hết cmnl hay gì
 //bắt buộc phải làm kiểu này, đường dẫn đến file phải ghi lại đến 2 lần
@@ -24,7 +29,6 @@ router.route('/dash/:filenamebase/:filename*.m4s').get(redirectController.M4SHan
 router.route('/dash/:filenamebase/:filename').get(redirectController.RedirectDash);
 //bỏ cuộc đi, không rediect sang rtmp đc đâu
 // router.route('/live/:filename').get(redirectController.RedirectLive);
-
 
 router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);
 router.route('/delete').post(redirectController.RedirectDeleteRequest);
@@ -37,8 +41,12 @@ router.route('/delete-folder').post(redirectController.RedirectDeleteFolderReque
 //     "port":":9100"
 // }
 
-router.route('/upload-video-large-multipart-hls').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartHls);
-router.route('/upload-video-large-multipart-dash').post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartDash);
+router
+  .route('/upload-video-large-multipart-hls')
+  .post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartHls);
+router
+  .route('/upload-video-large-multipart-dash')
+  .post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartDash);
 // 2 cái trên thì có formData và headers hơi nhức đầu tí
 // const formData = new FormData();
 // formData.append('myMultilPartFileChunk', chunk);
@@ -55,6 +63,5 @@ router.route('/upload-video-large-multipart-dash').post(uploadMultipartFileChunk
 //       arrayChunkName,
 //       ext,
 //     },
-
 
 module.exports = router;

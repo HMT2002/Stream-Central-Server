@@ -9,7 +9,6 @@ const router = express.Router();
 
 //router.param('slug', threadController.CheckSlug);
 
-
 //ROUTE HANDLER
 router
   .route('/')
@@ -21,19 +20,17 @@ router
     threadController.CreateNewThread
   );
 
-router.route('/content-creator/:account').get(
-  authController.protect,
-  authController.restrictTo('content-creator','admin'),
-  threadController.GetAllThreadsByUser
-);
-
 router
-  .route("/tag/:tag")
-  .get(threadController.GetAllThreadsByTag);
+  .route('/content-creator/:account')
+  .get(
+    authController.protect,
+    authController.restrictTo('content-creator', 'admin'),
+    threadController.GetAllThreadsByUser
+  );
 
-router
-  .route("/search/:title")
-  .get(threadController.SearchThreads);
+router.route('/tag/:tag').get(threadController.GetAllThreadsByTag);
+
+router.route('/search/:title').get(threadController.SearchThreads);
 
 router.route('/top-5-popular').get(threadController.aliasTop5Threads, threadController.GetAllThreads);
 
@@ -41,9 +38,7 @@ router.route('/upload-video').post(uploadVideo, videoController.GetVideoThumbnai
 
 // router.route('/upload-video-onedrive').post(uploadVideo, threadController.UploadNewFileOnedrive);
 
-router
-  .route('/user/:userId')
-  .get(threadController.GetAllThreadsByUserId);
+router.route('/user/:userId').get(threadController.GetAllThreadsByUserId);
 
 router
   .route('/comments/:account')
@@ -70,9 +65,7 @@ router
     threadController.CheckCommentID,
     threadController.DeleteComment
   );
-  router
-  .route('/comments/like/:id')
-  .get(threadController.CheckCommentID, threadController.UserLikeComment);
+router.route('/comments/like/:id').get(threadController.CheckCommentID, threadController.UserLikeComment);
 
 router
   .route('/:slug/comment')
@@ -124,13 +117,6 @@ router
     threadController.CheckSlug,
     threadController.DeleteThread
   );
-router
-  .route('/:slug/:n?')
-  .get(
-    threadController.CheckSlug,
-    threadController.GetThread
-  );
-
-
+router.route('/:slug/:n?').get(threadController.CheckSlug, threadController.GetThread);
 
 module.exports = router;

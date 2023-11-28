@@ -94,7 +94,7 @@ exports.CreateInfo = catchAsync(async (req, res, next) => {
       newInfo,
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     next(new AppError('Something wrong.', 400));
   }
 });

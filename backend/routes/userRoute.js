@@ -19,27 +19,23 @@ router.route('/').get(authController.protect, authController.restrictTo('admin')
 //   .post(userController.CheckInput, uploadImage, authController.SignUp);
 
 router
-.route('/all-upgrade-request')
-.get(
-  authController.protect,
-  authController.restrictTo('admin'),
-  userController.GetAllUpgradeRequest
-);
+  .route('/all-upgrade-request')
+  .get(authController.protect, authController.restrictTo('admin'), userController.GetAllUpgradeRequest);
 router
-.route('/get-upgrade-request/')
-.get(
-  authController.protect,
-  authController.restrictTo('user','content-creator'),
-  userController.GetUserUpgradeRequest
-);
+  .route('/get-upgrade-request/')
+  .get(
+    authController.protect,
+    authController.restrictTo('user', 'content-creator'),
+    userController.GetUserUpgradeRequest
+  );
 
 router
-.route('/get-upgrade-request/:account')
-.get(
-  authController.protect,
-  authController.restrictTo('admin','user','content-creator'),
-  userController.GetUserUpgradeRequestByAccount
-);
+  .route('/get-upgrade-request/:account')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'user', 'content-creator'),
+    userController.GetUserUpgradeRequestByAccount
+  );
 router
   .route('/:account')
   .get(authController.protect, authController.restrictTo('admin', 'content-creator', 'user'), userController.GetUser)
@@ -55,10 +51,7 @@ router
     userController.DeleteUser
   );
 
-router
-  .route('/id/:userId')
-  .get(userController.GetUserById);
-
+router.route('/id/:userId').get(userController.GetUserById);
 
 router
   .route('/:account/request-upgrade')
@@ -69,7 +62,7 @@ router
     userController.UpgradeReqUser
   );
 
-  router
+router
   .route('/:account/accept-upgrade')
   .post(
     authController.protect,

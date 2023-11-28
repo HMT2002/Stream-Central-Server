@@ -23,7 +23,7 @@ const SignToken = (id) => {
 };
 
 exports.SignUp = catchAsync(async (req, res, next) => {
-  console.log('signup!')
+  console.log('signup!');
   console.log(req.body);
 
   const { account, password, passwordConfirm, email, username, role } = req.body;
@@ -153,9 +153,8 @@ exports.SignIn = catchAsync(async (req, res, next) => {
   });
 });
 
-
 exports.SignUpGoogle = catchAsync(async (req, res, next) => {
-  console.log('signup!')
+  console.log('signup!');
   console.log(req.body);
 
   const { account, password, passwordConfirm, email, username, role } = req.body;
@@ -240,7 +239,6 @@ exports.SignInGoogle = catchAsync(async (req, res, next) => {
   });
 });
 
-
 exports.SignOut = catchAsync(async () => {
   console.log(req.body);
   res.status(201).json({
@@ -270,8 +268,6 @@ exports.protect = catchAsync(async (req, res, next) => {
 
   console.log(decoded);
   //3) Check if user is existed
-
-
 
   const currentUser = await User.findById(decoded.id);
   //console.log(currentUser);
@@ -347,7 +343,7 @@ exports.ForgetPassword = async (req, res, next) => {
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
-      token: resetToken
+      token: resetToken,
     });
   } catch (err) {
     console.log(err);

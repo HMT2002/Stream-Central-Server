@@ -39,14 +39,14 @@ exports.UploadNewFileDrive = catchAsync(async (req, res, next) => {
   };
   const driveAPIResponse = await driveAPI(videoMetaData, videoMedia);
   const driveID = driveAPIResponse.data.id;
-  if(driveAPIResponse.data.id!=='unavailable'){
-      fs.unlink(file.path, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log('deleted file');
-    }
-  });
+  if (driveAPIResponse.data.id !== 'unavailable') {
+    fs.unlink(file.path, (err) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log('deleted file');
+      }
+    });
   }
 
   console.log(driveID);
@@ -162,19 +162,19 @@ exports.MP4Handler = catchAsync(async (req, res, next) => {
   }
   const videoPath = './' + req.url;
   const videoSize = fs.statSync(videoPath).size;
-  console.log('videoSize')
+  console.log('videoSize');
   console.log(videoSize);
   // Parse Range
   // Example: "bytes=32324-"
   const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
   const start = Number(range.replace(/\D/g, ''));
-  console.log('start')
+  console.log('start');
   console.log(start);
   const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-  console.log('end')
-  console.log(end)
+  console.log('end');
+  console.log(end);
   console.log('req.range');
-  console.log(req.range())
+  console.log(req.range());
 
   // Create headers
   const contentLength = end - start + 1;
@@ -215,46 +215,44 @@ exports.MP4MPDHandler = catchAsync(async (req, res, next) => {
   // Example: "bytes=32324-"
   const CHUNK_SIZE = 10 ** 6; // 1MB nên để tầm nhiêu đây thôi, chunk size cao hơn dễ bị lỗi
   const start = Number(range.replace(/\D/g, ''));
-  console.log('start')
+  console.log('start');
   console.log(start);
   const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-  console.log('end')
-  console.log(end)
+  console.log('end');
+  console.log(end);
 
   console.log(req.range());
 
-  if(req.range()!==-1){
-  // Create headers
-  const contentLength = req.range()[0].end - req.range()[0].start + 1;
-  const headers = {
-    'Content-Range': range+'/'+videoSize,
-    'Accept-Ranges': 'bytes',
-    'Content-Length': contentLength,
-    'Content-Type': 'video/mp4',
-  };
-  // HTTP Status 206 for Partial Content
-  res.writeHead(206, headers);
-  const videoStream = fs.createReadStream(videoPath, { start:req.range()[0].start, end:req.range()[0].end });
-  // Stream the video chunk to the client
-  videoStream.pipe(res);
+  if (req.range() !== -1) {
+    // Create headers
+    const contentLength = req.range()[0].end - req.range()[0].start + 1;
+    const headers = {
+      'Content-Range': range + '/' + videoSize,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': contentLength,
+      'Content-Type': 'video/mp4',
+    };
+    // HTTP Status 206 for Partial Content
+    res.writeHead(206, headers);
+    const videoStream = fs.createReadStream(videoPath, { start: req.range()[0].start, end: req.range()[0].end });
+    // Stream the video chunk to the client
+    videoStream.pipe(res);
+  } else {
+    // Create headers
+    const contentLength = end - start + 1;
+    const headers = {
+      'Content-Range': `bytes ${start}-${end}/${videoSize}`,
+      'Accept-Ranges': 'bytes',
+      'Content-Length': contentLength,
+      'Content-Type': 'video/mp4',
+    };
+    // HTTP Status 206 for Partial Content
+    res.writeHead(206, headers);
+    // create video read stream for this particular chunk
+    const videoStream = fs.createReadStream(videoPath, { start, end });
+    // Stream the video chunk to the client
+    videoStream.pipe(res);
   }
-  else{
-  // Create headers
-  const contentLength = end - start + 1;
-  const headers = {
-    'Content-Range': `bytes ${start}-${end}/${videoSize}`,
-    'Accept-Ranges': 'bytes',
-    'Content-Length': contentLength,
-    'Content-Type': 'video/mp4',
-  };
-  // HTTP Status 206 for Partial Content
-  res.writeHead(206, headers);
-  // create video read stream for this particular chunk
-  const videoStream = fs.createReadStream(videoPath, { start, end });
-  // Stream the video chunk to the client
-  videoStream.pipe(res);
-  }
-
 });
 
 exports.MPDHandler = catchAsync(async (req, res, next) => {
@@ -756,4 +754,3 @@ exports.VideoPlayOPTIONS = catchAsync(async (req, res, next) => {
     })
     .run();
 });
-

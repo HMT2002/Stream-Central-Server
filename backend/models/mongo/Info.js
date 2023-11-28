@@ -5,7 +5,7 @@ const infoSchema = new mongoose.Schema({
   createDate: { type: Date, default: Date.now() },
   filmID: { type: String, required: [true, 'Info required'] },
   filmType: { type: String, required: [true, 'Info required'] },
-  videos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Video', default: null}],
+  videos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Video', default: null }],
 });
 const Info = mongoose.model('Info', infoSchema);
 

@@ -13,7 +13,7 @@ exports.Default = catchAsync(async (req, res, next) => {
   });
 });
 exports.Fu = catchAsync(async (req, res, next) => {
-  await Video.deleteMany({videoname:'0u6jYys'})
+  await Video.deleteMany({ videoname: '0u6jYys' });
   res.status(200).json({
     status: 'success',
     requestTime: req.requestTime,
