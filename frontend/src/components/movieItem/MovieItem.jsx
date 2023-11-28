@@ -6,15 +6,19 @@ import { Link, useNavigate } from 'react-router-dom';
 const MovieItem = (props) => {
   const video = props.video;
   return (
-    <div className=" w-60 shadow-lg hover:shadow-2xl text-sm gap-2">
-      <img src={video.img != null ? video.img : './logo'} alt="video-image" />
-      <div className="px-3 pt-1 pb-5 bg-white">
-        <div className="flex ">
-          <p className="mr-5">{video.release_date != null ? video.release_date : '2023'}</p>
-          <p>{video.type != null ? video.type : 'Movie'}</p>
+    <div className="shadow-lg hover:shadow-2xl text-sm gap-2 mx-2 flex flex-col bg-white rounded-sm">
+      <div className="">
+        <img src={video.img != null ? video.img : './logo'} alt="video-image" />
+      </div>
+      <div className="flex flex-col justify-between px-3 flex-auto">
+        <div className=" bg-white flex flex-col justify-stretch">
+          <div className="flex items-start">
+            <p className="mr-5">{video.release_date != null ? video.release_date : '2023'}</p>
+            <p>{video.type != null ? video.type : 'Movie'}</p>
+          </div>
+          <p className="font-semibold ">{video.title != null ? video.title : 'Ben 10: Alien Force'}</p>
         </div>
-        <p className="font-semibold ">{video.title != null ? video.title : 'Ben 10: Alien Force'}</p>
-        <Button className="bg-red-400 w-full rounded-sm py-1">
+        <Button className="bg-red-400 w-full rounded-sm py-1 mb-2 mx-auto">
           <Link className="login-form__forget-password" to={`/video-demo/${video.id}`}>
             Watch now
           </Link>

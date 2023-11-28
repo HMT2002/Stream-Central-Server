@@ -30,6 +30,7 @@ import MovieItem from '../components/movieItem/MovieItem.jsx';
 import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 
 import { GETFilmInfo } from '../APIs/thread-apis.js';
+import { Select } from '@mui/material';
 
 const getHlsUrl = async (filename) => {
   console.log(filename);
@@ -176,7 +177,7 @@ const VideoDemo = () => {
   return (
     <React.Fragment>
       <div className="flex flex-col">
-        <div className="w-full bg-primary h-3/5 p-5" id="video-demo">
+        <div className="w-full h-3/5 p-5" id="video-demo">
           {/* <video ref={videoHLS} className="video-js"></video> */}
 
           {/* ReactPlayer lấy video từ ytb để test UI */}
@@ -263,18 +264,23 @@ const VideoDemo = () => {
               <div className="p-2 bg-red-400 text-[#EEEEEE] rounded-md hover:cursor-pointer">Sub Server</div>
             </div>
           </div>
-          <div id="episode-section" className="mt-10">
-            {info.filmInfo !== undefined ? (
-              info.filmInfo.seasons.map((season) => {
-                return (
-                  <div className="text-active p-3 border-white border-2 max-w-max rounded-md hover:cursor-pointer">
-                    {season.name}
-                  </div>
-                );
-              })
-            ) : (
-              <div></div>
-            )}
+          <div>
+            <select id="episode-section" className="mt-10 p-2 text-[#EEEEEE] bg-red-400 rounded-md">
+              {info.filmInfo !== undefined ? (
+                info.filmInfo.seasons.map((season) => {
+                  return (
+                    <option
+                      value={season.name}
+                      className="text-active p-3 border-2 max-w-max rounded-md hover:cursor-pointer"
+                    >
+                      {season.name}
+                    </option>
+                  );
+                })
+              ) : (
+                <div></div>
+              )}
+            </select>
 
             <SwiperEspisode episodes={info.videos} />
           </div>

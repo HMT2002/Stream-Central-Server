@@ -5,6 +5,8 @@
   /* height: fit-content; */
   min-height: 100vh;
   font-family: 'Inter';
+  background-color: var(--bg-primary);
+  color: var(--normal-text);
 }
 
 .app-layout__sidebar {

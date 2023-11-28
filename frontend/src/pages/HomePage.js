@@ -51,13 +51,13 @@ const HomePage = () => {
           <ReactLoading type="spin" width="50px" height="50px" color="#13088e" />
         </div>
       ) : (
-        <div className="w-full">
+        <div className="w-full ">
           <Swiper
             spaceBetween={0}
             slidesPerView={1}
             onSlideChange={() => console.log('slide change')}
             onSwiper={(swiper) => console.log(swiper)}
-            className=" min-h-max h-[400px] bg-black]"
+            className="max-w-7xl min-h-max w-full"
             pagination={{
               dynamicBullets: true,
             }}
@@ -76,6 +76,7 @@ const HomePage = () => {
               <SwiperSection />
             </SwiperSlide>
           </Swiper>
+
           <SectionList labels={tags} threads={threads} />
         </div>
       )}
