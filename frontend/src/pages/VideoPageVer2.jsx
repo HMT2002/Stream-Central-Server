@@ -53,7 +53,7 @@ const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, e
   return formData;
 };
 
-async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title,infoID) {
+async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext, title, infoID) {
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
     console.log(arrayChunkName);
@@ -65,16 +65,15 @@ async function uploadChunkHls(chunk, chunkIndex, chunkName, arrayChunkName, file
       filename,
       ext,
       title,
-      infoID,
+      infoID
     );
     console.log(responseHls);
-
   } catch (error) {
     console.log(error);
   }
 }
 
-async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext,title,infoID) {
+async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext, title, infoID) {
   try {
     const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
     console.log(arrayChunkName);
@@ -86,7 +85,7 @@ async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, fil
       filename,
       ext,
       title,
-      infoID,
+      infoID
     );
     console.log(responseDash);
   } catch (error) {
@@ -253,9 +252,18 @@ const VideoPageVer2 = () => {
           console.log(end);
           // Make an API call to upload the chunk to the backend
           const ext = file.name.split('.')[1];
-          const title=chunkName;
-          const infoID="654ef92c9f7e923ef27cf32c";
-          await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext,title, infoID);
+          const title = chunkName;
+          const infoID = '654ef92c9f7e923ef27cf32c';
+          await uploadChunkHls(
+            chunk,
+            chunkIndex,
+            arrayChunkName[chunkIndex],
+            arrayChunkName,
+            chunkName,
+            ext,
+            title,
+            infoID
+          );
           // await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext, title, infoID);
 
           chunkIndex++; //  increment the counter
