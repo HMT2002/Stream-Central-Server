@@ -28,7 +28,7 @@ const SectionList = (props) => {
 
   return (
     <React.Fragment>
-      <ul className="centered mt-5 flex gap-5">{videoSections}</ul>
+      <ul className=" mt-5 flex gap-5 flex-1 flex-wrap mx-auto min-w-min w-min md:w-full max-w-7xl">{videoSections}</ul>
     </React.Fragment>
   );
 };
