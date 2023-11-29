@@ -23,7 +23,7 @@ const axios = require('axios');
 exports.GetAll = catchAsync(async (req, res, next) => {
   const tv = await infoAPI.GetAll();
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: tv,
   });
 });
@@ -32,7 +32,7 @@ exports.GetTV = catchAsync(async (req, res, next) => {
   const tv = await infoAPI.GetTV(req.params.id);
 
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: tv,
   });
 });
@@ -41,7 +41,7 @@ exports.QueryTV = catchAsync(async (req, res, next) => {
   const tv = await infoAPI.QueryTV(req.params.query);
 
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: tv,
   });
 });
@@ -50,31 +50,31 @@ exports.GetMovie = catchAsync(async (req, res, next) => {
   const movie = await infoAPI.GetMovie(req.params.id);
 
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: movie,
   });
 });
 
 exports.GetInfoByID = catchAsync(async (req, res, next) => {
   const info = await infoAPI.GetFilm(req.params.id);
-  req.info=info;
+  req.info = info;
   next();
 });
 
 exports.GetFilm = catchAsync(async (req, res, next) => {
-  const info = req.info
+  const info = req.info;
 
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: info,
   });
 });
 
 exports.AddEpisodes = catchAsync(async (req, res, next) => {
-  const result=await infoAPI.AddEpisodes(req);
+  const result = await infoAPI.AddEpisodes(req);
 
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: result,
   });
 });
@@ -83,7 +83,7 @@ exports.QueryMovie = catchAsync(async (req, res, next) => {
   const movie = await infoAPI.QueryMovie(req.params.query);
 
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: movie,
   });
 });
@@ -100,7 +100,7 @@ exports.CreateInfo = catchAsync(async (req, res, next) => {
     next(new AppError('This info already belong to other film.', 409));
     return;
   }
-  const filmType=req.body.filmType;
+  const filmType = req.body.filmType;
   if (filmType === 'TV') {
     req.body.filmInfo = await infoAPI.GetTV(filmID);
   } else {
@@ -113,25 +113,25 @@ exports.CreateInfo = catchAsync(async (req, res, next) => {
   try {
     const newInfo = await Info.create({ ...req.body });
     res.status(200).json({
-      status: 'ok',
+      status: 200,
       newInfo,
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     next(new AppError('Something wrong.', 400));
   }
 });
 
 exports.CreateInfoMovie = catchAsync(async (req, res, next) => {
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: tv,
   });
 });
 
 exports.CreateInfoTV = catchAsync(async (req, res, next) => {
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: tv,
   });
 });

@@ -232,7 +232,6 @@ exports.GetAllThreadsByTag = catchAsync(async (req, res) => {
   });
 });
 
-
 // exports.UploadNewFileOnedrive = catchAsync(async (req, res, next) => {
 //   //console.log(req);
 //   const file = req.file;
@@ -269,7 +268,6 @@ exports.GetAllThreadsByTag = catchAsync(async (req, res) => {
 //   });
 // });
 
-
 exports.GetThread = catchAsync(async (req, res, next) => {
   // console.log(req.params);
 
@@ -278,7 +276,7 @@ exports.GetThread = catchAsync(async (req, res, next) => {
     return next(new AppError('No thread found!', 404));
   }
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: {
       thread: thread,
     },
@@ -294,7 +292,7 @@ exports.CreateNewThread = catchAsync(async (req, res, next) => {
   const newThread = await Thread.create({ ...req.body, user: user });
 
   res.status(201).json({
-    status: 'ok',
+    status: 200,
     data: newThread,
   });
 });
@@ -321,7 +319,7 @@ exports.CreateNewComment = catchAsync(async (req, res, next) => {
   ).create();
   // console.log(notification);
   res.status(201).json({
-    status: 'ok',
+    status: 200,
     data: { content: newComment.content, user: newComment.user._id, thread: newComment.thread._id },
   });
 });
@@ -377,7 +375,7 @@ exports.UserLikeThread = catchAsync(async (req, res, next) => {
     ).create();
 
     res.status(201).json({
-      status: 'ok',
+      status: 200,
       data: newLike,
       threadPoints: thread.points + 1 * 1,
       userPoint: thread.user.points + 1 * 1,
@@ -389,7 +387,7 @@ exports.UserLikeComment = catchAsync(async (req, res, next) => {
   const user = req.user;
   const comment = req.comment;
   res.status(201).json({
-    status: 'ok',
+    status: 200,
     user,
     comment,
     data: {
@@ -410,7 +408,7 @@ exports.GetThreadLikeCount = catchAsync(async (req, res, next) => {
   // console.log(check);
 
   res.status(201).json({
-    status: 'ok',
+    status: 200,
     data: thread.points,
   });
 });
@@ -461,7 +459,7 @@ exports.GetAllComments = catchAsync(async (req, res, next) => {
   //console.log(newComment);
 
   res.status(201).json({
-    status: 'ok',
+    status: 200,
     data: comments,
   });
 });
@@ -473,7 +471,7 @@ exports.GetComment = catchAsync(async (req, res, next) => {
   // const comment = await Comment.findOne({ _id: id });
 
   res.status(201).json({
-    status: 'ok',
+    status: 200,
     data: req.comment,
   });
 });
@@ -501,7 +499,7 @@ exports.GetAllCommentsFromThread = catchAsync(async (req, res, next) => {
   const userThreadsComments = comments.filter((comment) => comment.user != null);
 
   res.status(201).json({
-    status: 'ok',
+    status: 200,
     data: userThreadsComments,
   });
 });
@@ -533,7 +531,7 @@ exports.GetAllCommentsFromUserThreads = async (req, res, next) => {
   );
 
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     data: userThreadsComments,
   });
 };
