@@ -139,7 +139,7 @@ const LoginPage = () => {
   if (authContext.isAuthorized) return navigate('/');
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-white h-full">
       <Link
         className="app-header__logo m-5 w-full"
         style={{

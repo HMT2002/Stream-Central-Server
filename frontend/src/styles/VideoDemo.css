@@ -89,23 +89,10 @@
   border-radius: 50%;
 }
 
-.thread-page__comments-section {
-  width: 840px;
-  height: fit-content;
-  margin-inline: auto;
-}
-
 .thread-page__comments-section-label {
   font-family: 'Inter';
   font-size: 1.7rem;
   font-weight: 800;
-}
-
-.thread-page__comments-section-input {
-  width: 750px;
-  margin-block: 3rem;
-  margin-inline-start: 1.5rem;
-  margin-inline-end: auto;
 }
 
 .dash-video-player {

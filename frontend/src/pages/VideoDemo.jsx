@@ -16,7 +16,6 @@ import {
   POSTLargeVideoMultipartUploadAction,
   POSTLargeVideoMultipartUploadConcatenateAction,
 } from '../APIs/thread-apis';
-import Button from '../components/UI elements/Button';
 
 import Utils from '../Utils';
 import ReactPlayer from 'react-player';
@@ -26,11 +25,15 @@ import ControlBar from '../components/dashControlBar/ControlBar';
 import '../components/dashControlBar/controlbar.css';
 import '../components/dashControlBar/icomoon.ttf';
 import '../styles/VideoDemo.css';
-import MovieItem from '../components/movieItem/MovieItem.jsx';
 import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 
 import { GETFilmInfo } from '../APIs/thread-apis.js';
-import { Select } from '@mui/material';
+import { GETThreadAction } from '../APIs/thread-apis';
+import AuthContext from '../contexts/auth-context.js';
+
+import { GETAllCommentAction, POSTCommentAction, DELETECommentAction } from '../APIs/comments-apis';
+import CommentInput from '../components/comments/CommentInput';
+import CommentOnThreadList from '../components/comments/CommentOnThreadList';
 
 const getHlsUrl = async (filename) => {
   console.log(filename);
@@ -57,6 +60,109 @@ const getDashUrl = async (filename) => {
   console.log(data);
   var subserverurl = data.subserverurl;
   return subserverurl;
+};
+
+const CommentSection = (props) => {
+  const authContext = useContext(AuthContext);
+  const navigate = useNavigate();
+  const params = useParams();
+  const [thread, setThread] = useState(null);
+  const [comments, setComments] = useState([]);
+  const LoadAllComments = async () => {
+    try {
+      const response = await GETAllCommentAction(params.slug);
+
+      if (response.status === 'ok') {
+        const unorderedComments = Array.from(response.data);
+        unorderedComments.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+
+        setComments(unorderedComments);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const UserPostCommentHandler = async (comment) => {
+    if (!authContext.isAuthorized) return navigate('/login');
+
+    const userToken = authContext.token;
+    const threadSlug = params.slug;
+    const commentData = {
+      content: comment,
+      createDate: Date.now,
+      thread: thread,
+    };
+
+    await POSTCommentAction(commentData, threadSlug, userToken);
+    await LoadAllComments();
+  };
+  const UICommentDeleteHandler = (comment) => {
+    const commentIndex = comments.indexOf(comment);
+    let newComments = comments.map((x) => x);
+    newComments.splice(commentIndex, 1);
+    setComments(newComments);
+  };
+
+  const CommentDeleteHandler = async (deletedComment) => {
+    try {
+      const payload = { comment: deletedComment };
+      const response = await DELETECommentAction(authContext.token, payload);
+
+      if (response != null && response.status === 'success delete') {
+        alert('Comment deleted!');
+        UICommentDeleteHandler(deletedComment);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    const FetchThreadHandler = async () => {
+      try {
+        const response = await GETThreadAction(params.slug);
+
+        if (response != null && response.status === 'ok') {
+          setThread(response.data.thread);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    const FetchAllCommentsHandler = async () => {
+      try {
+        const response = await GETAllCommentAction(params.slug);
+
+        if (response.status === 'ok') {
+          const unorderedComments = Array.from(response.data);
+          unorderedComments.sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+          setComments(unorderedComments);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    FetchThreadHandler();
+    FetchAllCommentsHandler();
+  }, [params.slug]);
+  return (
+    <div className={`thread-page__comments-section ${props.className}`}>
+      <div className="thread-page__comments-section-label">Comments</div>
+      <CommentInput
+        className="thread-page__comments-section-input"
+        context={authContext}
+        onUserPostComment={UserPostCommentHandler}
+      />
+      <CommentOnThreadList
+        context={authContext}
+        comments={comments}
+        threadCreator={props.info}
+        onCommentDelete={CommentDeleteHandler}
+      />
+    </div>
+  );
 };
 
 const VideoDemo = () => {
@@ -135,6 +241,7 @@ const VideoDemo = () => {
         setInfo(() => {
           return fetchInfo;
         });
+        console.log(2);
         console.log(fetchInfo);
         const index = 0;
         const filename = fetchInfo.videos[index].videoname;
@@ -163,17 +270,12 @@ const VideoDemo = () => {
     LoadVideo();
   }, []);
 
-  function checkTypeVideo() {
-    switch (1) {
-      case 'dash':
-        return;
-    }
-  }
   function getVideoStatus(status) {
     if (status === 'Ended') {
       return <p>Completed</p>;
     } else return <p>{status}</p>;
   }
+
   return (
     <React.Fragment>
       <div className="flex flex-col">
@@ -425,6 +527,8 @@ const VideoDemo = () => {
             <MovieItem /> */}
           </div>
         </div>
+
+        <CommentSection className={'mb-5 p-5'} info={infoID} />
       </div>
     </React.Fragment>
   );
