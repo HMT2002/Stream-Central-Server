@@ -13,12 +13,12 @@ router.route('/').get(infoController.GetAll).post(authController.protect, infoCo
 
 router.route('/tv/search/:query').get(infoController.QueryTV);
 
-router.route('/tv/:id').get(infoController.GetTV);
-
 router.route('/movie/search/:query').get(infoController.QueryMovie);
+
+router.route('/tv/:id').get(infoController.GetTV);
 
 router.route('/movie/:id').get(infoController.GetMovie);
 
-router.route('/film/:id').get(infoController.GetFilm);
+router.route('/film/:id').get(infoController.GetFilm).post(infoController.GetInfoByID, infoController.AddEpisodes);
 
 module.exports = router;

@@ -51,7 +51,7 @@ exports.SignUp = catchAsync(async (req, res, next) => {
     passwordConfirm: passwordConfirm,
     email: email,
     username: username,
-    passwordChangedAt: Date.now,
+    passwordChangedAt: Date.now(),
     role: role,
     photo: { link: photo.link },
   });
@@ -289,7 +289,7 @@ exports.protect = catchAsync(async (req, res, next) => {
 exports.Check = catchAsync(async (req, res, next) => {
   const user = req.user;
   res.status(200).json({
-    status: 'ok',
+    status: 200,
     message: 'user token is fine',
     role: req.user.role,
   });

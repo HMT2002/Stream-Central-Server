@@ -1,10 +1,9 @@
 const mongoose = require('mongoose');
 
-const commentSchema = new mongoose.Schema({
+const videoCommentSchema = new mongoose.Schema({
   video: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Video',
-    default: null,
     required: [true, 'Comment required video'],
   },
   content: { type: String, required: [true, 'Comment required content'] },
@@ -12,8 +11,8 @@ const commentSchema = new mongoose.Schema({
   createDate: { type: Date, required: false, default: Date.now },
   updateDate: { type: Date, required: false, default: Date.now },
 
-  points: { type: Number, required: [true, 'Comment required points'], default: 0 },
+  points: { type: Number, default: 0 },
 });
-const Comment = mongoose.model('Comment', commentSchema);
+const VideoComment = mongoose.model('VideoComment', videoCommentSchema);
 
-module.exports = Comment;
+module.exports = VideoComment;
