@@ -5,6 +5,7 @@ import MovieItem from '../movieItem/MovieItem.jsx';
 import { videoItem } from '../movieItem/movieItem.js';
 
 const SectionList = (props) => {
+  console.log(props);
   const sections = props.labels.map((label) => {
     let threadsPerTag = [];
     props.threads.map((thread) => {

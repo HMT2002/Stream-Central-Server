@@ -33,20 +33,19 @@ export const GETAllInfoAction = async () => {
     throw new Error('Something went wrong!');
   }
   const data = await response.json();
-  console.log(data)
+  console.log(data);
   return data;
 };
 
 export const GETFilmInfo = async (infoID) => {
-  console.log(infoID)
-  var url = '/api/v1/info/film/'+infoID
+  var url = '/api/v1/info/film/' + infoID;
   const { data } = await axios({
     method: 'get',
     url: url,
     headers: { myaxiosfetch: '123' },
   });
+  var info = data.data;
   console.log(data);
-  var info=data.data.info;
   return info;
 };
 
@@ -135,7 +134,7 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (
       arrayChunkName,
       ext,
       title,
-      infoID:infoID,
+      infoID: infoID,
     },
   });
   const data = await response.json();

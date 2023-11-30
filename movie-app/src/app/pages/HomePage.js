@@ -1,27 +1,27 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 
-import SectionList from '../components/sections/SectionList';
-import ReactLoading from 'react-loading';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/pagination';
+import SectionList from "../components/sections/SectionList";
+import ReactLoading from "react-loading";
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
+import "swiper/css/pagination";
 
 // import required modules
-import { Pagination } from 'swiper/modules';
+import { Pagination } from "swiper/modules";
 
-import { GETAllInfoAction } from '../APIs/thread-apis';
-import axios from 'axios';
-import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
-import SwiperItems from '../components/swiper-items/swiper-item';
-import SwiperSection from '../components/swiper-items/swiper-section';
+import { GETAllInfoAction } from "../APIs/thread-apis";
+import axios from "axios";
+import SwiperEspisode from "../components/swiper-espisode/swiper-espisode";
+import SwiperItems from "../components/swiper-items/swiper-item";
+import SwiperSection from "../components/swiper-items/swiper-section";
 
 const HomePage = () => {
   const tags = [
     // "Popular",
-    'Trending',
-    'Latest Movies',
-    'Latest TV Shows',
-    'Coming Soon',
+    "Trending",
+    "Latest Movies",
+    "Latest TV Shows",
+    "Coming Soon",
   ];
 
   const [threads, setThreads] = useState([]); // all threads in loaded in homepage
@@ -30,8 +30,9 @@ const HomePage = () => {
     try {
       const response = await GETAllInfoAction();
 
-      if (response.status === 'ok') {
+      if (response.status === "ok") {
         setThreads(response.data.allInfo);
+        alert(response.data.allInfo);
       }
     } catch (error) {
       console.log(error);
@@ -48,14 +49,19 @@ const HomePage = () => {
     <React.Fragment>
       {threads.length === 0 ? (
         <div className="account-page__loading">
-          <ReactLoading type="spin" width="50px" height="50px" color="#13088e" />
+          <ReactLoading
+            type="spin"
+            width="50px"
+            height="50px"
+            color="#13088e"
+          />
         </div>
       ) : (
         <div className="w-full">
           <Swiper
             spaceBetween={0}
             slidesPerView={1}
-            onSlideChange={() => console.log('slide change')}
+            onSlideChange={() => console.log("slide change")}
             onSwiper={(swiper) => console.log(swiper)}
             className=" min-h-max h-[400px] bg-black]"
             pagination={{

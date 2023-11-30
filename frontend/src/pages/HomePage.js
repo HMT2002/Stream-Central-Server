@@ -29,9 +29,9 @@ const HomePage = () => {
   const fetchThreadsHandler = useCallback(async () => {
     try {
       const response = await GETAllInfoAction();
-
-      if (response.status === 'ok') {
-        setThreads(response.data.allInfo);
+      if (response.status === 200) {
+        console.log(response.data);
+        setThreads(response.data);
       }
     } catch (error) {
       console.log(error);
