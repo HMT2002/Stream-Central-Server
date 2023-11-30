@@ -52,12 +52,14 @@ const Header = (props) => {
           {/*Authorized*/}
           {authContext.isAuthorized && (
             <React.Fragment>
-              <img
-                className="app-header__authorized-avatar"
-                // src="https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-cute-anime-avatar-profile-picture-14.jpg"
-                src={authContext.avatar}
-                alt="avatar"
-              />
+              <Link to={`/account/${authContext.username}`}>
+                <img
+                  className="app-header__authorized-avatar"
+                  // src="https://aniyuki.com/wp-content/uploads/2022/03/aniyuki-cute-anime-avatar-profile-picture-14.jpg"
+                  src={authContext.avatar}
+                  alt="avatar"
+                />
+              </Link>
               <Button
                 className="app-header__authorized-logout"
                 onClick={LogoutHandler}

@@ -109,13 +109,13 @@
 }
 
 .account-page__details__input {
-  width: 715px;
+  /* width: 715px; */
   height: 45px;
   margin-block: 1.8rem;
 }
 
 .account-page__details__upgrade-message {
-  width: 715px;
+  /* width: 715px; */
   height: fit-content;
   margin-block: 1.8rem;
 }
@@ -127,8 +127,6 @@
 .account-page__details__row {
   display: flex;
   flex-direction: row;
-  padding-inline-start: 2rem;
-  padding-inline-end: 35rem;
   justify-content: space-between;
   align-items: center;
 }

@@ -15,7 +15,7 @@ import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 import SwiperItems from '../components/swiper-items/swiper-item';
 import SwiperSection from '../components/swiper-items/swiper-section';
 
-const HomePage = () => {
+const MoviePage = () => {
   const tags = [
     // "Popular",
     'Trending',
@@ -51,7 +51,7 @@ const HomePage = () => {
           <ReactLoading type="spin" width="50px" height="50px" color="#13088e" />
         </div>
       ) : (
-        <div className="w-full bg-white">
+        <div className="w-full bg-white ">
           <Swiper
             spaceBetween={0}
             slidesPerView={1}
@@ -90,4 +90,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default MoviePage;

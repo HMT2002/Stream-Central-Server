@@ -15,7 +15,7 @@ import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 import SwiperItems from '../components/swiper-items/swiper-item';
 import SwiperSection from '../components/swiper-items/swiper-section';
 
-const HomePage = () => {
+const TVPage = () => {
   const tags = [
     // "Popular",
     'Trending',
@@ -90,4 +90,4 @@ const HomePage = () => {
   );
 };
 
-export default HomePage;
+export default TVPage;
