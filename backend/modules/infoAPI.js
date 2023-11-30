@@ -13,21 +13,22 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 
 const axios = require('axios');
+const Video = require('../models/mongo/Video');
 
 exports.GetAll = async () => {
   try {
     const allInfo = await Info.find({}, null, { lean: 'toObject' }).populate('videos');
-    for (let i = 0; i < allInfo.length; i++) {
-      const info = allInfo[i];
-      let filmInfo;
-      if (info.filmType === 'TV') {
-        filmInfo = await getTV(info.filmID);
-      } else {
-        filmInfo = await getMovie(info.filmID);
-      }
-      info.filmInfo = filmInfo;
-    }
-    return { allInfo };
+    // for (let i = 0; i < allInfo.length; i++) {
+    //   const info = allInfo[i];
+    //   let filmInfo;
+    //   if (info.filmType === 'TV') {
+    //     filmInfo = await getTV(info.filmID);
+    //   } else {
+    //     filmInfo = await getMovie(info.filmID);
+    //   }
+    //   info.filmInfo = filmInfo;
+    // }
+    return allInfo ;
   } catch (err) {
     console.log(err);
     return { message: 'There is error', isError: true, err };
@@ -99,26 +100,52 @@ const getMovie = async (id) => {
 };
 
 exports.GetFilm = async (id) => {
-    return await getFilm(id);
-  };
+  return await getFilm(id);
+};
 
 const getFilm = async (id) => {
-    try {
-      const info = await Info.findOne({_id:id}, null, { lean: 'toObject' }).populate('videos');
-        let filmInfo;
-        if (info.filmType === 'TV') {
-          filmInfo = await getTV(info.filmID);
-        } else {
-          filmInfo = await getMovie(info.filmID);
-        }
-        info.filmInfo = filmInfo;
-      
-      return { info };
-    } catch (err) {
-      console.log(err);
-      return { message: 'There is error', isError: true, err };
+  try {
+    // const info = await Info.findOne({_id:id}, null, { lean: 'toObject' }).populate('videos');
+    const info = await Info.findOne({ _id: id }).populate('videos');
+
+    // let filmInfo;
+    // if (info.filmType === 'TV') {
+    //   filmInfo = await getTV(info.filmID);
+    // } else {
+    //   filmInfo = await getMovie(info.filmID);
+    // }
+    // info.filmInfo = filmInfo;
+
+    return info;
+  } catch (err) {
+    console.log(err);
+    return { message: 'There is error', isError: true, err };
+  }
+};
+
+exports.AddEpisodes = async (req) => {
+  return await addEpisodes(req);
+};
+
+const addEpisodes = async (req) => {
+  try {
+    const info = req.info;
+    for (let i = 0; i < req.body.videos.length; i++) {
+      if (info.videos.some((video)=>{ return video._id.toString()=== req.body.videos[i]})) {
+        console.log('repeated!');
+        continue;
+      }
+      const video = await Video.findById(req.body.videos[i]);
+      info.videos.push(video);
     }
-  };
+    await info.save();
+
+    return { message: 'Success added!', info: req.info };
+  } catch (err) {
+    console.log(err);
+    return { message: 'There is error', isError: true, err };
+  }
+};
 
 exports.QueryMovie = async (query) => {
   try {

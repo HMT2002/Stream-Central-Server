@@ -38,7 +38,6 @@ export const GETAllInfoAction = async () => {
 };
 
 export const GETFilmInfo = async (infoID) => {
-  console.log(infoID)
   var url = '/api/v1/info/film/'+infoID
   const { data } = await axios({
     method: 'get',
@@ -46,7 +45,7 @@ export const GETFilmInfo = async (infoID) => {
     headers: { myaxiosfetch: '123' },
   });
   console.log(data);
-  var info=data.data.info;
+  var info=data.data;
   return info;
 };
 

@@ -11,6 +11,7 @@ const upgradeReqSchema = new mongoose.Schema({
   message: { type: String, required: [true, 'Upgrade request required'] },
   createDate: { type: Date, default: Date.now },
   updateDate: { type: Date, default: Date.now },
+  accepted: { type: Boolean, default: false },
 });
 const UpgradeReq = mongoose.model('UpgradeReq', upgradeReqSchema);
 
