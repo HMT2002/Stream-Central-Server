@@ -27,6 +27,7 @@ const userSchema = new mongoose.Schema({
   birthday: { type: Date, default: null, required: false },
   createdDate: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
+  premium: { type: String, enum: ['normal', 'premium', 'vip', 'admin'], default: 'normal' },
 
   role: { type: String, enum: ['guest', 'user', 'content-creator', 'admin'], default: 'guest' },
   photo: {

@@ -81,7 +81,7 @@ exports.GetUser = catchAsync(async (req, res, next) => {
   console.log(req.params);
   const account = req.params.account;
 
-  req.query.fields = 'account,createdDate,username,email,photo,role,lastUpdated';
+  req.query.fields = 'account,createdDate,username,email,photo,role,lastUpdated,premium';
   const features = new APIFeatures(User.findOne({ account: account }), req.query)
     .filter()
     .sort()
@@ -175,25 +175,24 @@ exports.DeleteUser = catchAsync(async (req, res, next) => {
 });
 
 exports.UpgradeReqUser = catchAsync(async (req, res, next) => {
-  const account = req.params.account;
-
-  const user = await User.findOne({ account: account });
+  const user = req.user;
   if (user === undefined || !user) {
     return next(new AppError('No user found!', 404));
   }
-
+  if (user.premium === 'premium' || user.premium === 'admin' || user.premium === 'vip') {
+    return next(new AppError('User already premium, vip or admin!', 400));
+  }
   const upgradeReqCheck = await UpgradeReq.findOne({ user: user._id });
   if (upgradeReqCheck) {
     return next(new AppError('User upgrade request is pended!', 404));
   }
-  console.log(req.body);
 
-  user.birthday = req.body.birthday;
-  user.address = req.body.address;
-  user.phone = req.body.phone;
-  await user.save({ validateBeforeSave: false });
+  // user.birthday = req.body.birthday;
+  // user.address = req.body.address;
+  // user.phone = req.body.phone;
+  // await user.save({ validateBeforeSave: false });
 
-  const upgradeReq = await UpgradeReq.create({ user: user, message: req.body.message });
+  const upgradeReq = await UpgradeReq.create({ user: user, message: 'User want to upgrade to premium' });
 
   res.status(201).json({
     status: 'success',
@@ -218,7 +217,7 @@ exports.AcceptUpgradeReq = catchAsync(async (req, res, next) => {
   }
 
   const upgradeLog = await UpgradeLog.create({ admin: req.user, upgradeReq: upgradeReq, accepted: true });
-  user.role = 'content-creator';
+  user.premium = 'premium';
   await user.save({ validateBeforeSave: false });
   upgradeReq.accepted = true;
   await upgradeReq.save({ validateBeforeSave: false });
@@ -226,7 +225,7 @@ exports.AcceptUpgradeReq = catchAsync(async (req, res, next) => {
   res.status(201).json({
     status: 'success',
     message: 'success upgrade user',
-    role: user.role,
+    premium: user.premium,
   });
 });
 
@@ -247,10 +246,8 @@ exports.GetAllUpgradeRequest = catchAsync(async (req, res, next) => {
 
   res.status(200).json({
     status: 'success get all request',
-    data: {
-      unaccepted_req,
-      accepted_req,
-    },
+    unaccepted_req,
+    accepted_req,
   });
 });
 
