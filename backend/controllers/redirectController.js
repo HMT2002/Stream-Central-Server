@@ -197,7 +197,7 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
 
   const index = 0;
   const url = server[index].URL || 'localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   const oriURL = 'http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8';
   if (req.headers.myaxiosfetch) {
     res.status(200).json({

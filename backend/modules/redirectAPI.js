@@ -26,7 +26,7 @@ const getAvailableVideoID = async (id) => {
 };
 
 const getAllServer = async () => {
-  const servers = await Server.find({ });
+  const servers = await Server.find({});
   return servers;
 };
 
@@ -201,9 +201,7 @@ const testSpeedLiveResults = async (videoname) => {
   let testResults = [];
   for (let i = 0; i < availableServer.length; i++) {
     let speedDownload;
-      speedDownload = checkTestErrorCode(
-        await getMyNetworkLiveSpeed(availableServer[i].URL, availableServer[i].port)
-      );
+    speedDownload = checkTestErrorCode(await getMyNetworkLiveSpeed(availableServer[i].URL, availableServer[i].port));
     if (speedDownload !== null) {
       testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
     }
@@ -337,16 +335,17 @@ const countVideoAccessing = async (videoname, url, port, type) => {
 
 const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const video = await Video.findOne({ videoname, type });
-  const availableServer = await getAvailableServer(video);
-  console.log(availableServer);
-  console.log(video);
+  // const availableServer = await getAvailableServer(video);
+  const server = await availableVideoOnServer(video);
+
+  console.log(server);
   console.log({ videoname, type });
-  if (availableServer.length === 0) {
+  if (server.length === 0) {
     return null;
   }
   const index = 0;
-  const url = availableServer[index].URL;
-  const port = availableServer[index].port;
+  const url = server[index].URL;
+  const port = server[index].port;
   // nên nhớ 2 port này khác nhau
   await addToServer(video, toURL, toPort);
   await addUpVideoReplicant(video);
@@ -493,6 +492,7 @@ const getInfoWithID = async (id) => {
 
 const addToServer = async (video, URL, port) => {
   const server = await getServerWithURLAndPort(URL, port);
+  // console.log(server);
   if (server.videos.includes(video._id)) {
     console.log('Video already on server');
     return server;
@@ -510,7 +510,7 @@ const addUpVideoReplicant = async (video) => {
 
 const addToInfo = async (video, infoID) => {
   const info = await getInfoWithID(infoID);
-  console.log(info)
+  console.log(info);
   if (info.videos.includes(video._id)) {
     console.log('Video already in info');
     return info;
@@ -590,7 +590,7 @@ const multipartFileIsUploadedEnough = async (req) => {
       flag = false;
     }
   }
-  console.log('flag is ' +flag)
+  console.log('flag is ' + flag);
   return flag;
 };
 
@@ -607,10 +607,10 @@ const checkFileISExistedOnServerYet = async (filename, type) => {
   }
   const check = await checkFolderOnServer(baseUrl);
   if (check.existed === true) {
-    console.log('Folder already existed on sub server')
+    console.log('Folder already existed on sub server');
     return {
       message: 'Folder already existed on sub server',
-      existed:true,
+      existed: true,
     };
   }
   return aliveServers;
@@ -656,7 +656,7 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
   const port = aliveServers[index].port || ':9100';
-  if (flag===true) {
+  if (flag === true) {
     console.log('file is completed');
     await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'HLS');
     // async function uploadLoop() {
