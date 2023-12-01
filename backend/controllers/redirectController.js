@@ -301,7 +301,7 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
 
   const index = 0;
   const url = server[index].URL || 'localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   const oriURL = 'http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd';
   if (req.headers.myaxiosfetch) {
     console.log('req.headers.myaxiosfetch existed');
@@ -332,7 +332,7 @@ exports.M4SHandler = catchAsync(async (req, res, next) => {
   }
   const index = 0;
   const url = server[index].URL || 'localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   req.url = req.url.replace('/dash/', '/videos/');
   req.url = req.url.replace(filebasename, filebasename + 'Dash');
   const oriURL = 'http://' + url + port + req.url;
@@ -443,7 +443,7 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
   }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   // const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
   // const check = await redirectAPI.checkFolderOnServer(baseUrl);
   // if (check.existed === true) {
