@@ -87,7 +87,7 @@ const AccountPage = () => {
         </div>
       )}
       {userInfo && (
-        <div className="account-page">
+        <div className="account-page bg-white">
           <AccountOverview context={authContext} userInfo={userInfo} />
           <div className="account-page__separator" />
           <AccountDetails

@@ -31,8 +31,16 @@ const Sidebar = (props) => {
           <Button className={'m-10'} content="Back" onClick={handleSidebarClick}></Button>
           <div className="flex flex-col justify-between gap-3 mt-2">
             <SidebarItem icon={<GoHome className="app-sidebar__item__icon" />} content="Home" navigateRoute={'/'} />
-            <SidebarItem icon={<GoHome className="app-sidebar__item__icon" />} content="Movies" navigateRoute={'/'} />
-            <SidebarItem icon={<GoHome className="app-sidebar__item__icon" />} content="TV Shows" navigateRoute={'/'} />
+            <SidebarItem
+              icon={<GoHome className="app-sidebar__item__icon" />}
+              content="Movies"
+              navigateRoute={'/movies'}
+            />
+            <SidebarItem
+              icon={<GoHome className="app-sidebar__item__icon" />}
+              content="TV Shows"
+              navigateRoute={'/tv-series'}
+            />
             <SidebarItem icon={<GoHome className="app-sidebar__item__icon" />} content="Top IMDB" navigateRoute={'/'} />
           </div>
           {authContext.isAuthorized && (

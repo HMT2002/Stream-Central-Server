@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef, useCallback } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 
 import { useParams, useNavigate } from 'react-router-dom';
 import SubtitlesOctopus from '../components/subtitles/subtitles-octopus';
@@ -70,195 +70,92 @@ const VideoDemo = () => {
   const [isPlayingDash, setIsPlaying] = useState(false);
   const [isPlayingHls, setIsPlayingHls] = useState(false);
   const [info, setInfo] = useState({ videos: [] });
-  const [episode, setEpisode] = useState(0);
-  const [played, setPlayed] = useState(0);
 
   const playerDashWindow = useRef(null);
 
   const videoReactPlayerHls = useRef();
   const videoReactPlayer = useRef();
 
-  const SwitchEpisode = async (index) => {
-    try {
-      // const config = {
-      //   startPosition: 0, // can be any number you want
-      // };
-      // const urlHls = '/redirect/hls/' + filename;
-      // const hls = new Hls(config);
-      // hls.loadSource(urlHls);
-      // hls.attachMedia(videoHLS.current);
-      // hls.subtitleDisplay = true;
-      // var obj_play_HLS = {
-      //   fill: true,
-      //   fluid: true,
-      //   autoplay: true,
-      //   controls: true,
-      //   loop: true,
-      // };
-      // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
-      //   videojs.log('Your player is ready!');
-      //   const defaultVolume = 0.4;
-      //   this.volume(defaultVolume);
-      //   this.on('ended', function () {
-      //     videojs.log('Awww...over so soon?!');
-      //   });
-      // });
-
-      // const videoDashWindowCurrent = videoDashWindow.current;
-
-      // if (videoDashWindowCurrent) {
-      //   var urlDash = '/redirect/dash/' + filename + '/' + filename;
-
-      //   const { data } = await axios({
-      //     method: 'get',
-      //     url: urlDash,
-      //     headers: { myaxiosfetch: '123' },
-      //   });
-      //   console.log(data);
-      //   //djtme đùa tao vcl
-      //   var urlDash = data.subserverurl || 'http://172.30.50.78:9100/videos/l8NSKXODash/init.mpd';
-
-      //   var playerDashWindow = dashjs.MediaPlayer().create();
-      //   playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
-      //   playerDashWindow.attachView(videoDashWindowCurrent);
-      //   console.log(playerDashWindow);
-
-      //   playerDashWindow.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
-      //   console.log(playerDashWindow);
-
-      //   const controlbar = new ControlBar(playerDashWindow);
-      //   // Player is instance of Dash.js MediaPlayer;
-      //   controlbar.initialize();
-      // }
-
-
-      setIsPlaying(() => {
-        return false; /// dòng này thì chạy đc
-      });
-      const fetchInfo = await GETFilmInfo(infoID);
-      setInfo(() => {
-        return fetchInfo;
-      });
-      console.log(fetchInfo);
-      setEpisode(() => {
-        return index;
-      });
-      const filename = fetchInfo.videos[index].videoname;
-      console.log(filename);
-      var urlDash = await getDashUrl(filename);
-      var urlHls = await getHlsUrl(filename);
-      console.log(urlDash);
-      console.log(urlHls)
-      if (urlDash!==undefined) {
-        setReactPlayerURL(() => {
-          return urlDash;
-        });
-      } else {
-        setReactPlayerURL(() => {
-          return urlHls;
-        });
-      }
-
-      videoReactPlayer.current.seekTo(0); /// cái dòng này không seekTo cái khúc đang coi dở
-      setIsPlaying(() => {
-        return true; /// dòng này thì chạy đc
-      });
-
-    } catch (error) {
-      console.log(error);
-      if (playerDashWindow.current) {
-        playerDashWindow.current.destroy();
-        playerDashWindow.current = null;
-      }
-    }
-  };
-
-
   useEffect(() => {
-  const LoadVideo = (async () => {
-    try {
-      // const config = {
-      //   startPosition: 0, // can be any number you want
-      // };
-      // const urlHls = '/redirect/hls/' + filename;
-      // const hls = new Hls(config);
-      // hls.loadSource(urlHls);
-      // hls.attachMedia(videoHLS.current);
-      // hls.subtitleDisplay = true;
-      // var obj_play_HLS = {
-      //   fill: true,
-      //   fluid: true,
-      //   autoplay: true,
-      //   controls: true,
-      //   loop: true,
-      // };
-      // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
-      //   videojs.log('Your player is ready!');
-      //   const defaultVolume = 0.4;
-      //   this.volume(defaultVolume);
-      //   this.on('ended', function () {
-      //     videojs.log('Awww...over so soon?!');
-      //   });
-      // });
+    const LoadVideo = async () => {
+      try {
+        // const config = {
+        //   startPosition: 0, // can be any number you want
+        // };
+        // const urlHls = '/redirect/hls/' + filename;
+        // const hls = new Hls(config);
+        // hls.loadSource(urlHls);
+        // hls.attachMedia(videoHLS.current);
+        // hls.subtitleDisplay = true;
+        // var obj_play_HLS = {
+        //   fill: true,
+        //   fluid: true,
+        //   autoplay: true,
+        //   controls: true,
+        //   loop: true,
+        // };
+        // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
+        //   videojs.log('Your player is ready!');
+        //   const defaultVolume = 0.4;
+        //   this.volume(defaultVolume);
+        //   this.on('ended', function () {
+        //     videojs.log('Awww...over so soon?!');
+        //   });
+        // });
 
-      // const videoDashWindowCurrent = videoDashWindow.current;
+        // const videoDashWindowCurrent = videoDashWindow.current;
 
-      // if (videoDashWindowCurrent) {
-      //   var urlDash = '/redirect/dash/' + filename + '/' + filename;
+        // if (videoDashWindowCurrent) {
+        //   var urlDash = '/redirect/dash/' + filename + '/' + filename;
 
-      //   const { data } = await axios({
-      //     method: 'get',
-      //     url: urlDash,
-      //     headers: { myaxiosfetch: '123' },
-      //   });
-      //   console.log(data);
-      //   //djtme đùa tao vcl
-      //   var urlDash = data.subserverurl || 'http://172.30.50.78:9100/videos/l8NSKXODash/init.mpd';
+        //   const { data } = await axios({
+        //     method: 'get',
+        //     url: urlDash,
+        //     headers: { myaxiosfetch: '123' },
+        //   });
+        //   console.log(data);
+        //   //djtme đùa tao vcl
+        //   var urlDash = data.subserverurl || 'http://172.30.50.78:9100/videos/l8NSKXODash/init.mpd';
 
-      //   var playerDashWindow = dashjs.MediaPlayer().create();
-      //   playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
-      //   playerDashWindow.attachView(videoDashWindowCurrent);
-      //   console.log(playerDashWindow);
+        //   var playerDashWindow = dashjs.MediaPlayer().create();
+        //   playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
+        //   playerDashWindow.attachView(videoDashWindowCurrent);
+        //   console.log(playerDashWindow);
 
-      //   playerDashWindow.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
-      //   console.log(playerDashWindow);
+        //   playerDashWindow.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
+        //   console.log(playerDashWindow);
 
-      //   const controlbar = new ControlBar(playerDashWindow);
-      //   // Player is instance of Dash.js MediaPlayer;
-      //   controlbar.initialize();
-      // }
-
-      const fetchInfo = await GETFilmInfo(infoID);
-
-      setInfo(() => {
-        return fetchInfo;
-      });
-      console.log(fetchInfo);
-      const index = 0;
-      const filename = fetchInfo.videos[episode].videoname;
-      console.log(filename);
-      var urlDash = await getDashUrl(filename);
-      var urlHls = await getHlsUrl(filename);
-      console.log(urlDash);
-      console.log(urlHls)
-      if (urlDash!==undefined) {
-        setReactPlayerURL(() => {
-          return urlDash;
+        //   const controlbar = new ControlBar(playerDashWindow);
+        //   // Player is instance of Dash.js MediaPlayer;
+        //   controlbar.initialize();
+        // }
+        const fetchInfo = await GETFilmInfo(infoID);
+        setInfo(() => {
+          return fetchInfo;
         });
-      } else {
-        setReactPlayerURL(() => {
-          return urlHls;
-        });
+        console.log(fetchInfo);
+        const index = 0;
+        const filename = fetchInfo.videos[index].videoname;
+        var urlDash = await getDashUrl(filename);
+        var urlHls = await getHlsUrl(filename);
+
+        if (urlDash) {
+          setReactPlayerURL(() => {
+            return urlDash;
+          });
+        } else {
+          setReactPlayerURL(() => {
+            return urlHls;
+          });
+        }
+      } catch (error) {
+        console.log(error);
+        if (playerDashWindow.current) {
+          playerDashWindow.current.destroy();
+          playerDashWindow.current = null;
+        }
       }
-      console.log(reactPlayerURL)
-    } catch (error) {
-      console.log(error);
-      if (playerDashWindow.current) {
-        playerDashWindow.current.destroy();
-        playerDashWindow.current = null;
-      }
-    }
-  });
+    };
 
     LoadVideo();
   }, []);
@@ -305,21 +202,21 @@ const VideoDemo = () => {
               autoPlay
               controls
               playing={isPlayingDash}
-              // onSeek={() => console.log('Seeking!')}
-              // onBuffer={() => console.log('onBuffer')}
-              // onBufferEnd={() => console.log('onBufferEnd')}
-              onProgress={(progress) => {
-                setPlayed(progress.playedSeconds);
-              }}
+              onSeek={() => console.log('Seeking!')}
+              onBuffer={() => console.log('onBuffer')}
+              onBufferEnd={() => console.log('onBufferEnd')}
               onError={async (event, data, instance, global) => {
                 console.log({ event, data, instance, global });
-                if (event) {
+                if (event.error) {
                   console.log('There are Error in videoReactPlayer');
+                  console.log(event.error);
+                  console.log('videoReactPlayer ref');
+                  console.log(videoReactPlayer);
                   setIsPlaying(() => {
                     return false;
                   }); /// dòng này thì chạy đc
-                  const filename = info.videos[episode].videoname;
-                  console.log(filename);
+                  const index = 0;
+                  const filename = info.videos[index].videoname;
                   var urlDash = await getDashUrl(filename);
                   var urlHls = await getHlsUrl(filename);
 
@@ -335,7 +232,10 @@ const VideoDemo = () => {
                       return urlHls;
                     });
                   }
-                  videoReactPlayer.current.seekTo(played); /// cái dòng này không seekTo cái khúc đang coi dở
+
+                  const duration = videoReactPlayer.current.getDuration();
+                  console.log(duration);
+                  // videoReactPlayer.current.seekTo(300postma); /// cái dòng này không seekTo cái khúc đang coi dở
                   setIsPlaying(() => {
                     return true; /// dòng này thì chạy đc
                   });
@@ -358,7 +258,7 @@ const VideoDemo = () => {
               <div className="p-2 bg-[#171717] rounded-md hover:text-[#171717] hover:bg-[#777777] transition-all duration-300 delay-100 hover:cursor-pointer">
                 Main Server
               </div>
-              <div className="p-2 bg-red-400 text-[#EEEEEE] rounded-md hover:cursor-pointer" >Sub Server</div>
+              <div className="p-2 bg-red-400 text-[#EEEEEE] rounded-md hover:cursor-pointer">Sub Server</div>
             </div>
           </div>
           <div>

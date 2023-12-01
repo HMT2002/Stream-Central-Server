@@ -2,7 +2,7 @@ import React from 'react';
 
 const SwiperItems = (props) => {
   return (
-    <div >
+    <div>
       {/* <img src="#" /> */}
       <div className="text-unactive text-sm hover:cursor-pointer leading-7">
         <div className="bg-black w-40 h-24"></div>

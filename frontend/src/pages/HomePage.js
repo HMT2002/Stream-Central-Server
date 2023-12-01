@@ -29,8 +29,8 @@ const HomePage = () => {
   const fetchThreadsHandler = useCallback(async () => {
     try {
       const response = await GETAllInfoAction();
-
-      if (response.status === 'ok') {
+      if (response.status === 200) {
+        console.log(response.data);
         setThreads(response.data);
       }
     } catch (error) {
@@ -51,7 +51,7 @@ const HomePage = () => {
           <ReactLoading type="spin" width="50px" height="50px" color="#13088e" />
         </div>
       ) : (
-        <div className="w-full ">
+        <div className="w-full bg-white">
           <Swiper
             spaceBetween={0}
             slidesPerView={1}

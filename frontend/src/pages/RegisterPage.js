@@ -172,7 +172,7 @@ const RegisterPage = () => {
   if (authContext.isLoggedIn) return navigate('/');
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col bg-white">
       <Link
         className="app-header__logo m-5 w-full"
         style={{

@@ -6,7 +6,7 @@ import 'swiper/css';
 import SwiperItems from '../swiper-items/swiper-item';
 
 const SwiperEspisode = (props) => {
-  // console.log(props.episodes);
+  console.log(props.episodes);
   return (
     <Swiper
       spaceBetween={50}
@@ -15,7 +15,7 @@ const SwiperEspisode = (props) => {
       onSwiper={(swiper) => console.log(swiper)}
       className=" py-6 text-[#777777]"
     >
-      {props.episodes.map((episode,index) => {
+      {props.episodes.map((episode) => {
         return (
           <SwiperSlide className=" max-w-fit">
             <SwiperItems episode={episode} />

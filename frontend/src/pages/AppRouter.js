@@ -17,12 +17,16 @@ import WorkshopPage from './WorkshopPage';
 import TagPage from './TagPage';
 import UserPage from './UserPage';
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import MoviePage from './MoviePage';
+import TVPage from './TVPage';
 
 const AppRouter = () => {
   return (
     <GoogleOAuthProvider clientId="1031226840176-2hfbvd0am0ea3hcapmapeea1tc4ijn0n.apps.googleusercontent.com">
       <Routes>
         <Route path="/" exact element={<HomePage />} />
+        <Route path="/movies" exact element={<MoviePage />} />
+        <Route path="/tv-series" exact element={<TVPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/create-new-account" element={<RegisterPage />} />
         <Route path="/user/:id" element={<UserPage />} />
