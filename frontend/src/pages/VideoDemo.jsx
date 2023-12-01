@@ -25,7 +25,7 @@ import '../styles/VideoDemo.css';
 
 const VideoDemo = () => {
   const params = useParams();
-  const filename=params.filename
+  const filename = params.filename;
   const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
   const videoNormal = useRef();
 
@@ -38,12 +38,10 @@ const VideoDemo = () => {
   useEffect(() => {
     const LoadVideo = async () => {
       try {
-
-
         const config = {
           startPosition: 0, // can be any number you want
         };
-        const url='/redirect/hls/'+filename;
+        const url = '/redirect/hls/' + filename;
         const hls = new Hls(config);
         hls.loadSource(url);
         hls.attachMedia(videoHLS.current);
@@ -65,33 +63,31 @@ const VideoDemo = () => {
           });
         });
 
-
-        // const videoDashWindowCurrent=videoDashWindow.current;
-        // var urlDash = 'http://localhost/tmp_dash/videomusic1080/index.mpd';
+        const videoDashWindowCurrent = videoDashWindow.current;
+        var urlDash = 'http://34.142.254.141/videos/yurucamp_ep01Dash/init.mpd';
         // var playerDashWindow = dashjs.MediaPlayer().create();
         // playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
         // playerDashWindow.current.attachView(videoDashWindowCurrent);
-        // console.log(playerDashWindow)
+        // console.log(playerDashWindow);
 
+        if (videoDashWindow.current) {
+          const video = videoDashWindow.current;
+          var urlDash = 'http://34.142.254.141/videos/yurucamp_ep01Dash/init.mpd';
+          playerDashWindow.current = dashjs.MediaPlayer().create();
 
-        // if (videoDashWindow.current) {
-        //   const video = videoDashWindow.current;
-        //   var urlDash = '/redirect/dash/'+filename+'/'+filename;
-        //   playerDashWindow.current = dashjs.MediaPlayer().create();
+          playerDashWindow.current.initialize(video, urlDash, true);
+          playerDashWindow.current.attachView(video);
 
-        //   playerDashWindow.current.initialize(video, urlDash, true);
-        //   playerDashWindow.current.attachView(video);
+          console.log(playerDashWindow.current);
 
-        //   console.log(playerDashWindow.current);
-
-        //   if (playerDashWindow.current) {
-        //     playerDashWindow.current.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
-        //     console.log(video);
-        //   }
-        //   const controlbar = new ControlBar(playerDashWindow.current);
-        //   // Player is instance of Dash.js MediaPlayer;
-        //   controlbar.initialize();
-        // }
+          if (playerDashWindow.current) {
+            playerDashWindow.current.updateSettings({ debug: { logLevel: dashjs.Debug.LOG_LEVEL_NONE } });
+            console.log(video);
+          }
+          const controlbar = new ControlBar(playerDashWindow.current);
+          // Player is instance of Dash.js MediaPlayer;
+          controlbar.initialize();
+        }
       } catch (error) {
         console.log(error);
         if (playerDashWindow.current) {
@@ -114,7 +110,7 @@ const VideoDemo = () => {
 
         <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
-            <video ref={videoDashWindow} loop ></video>
+            <video ref={videoDashWindow} loop></video>
             <div id="videoController" className="video-controller unselectable">
               <div id="playPauseBtn" className="btn-play-pause" title="Play/Pause">
                 <span id="iconPlayPause" className="icon-play"></span>
