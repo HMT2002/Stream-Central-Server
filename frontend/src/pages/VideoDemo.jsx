@@ -64,7 +64,7 @@ const VideoDemo = () => {
         });
 
         const videoDashWindowCurrent = videoDashWindow.current;
-        var urlDash = 'http://34.142.254.141/videos/yurucamp_ep01Dash/init.mpd';
+        // var urlDash = 'http://34.142.254.141/videos/yurucamp_ep01Dash/init.mpd';
         // var playerDashWindow = dashjs.MediaPlayer().create();
         // playerDashWindow.initialize(videoDashWindowCurrent, urlDash, true);
         // playerDashWindow.current.attachView(videoDashWindowCurrent);
@@ -72,7 +72,7 @@ const VideoDemo = () => {
 
         if (videoDashWindow.current) {
           const video = videoDashWindow.current;
-          var urlDash = 'http://34.142.254.141/videos/yurucamp_ep01Dash/init.mpd';
+          var urlDash = 'http://localhost:9100/videos/yurucamp_ep01Dash/init.mpd';
           playerDashWindow.current = dashjs.MediaPlayer().create();
 
           playerDashWindow.current.initialize(video, urlDash, true);
