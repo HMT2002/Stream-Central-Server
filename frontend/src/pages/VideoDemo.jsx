@@ -72,7 +72,7 @@ const VideoDemo = () => {
 
         if (videoDashWindow.current) {
           const video = videoDashWindow.current;
-          var urlDash = 'http://localhost:9100/videos/yurucamp_ep01Dash/init.mpd';
+          var urlDash = 'http://localhost:9000/redirect/dash/yurucamp_ep01/yurucamp_ep01';
           playerDashWindow.current = dashjs.MediaPlayer().create();
 
           playerDashWindow.current.initialize(video, urlDash, true);
