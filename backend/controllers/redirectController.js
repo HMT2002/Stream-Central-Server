@@ -563,6 +563,67 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   // res.redirect('http://' + url + port + '/api/v1/video/upload-video-large-multipart');
 });
 
+exports.RequestUploadURLHls = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request RequestUploadURLHls');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } = req.body;
+  let flag = true;
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'HLS');
+  console.log(aliveServers);
+  if (aliveServers.existed === true || aliveServers.noalive === true) {
+    res.status(200).json({
+      ...aliveServers,
+      failed: true,
+    });
+    return;
+  }
+  const index = 0;
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || '';
+  res.status(200).json({
+    status: 200,
+    message: 'found servers for upload',
+    aliveServers,
+  });
+});
+
+exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request RequestUploadURLDash');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } = req.headers;
+  let flag = true;
+
+  const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
+  if (video !== null) {
+    res.status(200).json({
+      message: 'There is the same video with filename and type, pick another',
+      failed: true,
+    });
+    return;
+  }
+
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
+  if (aliveServers.existed === true || aliveServers.noalive === true) {
+    res.status(200).json({
+      ...aliveServers,
+      failed: true,
+    });
+    return;
+  }
+
+  const index = 0;
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || '';
+
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
+  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+
+  res.status(200).json({
+    status: 200,
+    message: 'found servers for upload',
+    aliveServers,
+  });
+});
+
 exports.GetAvailableStorageForVideo = catchAsync(async (req, res, next) => {
   console.log('Dealing with request GetAvailableStorageForVideo');
   const videoname = req.body.videoname || 'GSpR1T8';

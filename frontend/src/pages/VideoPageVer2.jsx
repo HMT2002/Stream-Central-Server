@@ -6,6 +6,7 @@ import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt';
 import Card from '../components/UI elements/Card';
 import Hls from 'hls.js';
+import FormData from 'form-data';
 import {
   POSTVideoUploadAction,
   POSTThreadAction,
@@ -15,12 +16,14 @@ import {
   POSTLargeVideoMultipartUploadConcatenateAction,
   OPTIONSLargeVideoMultipartUploadAction,
   OPTIONSLargeVideoMultipartUploadConcatenateAction,
+  POSTLargeVideoMultipartUploadDashActionVer2,
 } from '../APIs/thread-apis';
 import Button from '../components/UI elements/Button';
 
 import Utils from '../Utils';
 
 import '../styles/ThreadPage.css';
+import axios from 'axios';
 const play = {
   fill: true,
   fluid: true,
@@ -38,10 +41,10 @@ const play = {
 };
 
 const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) => {
-  const formData = new FormData();
-  formData.append('myMultilPartFileChunk', chunk);
-  formData.append('myMultilPartFileChunkIndex', chunkIndex);
-  formData.append('arraychunkname', arrayChunkName);
+  // const formData = new FormData();
+  // formData.append('myMultilPartFileChunk', chunk);
+  // formData.append('myMultilPartFileChunkIndex', chunkIndex);
+  // formData.append('arraychunkname', arrayChunkName);
 
   // formData.append('type', 'blob');
   // formData.append('index', chunkIndex);
@@ -50,6 +53,12 @@ const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, e
   // formData.append('arrayChunkName', arrayChunkName);
   // formData.append('ext', ext);
 
+  const formData = axios.toFormData({
+    myMultilPartFileChunk: chunk,
+    myMultilPartFileChunkIndex: chunkIndex,
+    arraychunkname: arrayChunkName,
+    filename: filename + '.' + ext,
+  });
   return formData;
 };
 
@@ -86,6 +95,37 @@ async function uploadChunkDash(chunk, chunkIndex, chunkName, arrayChunkName, fil
       ext,
       title,
       infoID
+    );
+    console.log(responseDash);
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+async function uploadChunkDashVer2(
+  chunk,
+  chunkIndex,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext,
+  title,
+  infoID,
+  fullUploadURL
+) {
+  try {
+    const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
+    console.log(arrayChunkName);
+    const responseDash = await POSTLargeVideoMultipartUploadDashActionVer2(
+      formData,
+      chunkIndex,
+      chunkName,
+      arrayChunkName,
+      filename,
+      ext,
+      title,
+      infoID,
+      fullUploadURL
     );
     console.log(responseDash);
   } catch (error) {
@@ -239,41 +279,74 @@ const VideoPageVer2 = () => {
       // }
 
       var chunkIndex = 0;
-      async function uploadLoop() {
-        //  create a loop function
-        setTimeout(async function () {
-          //  call a 3s setTimeout when the loop is called
-          console.log('looping'); //  your code here
 
-          const start = chunkIndex * chunkSize;
-          const end = Math.min(start + chunkSize, file.size);
-          const chunk = file.slice(start, end);
-          console.log(start);
-          console.log(end);
-          // Make an API call to upload the chunk to the backend
-          const ext = file.name.split('.')[1];
-          const title = chunkName;
-          const infoID = '654ef92c9f7e923ef27cf32c';
-          await uploadChunkHls(
-            chunk,
-            chunkIndex,
-            arrayChunkName[chunkIndex],
-            arrayChunkName,
-            chunkName,
-            ext,
-            title,
-            infoID
-          );
-          // await uploadChunkDash(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext, title, infoID);
+      const requestUploadURL = await fetch('/redirect/request-upload-url-dash', {
+        method: 'POST',
+        mode: 'cors', // no-cors, *cors, same-origin
 
-          chunkIndex++; //  increment the counter
-          if (chunkIndex < totalChunks) {
-            //  if the counter < totalChunks, call the loop function
-            uploadLoop(); //  ..  again which will trigger another
-          } //  ..  setTimeout()
-        }, 500);
+        body: JSON.stringify({
+          filename: chunkName,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      });
+      const checkResult = await requestUploadURL.json();
+      console.log(checkResult);
+      if (checkResult.status === 200) {
+        const index = 0;
+        const uploadURL = checkResult.aliveServers[index].URL;
+        const uploadPort = checkResult.aliveServers[index].port || '';
+        const fullUploadURL = checkResult.aliveServers[index].uploadURL;
+        console.log({ uploadURL, uploadPort, fullUploadURL });
+        async function uploadLoop() {
+          //  create a loop function
+          setTimeout(async function () {
+            //  call a 3s setTimeout when the loop is called
+            console.log('looping'); //  your code here
+
+            const start = chunkIndex * chunkSize;
+            const end = Math.min(start + chunkSize, file.size);
+            const chunk = file.slice(start, end);
+            console.log(start);
+            console.log(end);
+            // Make an API call to upload the chunk to the backend
+            const ext = file.name.split('.')[1];
+            const title = chunkName;
+            const infoID = '654ef92c9f7e923ef27cf32c';
+            // await uploadChunkHls(
+            //   chunk,
+            //   chunkIndex,
+            //   arrayChunkName[chunkIndex],
+            //   arrayChunkName,
+            //   chunkName,
+            //   ext,
+            //   title,
+            //   infoID
+            // );
+            await uploadChunkDashVer2(
+              chunk,
+              chunkIndex,
+              arrayChunkName[chunkIndex],
+              arrayChunkName,
+              chunkName,
+              ext,
+              title,
+              infoID,
+              fullUploadURL
+            );
+
+            chunkIndex++; //  increment the counter
+            if (chunkIndex < totalChunks) {
+              //  if the counter < totalChunks, call the loop function
+              uploadLoop(); //  ..  again which will trigger another
+            } //  ..  setTimeout()
+          }, 500);
+        }
+        uploadLoop();
       }
-      uploadLoop();
+
       // const formData = new FormData();
       // formData.append('myMultilPartFile', threadVideo);
       // const response = await POSTLargeVideoMultipartUploadAction(formData);

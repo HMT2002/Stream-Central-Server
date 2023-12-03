@@ -122,12 +122,11 @@ const calculateTimeStorage = async (baseUrl) => {
 
 const checkConditionAndFilter = async (baseUrl) => {
   try {
-    console.log(baseUrl);
     const { data } = await axios.get(baseUrl, {
-      timeout: 500, // Set a timeout of 0,3 seconds
+      timeout: 500, // Set a timeout of 0,5 seconds
     });
-    console.log(baseUrl);
-    return { data };
+    console.log(data);
+    return data;
   } catch (err) {
     // console.log( { ...err })
     return null;
@@ -249,7 +248,6 @@ const testServerIsFckingAlive = async () => {
   let testResults = [];
   for (let i = 0; i < availableServer.length; i++) {
     condition = await getMyNetworkAliveCondition(availableServer[i].URL, availableServer[i].port);
-    console.log({ URL: availableServer[i].URL, port: availableServer[i].port, ...condition });
     if (condition !== null) {
       testResults.push({ ...condition, URL: availableServer[i].URL, port: availableServer[i].port });
     }
@@ -297,10 +295,10 @@ const availableVideoOnServer = async (video) => {
 const availableStorageOnServer = async (video) => {
   // const availableStorageOnServer = await availableStorageTest(videoname, type);
   const availableStorageOnServer = await availableStorage(video);
-  console.log(availableStorageOnServer);
   if (availableStorageOnServer === null) {
     return [];
   }
+
   return availableStorageOnServer;
 };
 
@@ -596,6 +594,12 @@ const multipartFileIsUploadedEnough = async (req) => {
 
 const checkFileISExistedOnServerYet = async (filename, type) => {
   const aliveServers = await testServerIsFckingAlive();
+  if (aliveServers.length === 0) {
+    return {
+      message: 'No alive server found',
+      noalive: true,
+    };
+  }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
   const port = aliveServers[index].port || ':9100';
@@ -607,7 +611,6 @@ const checkFileISExistedOnServerYet = async (filename, type) => {
   }
   const check = await checkFolderOnServer(baseUrl);
   if (check.existed === true) {
-    console.log('Folder already existed on sub server');
     return {
       message: 'Folder already existed on sub server',
       existed: true,

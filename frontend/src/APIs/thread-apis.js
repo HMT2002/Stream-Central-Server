@@ -33,19 +33,19 @@ export const GETAllInfoAction = async () => {
     throw new Error('Something went wrong!');
   }
   const data = await response.json();
-  console.log(data)
+  console.log(data);
   return data;
 };
 
 export const GETFilmInfo = async (infoID) => {
-  var url = '/api/v1/info/film/'+infoID
+  var url = '/api/v1/info/film/' + infoID;
   const { data } = await axios({
     method: 'get',
     url: url,
     headers: { myaxiosfetch: '123' },
   });
   console.log(data);
-  var info=data.data;
+  var info = data.data;
   return info;
 };
 
@@ -134,7 +134,7 @@ export const POSTLargeVideoMultipartUploadHlsAction = async (
       arrayChunkName,
       ext,
       title,
-      infoID:infoID,
+      infoID: infoID,
     },
   });
   const data = await response.json();
@@ -171,6 +171,36 @@ export const POSTLargeVideoMultipartUploadDashAction = async (
   });
   const data = await response.json();
   // console.log(data);
+  return data;
+};
+
+export const POSTLargeVideoMultipartUploadDashActionVer2 = async (
+  formData,
+  index,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext,
+  title,
+  infoID,
+  fullUploadURL
+) => {
+  if (!formData) {
+    return { status: 'fail' };
+  }
+  const { data } = await axios.post(fullUploadURL, formData, {
+    validateStatus: () => true,
+    headers: {
+      type: 'blob',
+      index: index,
+      chunkname: chunkName,
+      filename: filename,
+      arrayChunkName,
+      ext,
+      title,
+      infoID,
+    },
+  });
   return data;
 };
 
@@ -372,6 +402,7 @@ const threadAPIs = {
   POSTLargeVideoMultipartUploadConcatenateAction,
   OPTIONSLargeVideoMultipartUploadAction,
   OPTIONSLargeVideoMultipartUploadConcatenateAction,
+  POSTLargeVideoMultipartUploadDashActionVer2,
 };
 
 export default threadAPIs;
