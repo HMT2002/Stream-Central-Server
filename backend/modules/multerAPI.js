@@ -1,10 +1,9 @@
 const multer = require('multer');
 const helperAPI = require('./helperAPI');
 
-const defaultStoragePath='resources-storage/uploads/';
-const videoStoragePath='videos/';
-const videoChunkStoragePath='videos/';
-
+const defaultStoragePath = 'resources-storage/uploads/';
+const videoStoragePath = 'videos/';
+const videoChunkStoragePath = 'videos/';
 
 const storage = multer.diskStorage({
   destination: defaultStoragePath,
@@ -16,10 +15,10 @@ const storage = multer.diskStorage({
 const storageVideo = multer.diskStorage({
   destination: videoStoragePath,
   filename: (req, file, cb) => {
-const fileID = helperAPI.GenerrateRandomString(7);
-const ext=file.originalname.split(".")[1];
+    const fileID = helperAPI.GenerrateRandomString(7);
+    const ext = file.originalname.split('.')[1];
 
-    cb(null, fileID+'.'+ext);
+    cb(null, fileID + '.' + ext);
   },
 });
 
@@ -33,6 +32,7 @@ const multipartMaxSize = 35 * 1024 * 1024; //35mb
 const maxSize = 300 * 1024 * 1024; //300mb
 const maxSizeVideo = 300 * 1024 * 1024; //300mb
 const maxSizeImage = 15 * 1024 * 1024; //10mb
+const individualFileMaxSize = 10 * 1024 * 1024; //10mb
 
 const upload = multer({
   storage: storage,
@@ -65,7 +65,6 @@ const uploadMultipartFile = multer({
   limits: { fileSize: multipartMaxSize },
 }).single('myMultilPartFile');
 
-
 const uploadMultipartFileChunk = multer({
   storage: storageChunk,
   limits: { fileSize: multipartMaxSize },
@@ -74,9 +73,20 @@ const uploadMultipartFileChunk = multer({
 const uploadArrayFile = multer({
   storage: storage,
   limits: { fileSize: maxSize },
-}).any('myFiles',10);
+}).any('myFiles', 10);
 
-
+const storageIndividualFile = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const videoFolder = videoStoragePath + '/';
+    if (!fs.existsSync(videoFolder)) {
+      fs.mkdirSync(videoFolder);
+    }
+    cb(null, videoFolder);
+  },
+  filename: (req, file, cb) => {
+    cb(null, req.headers.filename);
+  },
+});
 // var Upload = upload.any([{ name: 'TenFieldsORouteVaHbsPhaiGiongNhau' }]);
 
 const uploadVideo = multer({
@@ -103,7 +113,7 @@ const uploadArrayVideo = multer({
     }
   },
   limits: { fileSize: maxSizeVideo },
-}).array('myFiles',5);
+}).array('myFiles', 5);
 
 const uploadImage = multer({
   storage: storage,
@@ -129,6 +139,22 @@ const uploadArrayImage = multer({
     }
   },
   limits: { fileSize: maxSizeImage },
-}).array('myFiles',10);
+}).array('myFiles', 10);
 
-module.exports = { upload, uploadVideo, uploadImage, uploadArrayFile,uploadFile,uploadArrayImage,uploadArrayVideo,uploadMultipartFile,uploadMultipartFileChunk };
+const uploadIndividualFile = multer({
+  storage: storageIndividualFile,
+  limits: { fileSize: individualFileMaxSize },
+}).single('myIndividualFile');
+
+module.exports = {
+  upload,
+  uploadVideo,
+  uploadImage,
+  uploadArrayFile,
+  uploadFile,
+  uploadArrayImage,
+  uploadArrayVideo,
+  uploadMultipartFile,
+  uploadMultipartFileChunk,
+  uploadIndividualFile,
+};

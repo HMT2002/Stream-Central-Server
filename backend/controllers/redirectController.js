@@ -352,7 +352,7 @@ exports.RedirectReplicateRequest = catchAsync(async (req, res, next) => {
   const availableServer = await redirectAPI.getAvailableServer(video);
   const index = 0;
   const url = availableServer[index].URL || 'localhost';
-  const port = availableServer[index].port || ':9100';
+  const port = availableServer[index].port || '';
   console.log({ url, port });
   res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send');
   res.end();
@@ -362,7 +362,7 @@ exports.RedirectDeleteRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post delete');
   console.log(req.body);
   const url = req.body.url || 'localhost';
-  const port = req.body.port || ':9100';
+  const port = req.body.port || '';
   res.redirect(308, 'http://' + url + port + '/api/v1/delete');
   res.end();
 });
@@ -382,7 +382,7 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   // const index = 0;
   // console.log(availableServer)
   // const url =availableServer[index].URL||'localhost';
-  // const port =availableServer[index].port||':9100';
+  // const port =availableServer[index].port||'';
   // // nên nhớ 2 port này khác nhau
   // await addToServer(video,toURL,toPort);
   // res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
@@ -402,7 +402,7 @@ exports.RedirectDeleteFolderRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post replicate');
   console.log(req.body);
   const url = req.body.url || 'localhost';
-  const port = req.body.port || ':9100';
+  const port = req.body.port || '';
   res.redirect(308, 'http://' + url + port + '/api/v1/delete/folder');
   res.end();
 });
@@ -532,7 +532,7 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   if (flag) {
     console.log('file is completed');
 
@@ -635,7 +635,7 @@ exports.GetAvailableStorageForVideo = catchAsync(async (req, res, next) => {
   }
   const index = 0;
   const url = server[index].URL || 'http://localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   res.status(200).json({
     message: 'All avaiable servers',
     server,
@@ -706,7 +706,7 @@ exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res, ne
   }
   const index = 0;
   const url = 'localhost';
-  const port = ':9100';
+  const port = '';
 });
 
 exports.UploadNewFileLargeConvertToHls = catchAsync(async (req, res, next) => {

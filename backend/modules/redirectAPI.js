@@ -490,7 +490,7 @@ const getInfoWithID = async (id) => {
 
 const addToServer = async (video, URL, port) => {
   const server = await getServerWithURLAndPort(URL, port);
-  // console.log(server);
+  console.log(server);
   if (server.videos.includes(video._id)) {
     console.log('Video already on server');
     return server;
@@ -507,15 +507,20 @@ const addUpVideoReplicant = async (video) => {
 };
 
 const addToInfo = async (video, infoID) => {
-  const info = await getInfoWithID(infoID);
-  console.log(info);
-  if (info.videos.includes(video._id)) {
-    console.log('Video already in info');
+  try {
+    const info = await getInfoWithID(infoID);
+    console.log(info);
+    if (info.videos.includes(video._id)) {
+      console.log('Video already in info');
+      return info;
+    }
+    info.videos.push(video);
+    await info.save();
     return info;
+  } catch (error) {
+    console.log(error);
+    return null;
   }
-  info.videos.push(video);
-  await info.save();
-  return info;
 };
 
 const checkFolderOnServer = async (baseUrl) => {
@@ -602,7 +607,7 @@ const checkFileISExistedOnServerYet = async (filename, type) => {
   }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   let baseUrl;
   if (type === 'HLS') {
     baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
@@ -647,7 +652,7 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   // console.log(aliveServers);
   // const index = 0;
   // const url = aliveServers[index].URL || 'localhost';
-  // const port = aliveServers[index].port || ':9100';
+  // const port = aliveServers[index].port || '';
   // const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
   // const check = await checkFolderOnServer(baseUrl);
   // if (check.existed === true) {
@@ -658,7 +663,7 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   // }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   if (flag === true) {
     console.log('file is completed');
     await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'HLS');
@@ -723,7 +728,7 @@ const UploadNewFileLargeMultilpartDash = async (req, res, next) => {
   }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   if (flag) {
     console.log('file is completed');
     await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'DASH');
