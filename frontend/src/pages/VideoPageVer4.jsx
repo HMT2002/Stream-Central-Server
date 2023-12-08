@@ -210,16 +210,14 @@ const loadSubtitleRed5 = async (player, VideoJS_player) => {
 const loadSubtitle = async (player, VideoJS_player, videoname) => {
   try {
     console.log(player);
-    const video = player.current;
+    const video = player.getInternalPlayer();
+    console.log(video);
     const subASSResponse = await fetch('/videos/' + videoname + '.ass', {
       method: 'GET',
     });
     const subSRTResponse = await fetch('/videos/' + videoname + '.srt', {
       method: 'GET',
     });
-    console.log(subASSResponse);
-    console.log(subSRTResponse);
-
     if (subSRTResponse.status != 500) {
       //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
       //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
@@ -234,7 +232,7 @@ const loadSubtitle = async (player, VideoJS_player, videoname) => {
       console.log(WebVTT_sutitle);
 
       // const localURL = await URL.createObjectURL(vtt);
-      VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
+      // VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
       // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành 1 obj blob
       // Dùng obj blob đó cùng phương thức toWebVTT thành blob nguồn(src) cho _player videojs blob:http://localhost:3000/xxxxx-xxx-xxxxxxx-xxxxxxx
     }
@@ -418,7 +416,6 @@ const VideoPageVer4 = () => {
             return urlDash;
           });
         }
-        loadSubtitle(videoReactPlayer, null, params.videoname);
       } catch (error) {
         console.log(error);
       }
@@ -438,11 +435,19 @@ const VideoPageVer4 = () => {
           autoPlay
           controls
           playing={isPlayingDash}
+          onReady={() => {
+            const innerPalyer = videoReactPlayer.current.getInternalPlayer();
+            console.log(innerPalyer);
+            loadSubtitle(videoReactPlayer.current, null, params.videoname);
+          }}
           // onSeek={() => console.log('Seeking!')}
           // onBuffer={() => console.log('onBuffer')}
           // onBufferEnd={() => console.log('onBufferEnd')}
           onProgress={(progress) => {
             setPlayed(progress.playedSeconds);
+            if (played === 5) {
+              // loadSubtitle(videoReactPlayer.current, null, params.videoname);
+            }
           }}
           onError={async (event, data, instance, global) => {
             console.log({ event, data, instance, global });
@@ -474,6 +479,7 @@ const VideoPageVer4 = () => {
           }}
         />{' '}
       </Card>
+
       <input ref={threadVideoRef} type="file" accept="video/*|mkv/*.mkv" onChange={VideoChangeHandler} />
       <Button className="workshop-new-thread-tab__complete-btn" content="Upload" onClick={CreateNewThreadHandler} />
     </React.Fragment>
