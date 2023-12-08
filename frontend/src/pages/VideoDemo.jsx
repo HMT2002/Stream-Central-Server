@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useContext, useEffect, useState, useRef, useCallback } from 'react';
 
 import { useParams, useNavigate } from 'react-router-dom';
 import SubtitlesOctopus from '../components/subtitles/subtitles-octopus';
@@ -31,6 +31,9 @@ import SwiperEspisode from '../components/swiper-espisode/swiper-espisode';
 
 import { GETFilmInfo } from '../APIs/thread-apis.js';
 import { Select } from '@mui/material';
+import CommentInput from '../components/comments/CommentInput.js';
+import AuthContext from '../contexts/auth-context.js';
+import { GETAllCommentAction } from '../APIs/comments-apis.js';
 
 const getHlsUrl = async (filename) => {
   console.log(filename);
@@ -60,6 +63,7 @@ const getDashUrl = async (filename) => {
 };
 
 const VideoDemo = () => {
+  const authContext = useContext(AuthContext);
   const params = useParams();
   const infoID = params.filename;
   // const [source, setSource] = useState('/videos/MY Heart Rate.mp4');
@@ -166,6 +170,22 @@ const VideoDemo = () => {
         return;
     }
   }
+
+  const getAllComment = useCallback(async () => {
+    try {
+      const response = await GETAllCommentAction(filename);
+      if (response.status === 200) {
+        console.log(response.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  useEffect(() => {
+    getAllComment();
+  });
+
   function getVideoStatus(status) {
     if (status === 'Ended') {
       return <p>Completed</p>;
@@ -421,6 +441,7 @@ const VideoDemo = () => {
             <MovieItem />
             <MovieItem /> */}
           </div>
+          <CommentInput context={authContext} />
         </div>
       </div>
     </React.Fragment>
