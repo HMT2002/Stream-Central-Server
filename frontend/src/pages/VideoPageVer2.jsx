@@ -185,7 +185,7 @@ const VideoPageVer2 = () => {
         const end = Math.min(start + chunkSize, file.size);
         const chunk = file.slice(start, end);
         console.log(start);
-        console.log(end)
+        console.log(end);
         // Make an API call to upload the chunk to the backend
         const ext = file.name.split('.')[1];
         await uploadChunk(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
@@ -445,43 +445,56 @@ const VideoPageVer2 = () => {
           hls.attachMedia(videoNode.current);
           hls.subtitleDisplay = true;
         } else {
-          const response = await fetch('/api/video/video-proc/convert-stream/' + params.videoname, {
-            method: 'GET',
-            headers: {
-              // 'Content-Type': 'application/json',
-              // Authorization: storedToken,
-            },
-          });
-          const data = await response.json();
-          console.log(data);
-          if (data.status) {
-            if (data.status === 'found and converted') {
-              let url = data.path;
-              obj_play = {
-                fill: true,
-                fluid: true,
-                autoplay: true,
-                controls: true,
-                preload: 'auto',
-                loop: true,
-                sources: [
-                  // {
-                  //   src: data.path,
-                  //   type: 'application/x-mpegURL',
-                  //   withCredentials: true,
-                  // },
-                ],
-              };
-
-              const hls = new Hls(config);
-              hls.loadSource(url);
-              hls.attachMedia(videoNode.current);
-              hls.subtitleDisplay = true;
-            } else {
-            }
-          }
+          // const response = await fetch('/api/video/video-proc/convert-stream/' + params.videoname, {
+          //   method: 'GET',
+          //   headers: {
+          //     // 'Content-Type': 'application/json',
+          //     // Authorization: storedToken,
+          //   },
+          // });
+          // const data = await response.json();
+          // console.log(data);
+          // if (data.status) {
+          //   if (data.status === 'found and converted') {
+          //     let url = data.path;
+          //     obj_play = {
+          //       fill: true,
+          //       fluid: true,
+          //       autoplay: true,
+          //       controls: true,
+          //       preload: 'auto',
+          //       loop: true,
+          //       sources: [
+          //         // {
+          //         //   src: data.path,
+          //         //   type: 'application/x-mpegURL',
+          //         //   withCredentials: true,
+          //         // },
+          //       ],
+          //     };
+          //     const hls = new Hls(config);
+          //     hls.loadSource(url);
+          //     hls.attachMedia(videoNode.current);
+          //     hls.subtitleDisplay = true;
+          //   } else {
+          //   }
+          // }
         }
-
+        obj_play = {
+          fill: true,
+          fluid: true,
+          autoplay: true,
+          controls: true,
+          preload: 'auto',
+          loop: true,
+          sources: [
+            {
+              src: 'http://localhost:9100/videos/eva_ep25Hls/eva_ep25.m3u8',
+              // type: 'application/x-mpegURL',
+              // withCredentials: true,
+            },
+          ],
+        };
         const _player = videojs(videoNode.current, obj_play, function onPlayerReady() {
           videojs.log('Your player is ready!');
 
@@ -515,7 +528,7 @@ const VideoPageVer2 = () => {
         } else if (params.videoname === 'ハルジオン-Red5-mp4') {
           loadSubtitleRed5(videoNode, _player);
         } else {
-          loadSubtitle(videoNode, _player, params.videoname);
+          loadSubtitle(videoNode, _player, 'eva_ep25');
         }
       } catch (error) {
         console.log(error);
