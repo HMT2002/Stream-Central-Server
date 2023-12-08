@@ -17,7 +17,7 @@ import {
 import Button from '../components/UI elements/Button';
 
 import Utils from '../Utils';
-
+import axios from 'axios';
 import '../styles/ThreadPage.css';
 const play = {
   fill: true,
@@ -33,6 +33,19 @@ const play = {
       type: 'application/x-mpegURL',
     },
   ],
+};
+const getHlsUrl = async (filename) => {
+  console.log(filename);
+  var url = '/redirect/hls/' + filename;
+
+  const { data } = await axios({
+    method: 'get',
+    url: url,
+    headers: { myaxiosfetch: '123' },
+  });
+  console.log(data);
+  var subserverurl = data.subserverurl;
+  return subserverurl;
 };
 
 async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) {
@@ -480,6 +493,7 @@ const VideoPageVer2 = () => {
           //   }
           // }
         }
+
         obj_play = {
           fill: true,
           fluid: true,
