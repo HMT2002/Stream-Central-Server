@@ -1,17 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { GETUserInfoAction } from "../APIs/user-apis";
+import React, { useEffect, useState } from 'react';
+import { GETUserInfoAction } from '../APIs/user-apis';
 
 const AuthContext = React.createContext({
   isAuthorized: false,
-  username: "",
-  avatar: "",
-  displayName: "",
-  token: "",
-  role: "",
-  OnUserLogin: (username, avatar, displayName, token, role, isStayLoggedIn) => { },
-  OnUserLogout: () => { },
-  OnAvatarUpdate: (newAvatar) => { },
-  OnDisplayNameUpdate: (newDisplayName) => { }
+  username: '',
+  avatar: '',
+  displayName: '',
+  token: '',
+  role: '',
+  OnUserLogin: (username, avatar, displayName, token, role, isStayLoggedIn) => {},
+  OnUserLogout: () => {},
+  OnAvatarUpdate: (newAvatar) => {},
+  OnDisplayNameUpdate: (newDisplayName) => {},
 });
 
 export const AuthContextProvider = (props) => {
@@ -29,7 +29,7 @@ export const AuthContextProvider = (props) => {
     setUsername(username);
     setAvatar(avatar);
     setDisplayName(displayName);
-    setToken("Bearer " + token);
+    setToken('Bearer ' + token);
     setRole(role);
     setIsStayLoggedIn(isStayLoggedIn);
   };
@@ -42,23 +42,23 @@ export const AuthContextProvider = (props) => {
     setDisplayName(null);
     setToken(null);
     setRole(null);
-    localStorage.removeItem("username");
-    localStorage.removeItem("token");
+    localStorage.removeItem('username');
+    localStorage.removeItem('token');
   };
 
   const AvatarUpdateHandler = (newAvatar) => {
     setAvatar(newAvatar);
-  }
+  };
 
   const DisplayNameUpdateHandler = (newDisplayName) => {
     setDisplayName(newDisplayName);
-  }
+  };
 
   useEffect(() => {
     const RetrieveUserInfoHandler = async (username, token) => {
       try {
         const response = await GETUserInfoAction(username, token);
-        if (response.status === "success") {
+        if (response.status === 'success') {
           const userInfo = response.data;
           if (userInfo[0] != null) {
             setAvatar(userInfo[0].photo.link);
@@ -66,15 +66,15 @@ export const AuthContextProvider = (props) => {
             setRole(userInfo[0].role);
           }
         } else {
-          console.log("Failed to retrieve user info!");
+          console.log('Failed to retrieve user info!');
         }
       } catch (error) {
-        console.log("Can not retrieve user info. Error: " + error);
+        console.log('Can not retrieve user info. Error: ' + error);
       }
-    }
+    };
 
-    const localUsername = localStorage.getItem("username");
-    const localToken = localStorage.getItem("token");
+    const localUsername = localStorage.getItem('username');
+    const localToken = localStorage.getItem('token');
 
     if (localUsername != null && !localToken != null) {
       setIsAuthorized(true);
@@ -87,10 +87,10 @@ export const AuthContextProvider = (props) => {
 
   useEffect(() => {
     if (isStayLoggedIn) {
-      localStorage.setItem("username", username);
-      localStorage.setItem("token", token);
+      localStorage.setItem('username', username);
+      localStorage.setItem('token', token);
     }
-  }, [isStayLoggedIn, username, token])
+  }, [isStayLoggedIn, username, token]);
 
   // console.log("is authorized: " + isAuthorized);
   // console.log("local username: " + username);
@@ -111,10 +111,11 @@ export const AuthContextProvider = (props) => {
         OnUserLogin: UserLoginHandler,
         OnUserLogout: UserLogOutHandler,
         OnAvatarUpdate: AvatarUpdateHandler,
-        OnDisplayNameUpdate: DisplayNameUpdateHandler
-      }} >
+        OnDisplayNameUpdate: DisplayNameUpdateHandler,
+      }}
+    >
       {props.children}
-    </AuthContext.Provider >
+    </AuthContext.Provider>
   );
 };
 
