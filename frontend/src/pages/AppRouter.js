@@ -12,6 +12,7 @@ import VideoDemo from './VideoDemo';
 import VideoPage from './VideoPage';
 import VideoPageVer2 from './VideoPageVer2';
 import VideoPageVer3 from './VideoPageVer3';
+import VideoPageVer4 from './VideoPageVer4';
 
 import WorkshopPage from './WorkshopPage';
 import TagPage from './TagPage';
@@ -38,6 +39,7 @@ const AppRouter = () => {
 
         <Route path="/video-ver-2/:videoname" element={<VideoPageVer2 />} />
         <Route path="/video-ver-3/:videoname" element={<VideoPageVer3 />} />
+        <Route path="/video-ver-4/:videoname" element={<VideoPageVer4 />} />
 
         <Route path="/workshop/:username" element={<WorkshopPage />} />
         <Route path="/workshop/create/thread/:username" element={<WorkshopPage />} />

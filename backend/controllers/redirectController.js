@@ -197,7 +197,7 @@ exports.RedirectHls = catchAsync(async (req, res, next) => {
 
   const index = 0;
   const url = server[index].URL || 'localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   const oriURL = 'http://' + url + port + '/videos/' + videoname + 'Hls/' + videoname + '.m3u8';
   if (req.headers.myaxiosfetch) {
     res.status(200).json({
@@ -301,7 +301,7 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
 
   const index = 0;
   const url = server[index].URL || 'localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   const oriURL = 'http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd';
   if (req.headers.myaxiosfetch) {
     console.log('req.headers.myaxiosfetch existed');
@@ -332,7 +332,7 @@ exports.M4SHandler = catchAsync(async (req, res, next) => {
   }
   const index = 0;
   const url = server[index].URL || 'localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   req.url = req.url.replace('/dash/', '/videos/');
   req.url = req.url.replace(filebasename, filebasename + 'Dash');
   const oriURL = 'http://' + url + port + req.url;
@@ -352,7 +352,7 @@ exports.RedirectReplicateRequest = catchAsync(async (req, res, next) => {
   const availableServer = await redirectAPI.getAvailableServer(video);
   const index = 0;
   const url = availableServer[index].URL || 'localhost';
-  const port = availableServer[index].port || ':9100';
+  const port = availableServer[index].port || '';
   console.log({ url, port });
   res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send');
   res.end();
@@ -362,7 +362,7 @@ exports.RedirectDeleteRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post delete');
   console.log(req.body);
   const url = req.body.url || 'localhost';
-  const port = req.body.port || ':9100';
+  const port = req.body.port || '';
   res.redirect(308, 'http://' + url + port + '/api/v1/delete');
   res.end();
 });
@@ -382,7 +382,7 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   // const index = 0;
   // console.log(availableServer)
   // const url =availableServer[index].URL||'localhost';
-  // const port =availableServer[index].port||':9100';
+  // const port =availableServer[index].port||'';
   // // nên nhớ 2 port này khác nhau
   // await addToServer(video,toURL,toPort);
   // res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
@@ -402,7 +402,7 @@ exports.RedirectDeleteFolderRequest = catchAsync(async (req, res, next) => {
   console.log('redirect post replicate');
   console.log(req.body);
   const url = req.body.url || 'localhost';
-  const port = req.body.port || ':9100';
+  const port = req.body.port || '';
   res.redirect(308, 'http://' + url + port + '/api/v1/delete/folder');
   res.end();
 });
@@ -443,7 +443,7 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
   }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   // const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
   // const check = await redirectAPI.checkFolderOnServer(baseUrl);
   // if (check.existed === true) {
@@ -532,7 +532,7 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   if (flag) {
     console.log('file is completed');
 
@@ -563,6 +563,67 @@ exports.UploadNewFileLargeMultilpartDash = catchAsync(async (req, res, next) => 
   // res.redirect('http://' + url + port + '/api/v1/video/upload-video-large-multipart');
 });
 
+exports.RequestUploadURLHls = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request RequestUploadURLHls');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } = req.body;
+  let flag = true;
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'HLS');
+  console.log(aliveServers);
+  if (aliveServers.existed === true || aliveServers.noalive === true) {
+    res.status(200).json({
+      ...aliveServers,
+      failed: true,
+    });
+    return;
+  }
+  const index = 0;
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || '';
+  res.status(200).json({
+    status: 200,
+    message: 'found servers for upload',
+    aliveServers,
+  });
+});
+
+exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request RequestUploadURLDash');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } = req.headers;
+  let flag = true;
+
+  const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
+  if (video !== null) {
+    res.status(200).json({
+      message: 'There is the same video with filename and type, pick another',
+      failed: true,
+    });
+    return;
+  }
+
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
+  if (aliveServers.existed === true || aliveServers.noalive === true) {
+    res.status(200).json({
+      ...aliveServers,
+      failed: true,
+    });
+    return;
+  }
+
+  const index = 0;
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || '';
+
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
+  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+
+  res.status(200).json({
+    status: 200,
+    message: 'found servers for upload',
+    aliveServers,
+  });
+});
+
 exports.GetAvailableStorageForVideo = catchAsync(async (req, res, next) => {
   console.log('Dealing with request GetAvailableStorageForVideo');
   const videoname = req.body.videoname || 'GSpR1T8';
@@ -574,7 +635,7 @@ exports.GetAvailableStorageForVideo = catchAsync(async (req, res, next) => {
   }
   const index = 0;
   const url = server[index].URL || 'http://localhost';
-  const port = server[index].port || ':9100';
+  const port = server[index].port || '';
   res.status(200).json({
     message: 'All avaiable servers',
     server,
@@ -645,7 +706,7 @@ exports.UploadNewFileLargeMultilpartConcatenate = catchAsync(async (req, res, ne
   }
   const index = 0;
   const url = 'localhost';
-  const port = ':9100';
+  const port = '';
 });
 
 exports.UploadNewFileLargeConvertToHls = catchAsync(async (req, res, next) => {

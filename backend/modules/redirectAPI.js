@@ -26,7 +26,7 @@ const getAvailableVideoID = async (id) => {
 };
 
 const getAllServer = async () => {
-  const servers = await Server.find({ });
+  const servers = await Server.find({});
   return servers;
 };
 
@@ -122,12 +122,11 @@ const calculateTimeStorage = async (baseUrl) => {
 
 const checkConditionAndFilter = async (baseUrl) => {
   try {
-    console.log(baseUrl);
     const { data } = await axios.get(baseUrl, {
-      timeout: 500, // Set a timeout of 0,3 seconds
+      timeout: 500, // Set a timeout of 0,5 seconds
     });
-    console.log(baseUrl);
-    return { data };
+    console.log(data);
+    return data;
   } catch (err) {
     // console.log( { ...err })
     return null;
@@ -201,9 +200,7 @@ const testSpeedLiveResults = async (videoname) => {
   let testResults = [];
   for (let i = 0; i < availableServer.length; i++) {
     let speedDownload;
-      speedDownload = checkTestErrorCode(
-        await getMyNetworkLiveSpeed(availableServer[i].URL, availableServer[i].port)
-      );
+    speedDownload = checkTestErrorCode(await getMyNetworkLiveSpeed(availableServer[i].URL, availableServer[i].port));
     if (speedDownload !== null) {
       testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
     }
@@ -251,7 +248,6 @@ const testServerIsFckingAlive = async () => {
   let testResults = [];
   for (let i = 0; i < availableServer.length; i++) {
     condition = await getMyNetworkAliveCondition(availableServer[i].URL, availableServer[i].port);
-    console.log({ URL: availableServer[i].URL, port: availableServer[i].port, ...condition });
     if (condition !== null) {
       testResults.push({ ...condition, URL: availableServer[i].URL, port: availableServer[i].port });
     }
@@ -299,10 +295,10 @@ const availableVideoOnServer = async (video) => {
 const availableStorageOnServer = async (video) => {
   // const availableStorageOnServer = await availableStorageTest(videoname, type);
   const availableStorageOnServer = await availableStorage(video);
-  console.log(availableStorageOnServer);
   if (availableStorageOnServer === null) {
     return [];
   }
+
   return availableStorageOnServer;
 };
 
@@ -337,16 +333,17 @@ const countVideoAccessing = async (videoname, url, port, type) => {
 
 const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const video = await Video.findOne({ videoname, type });
-  const availableServer = await getAvailableServer(video);
-  console.log(availableServer);
-  console.log(video);
+  // const availableServer = await getAvailableServer(video);
+  const server = await availableVideoOnServer(video);
+
+  console.log(server);
   console.log({ videoname, type });
-  if (availableServer.length === 0) {
+  if (server.length === 0) {
     return null;
   }
   const index = 0;
-  const url = availableServer[index].URL;
-  const port = availableServer[index].port;
+  const url = server[index].URL;
+  const port = server[index].port;
   // nên nhớ 2 port này khác nhau
   await addToServer(video, toURL, toPort);
   await addUpVideoReplicant(video);
@@ -493,6 +490,7 @@ const getInfoWithID = async (id) => {
 
 const addToServer = async (video, URL, port) => {
   const server = await getServerWithURLAndPort(URL, port);
+  console.log(server);
   if (server.videos.includes(video._id)) {
     console.log('Video already on server');
     return server;
@@ -509,15 +507,20 @@ const addUpVideoReplicant = async (video) => {
 };
 
 const addToInfo = async (video, infoID) => {
-  const info = await getInfoWithID(infoID);
-  console.log(info)
-  if (info.videos.includes(video._id)) {
-    console.log('Video already in info');
+  try {
+    const info = await getInfoWithID(infoID);
+    console.log(info);
+    if (info.videos.includes(video._id)) {
+      console.log('Video already in info');
+      return info;
+    }
+    info.videos.push(video);
+    await info.save();
     return info;
+  } catch (error) {
+    console.log(error);
+    return null;
   }
-  info.videos.push(video);
-  await info.save();
-  return info;
 };
 
 const checkFolderOnServer = async (baseUrl) => {
@@ -590,15 +593,21 @@ const multipartFileIsUploadedEnough = async (req) => {
       flag = false;
     }
   }
-  console.log('flag is ' +flag)
+  console.log('flag is ' + flag);
   return flag;
 };
 
 const checkFileISExistedOnServerYet = async (filename, type) => {
   const aliveServers = await testServerIsFckingAlive();
+  if (aliveServers.length === 0) {
+    return {
+      message: 'No alive server found',
+      noalive: true,
+    };
+  }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   let baseUrl;
   if (type === 'HLS') {
     baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
@@ -607,10 +616,9 @@ const checkFileISExistedOnServerYet = async (filename, type) => {
   }
   const check = await checkFolderOnServer(baseUrl);
   if (check.existed === true) {
-    console.log('Folder already existed on sub server')
     return {
       message: 'Folder already existed on sub server',
-      existed:true,
+      existed: true,
     };
   }
   return aliveServers;
@@ -644,7 +652,7 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   // console.log(aliveServers);
   // const index = 0;
   // const url = aliveServers[index].URL || 'localhost';
-  // const port = aliveServers[index].port || ':9100';
+  // const port = aliveServers[index].port || '';
   // const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
   // const check = await checkFolderOnServer(baseUrl);
   // if (check.existed === true) {
@@ -655,8 +663,8 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   // }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
-  if (flag===true) {
+  const port = aliveServers[index].port || '';
+  if (flag === true) {
     console.log('file is completed');
     await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'HLS');
     // async function uploadLoop() {
@@ -720,7 +728,7 @@ const UploadNewFileLargeMultilpartDash = async (req, res, next) => {
   }
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || ':9100';
+  const port = aliveServers[index].port || '';
   if (flag) {
     console.log('file is completed');
     await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'DASH');

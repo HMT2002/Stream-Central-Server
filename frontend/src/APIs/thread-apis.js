@@ -44,8 +44,9 @@ export const GETFilmInfo = async (infoID) => {
     url: url,
     headers: { myaxiosfetch: '123' },
   });
+  // var info = data.data;
+  // console.log(data);
   var info = data.data;
-  console.log(data);
   return info;
 };
 
@@ -171,6 +172,36 @@ export const POSTLargeVideoMultipartUploadDashAction = async (
   });
   const data = await response.json();
   // console.log(data);
+  return data;
+};
+
+export const POSTLargeVideoMultipartUploadDashActionVer2 = async (
+  formData,
+  index,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext,
+  title,
+  infoID,
+  fullUploadURL
+) => {
+  if (!formData) {
+    return { status: 'fail' };
+  }
+  const { data } = await axios.post(fullUploadURL, formData, {
+    validateStatus: () => true,
+    headers: {
+      type: 'blob',
+      index: index,
+      chunkname: chunkName,
+      filename: filename,
+      arrayChunkName,
+      ext,
+      title,
+      infoID,
+    },
+  });
   return data;
 };
 
@@ -372,6 +403,7 @@ const threadAPIs = {
   POSTLargeVideoMultipartUploadConcatenateAction,
   OPTIONSLargeVideoMultipartUploadAction,
   OPTIONSLargeVideoMultipartUploadConcatenateAction,
+  POSTLargeVideoMultipartUploadDashActionVer2,
 };
 
 export default threadAPIs;

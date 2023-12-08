@@ -63,5 +63,7 @@ router
 //       arrayChunkName,
 //       ext,
 //     },
+router.route('/request-upload-url-hls').post(redirectController.RequestUploadURLHls);
+router.route('/request-upload-url-dash').post(redirectController.RequestUploadURLDash);
 
 module.exports = router;
