@@ -38,30 +38,30 @@ const VideoDemo = () => {
   useEffect(() => {
     const LoadVideo = async () => {
       try {
-        const config = {
-          startPosition: 0, // can be any number you want
-        };
-        const url = '/redirect/hls/' + filename;
-        const hls = new Hls(config);
-        hls.loadSource(url);
-        hls.attachMedia(videoHLS.current);
-        hls.subtitleDisplay = true;
+        // const config = {
+        //   startPosition: 0, // can be any number you want
+        // };
+        // const url = '/redirect/dash/' + filename;
+        // const hls = new Hls(config);
+        // hls.loadSource(url);
+        // hls.attachMedia(videoHLS.current);
+        // hls.subtitleDisplay = true;
 
-        var obj_play_HLS = {
-          fill: true,
-          fluid: true,
-          autoplay: true,
-          controls: true,
-          loop: true,
-        };
-        const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
-          videojs.log('Your player is ready!');
-          const defaultVolume = 0.4;
-          this.volume(defaultVolume);
-          this.on('ended', function () {
-            videojs.log('Awww...over so soon?!');
-          });
-        });
+        // var obj_play_HLS = {
+        //   fill: true,
+        //   fluid: true,
+        //   autoplay: true,
+        //   controls: true,
+        //   loop: true,
+        // };
+        // const _playerHLS = videojs(videoHLS.current, obj_play_HLS, function onPlayerReady() {
+        //   videojs.log('Your player is ready!');
+        //   const defaultVolume = 0.4;
+        //   this.volume(defaultVolume);
+        //   this.on('ended', function () {
+        //     videojs.log('Awww...over so soon?!');
+        //   });
+        // });
 
         const videoDashWindowCurrent = videoDashWindow.current;
         // var urlDash = 'http://34.142.254.141/videos/yurucamp_ep01Dash/init.mpd';
@@ -72,7 +72,7 @@ const VideoDemo = () => {
 
         if (videoDashWindow.current) {
           const video = videoDashWindow.current;
-          var urlDash = 'http://localhost:9000/redirect/dash/yurucamp_ep01/yurucamp_ep01';
+          var urlDash = 'http://192.168.1.99:9100/videos/' + filename + 'Dash/init.mpd';
           playerDashWindow.current = dashjs.MediaPlayer().create();
 
           playerDashWindow.current.initialize(video, urlDash, true);
