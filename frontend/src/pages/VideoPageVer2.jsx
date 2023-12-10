@@ -50,6 +50,58 @@ const getHlsUrl = async (filename) => {
   return subserverurl;
 };
 
+const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) => {
+  // const formData = new FormData();
+  // formData.append('myMultilPartFileChunk', chunk);
+  // formData.append('myMultilPartFileChunkIndex', chunkIndex);
+  // formData.append('arraychunkname', arrayChunkName);
+
+  // formData.append('type', 'blob');
+  // formData.append('index', chunkIndex);
+  // formData.append('chunkname', chunkName);
+  // formData.append('filename', filename);
+  // formData.append('arrayChunkName', arrayChunkName);
+  // formData.append('ext', ext);
+
+  const formData = axios.toFormData({
+    myMultilPartFileChunk: chunk,
+    myMultilPartFileChunkIndex: chunkIndex,
+    arraychunkname: arrayChunkName,
+    filename: filename + '.' + ext,
+  });
+  return formData;
+};
+
+async function uploadChunkDashVer2(
+  chunk,
+  chunkIndex,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext,
+  title,
+  infoID,
+  fullUploadURL
+) {
+  try {
+    const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
+    console.log(arrayChunkName);
+    const responseDash = await POSTLargeVideoMultipartUploadDashActionVer2(
+      formData,
+      chunkIndex,
+      chunkName,
+      arrayChunkName,
+      filename,
+      ext,
+      title,
+      infoID,
+      fullUploadURL
+    );
+    console.log(responseDash);
+  } catch (error) {
+    console.log(error);
+  }
+}
 async function uploadChunk(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) {
   try {
     const formData = new FormData();
@@ -138,30 +190,126 @@ const VideoPageVer2 = () => {
 
   const CreateNewThreadHandler = async () => {
     try {
+      console.log('press create new thread btn');
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
-      const totalChunks = Math.ceil(file.size / chunkSize);
+      const fileSize = file.size;
+      const totalChunks = Math.ceil(fileSize / chunkSize);
+
+      // let chunkNameHls = Utils.RandomString(7);
+      // let arrayChunkNameHls = [];
+      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      //   arrayChunkNameHls.push(chunkNameHls + '_' + chunkIndex);
+      // }
+
+      // // Iterate over the chunks and upload them sequentially
+      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      //   const start = chunkIndex * chunkSize;
+      //   const end = Math.min(start + chunkSize, fileSize);
+      //   const chunk = file.slice(start, end);
+      //   console.log(start);
+      //   console.log(end);
+      //   // Make an API call to upload the chunk to the backend
+      //   const ext = file.name.split('.')[1];
+      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkNameHls[chunkIndex], arrayChunkNameHls, chunkNameHls, ext);
+      // }
+
       let chunkName = Utils.RandomString(7);
       let arrayChunkName = [];
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         arrayChunkName.push(chunkName + '_' + chunkIndex);
       }
 
-      // Iterate over the chunks and upload them sequentially
-      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-        const start = chunkIndex * chunkSize;
-        const end = Math.min(start + chunkSize, file.size);
-        const chunk = file.slice(start, end);
-        console.log(start);
-        console.log(end);
-        // Make an API call to upload the chunk to the backend
-        const ext = file.name.split('.')[1];
-        await uploadChunk(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
+      // // Iterate over the chunks and upload them sequentially
+      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+      //   const start = chunkIndex * chunkSize;
+      //   const end = Math.min(start + chunkSize, fileSize);
+      //   const chunk = file.slice(start, end);
+      //   console.log(start);
+      //   console.log(end);
+      //   // Make an API call to upload the chunk to the backend
+      //   const ext = file.name.split('.')[1];
+
+      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
+      // }
+
+      var chunkIndex = 0;
+
+      const requestUploadURL = await fetch('/redirect/request-upload-url-dash', {
+        method: 'POST',
+        mode: 'cors', // no-cors, *cors, same-origin
+
+        body: JSON.stringify({
+          filename: chunkName,
+          filesize: fileSize,
+        }),
+        headers: {
+          'Content-Type': 'application/json',
+          // 'Content-Type': 'application/x-www-form-urlencoded',
+          filename: chunkName,
+          filesize: fileSize,
+        },
+      });
+      const checkResult = await requestUploadURL.json();
+      console.log(checkResult);
+      if (checkResult.status === 200) {
+        console.log(chunkName);
+
+        const index = 0;
+        const uploadURL = checkResult.aliveServers[index].URL;
+        const uploadPort = checkResult.aliveServers[index].port || '';
+        const fullUploadURL = checkResult.aliveServers[index].uploadURL;
+        console.log({ uploadURL, uploadPort, fullUploadURL });
+        async function uploadLoop() {
+          //  create a loop function
+          setTimeout(async function () {
+            //  call a 3s setTimeout when the loop is called
+            console.log('looping'); //  your code here
+
+            const start = chunkIndex * chunkSize;
+            const end = Math.min(start + chunkSize, fileSize);
+            const chunk = file.slice(start, end);
+            console.log(start);
+            console.log(end);
+            // Make an API call to upload the chunk to the backend
+            const ext = file.name.split('.')[1];
+            const title = chunkName;
+            const infoID = '';
+            // await uploadChunkHls(
+            //   chunk,
+            //   chunkIndex,
+            //   arrayChunkName[chunkIndex],
+            //   arrayChunkName,
+            //   chunkName,
+            //   ext,
+            //   title,
+            //   infoID
+            // );
+            await uploadChunkDashVer2(
+              chunk,
+              chunkIndex,
+              arrayChunkName[chunkIndex],
+              arrayChunkName,
+              chunkName,
+              ext,
+              title,
+              infoID,
+              fullUploadURL
+            );
+
+            chunkIndex++; //  increment the counter
+            if (chunkIndex < totalChunks) {
+              //  if the counter < totalChunks, call the loop function
+              uploadLoop(); //  ..  again which will trigger another
+            } //  ..  setTimeout()
+          }, 500);
+        }
+        uploadLoop();
       }
 
       // const formData = new FormData();
       // formData.append('myMultilPartFile', threadVideo);
-      // const response = await POSTLargeVideoMutilpartUploadAction(formData);
+      // const response = await POSTLargeVideoMultipartUploadAction(formData);
       // console.log(response);
     } catch (error) {
       console.log(error);
@@ -183,6 +331,7 @@ const VideoPageVer2 = () => {
           startPosition: 0, // can be any number you want
         };
         var urlHls = await getHlsUrl(params.videoname);
+        var urlDash = await getDashUrl(params.videoname);
 
         obj_play = {
           fill: true,
@@ -193,7 +342,7 @@ const VideoPageVer2 = () => {
           loop: true,
           sources: [
             {
-              src: urlHls,
+              src: urlDash,
               // type: 'application/x-mpegURL',
               // withCredentials: true,
             },

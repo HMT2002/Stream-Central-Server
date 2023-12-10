@@ -275,8 +275,8 @@ const VideoPageVer4 = () => {
       console.log('press create new thread btn');
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
-      const totalChunks = Math.ceil(file.size / chunkSize);
-
+      const fileSize = fileSize;
+      const totalChunks = Math.ceil(fileSize / chunkSize);
       // let chunkNameHls = Utils.RandomString(7);
       // let arrayChunkNameHls = [];
       // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
@@ -286,7 +286,7 @@ const VideoPageVer4 = () => {
       // // Iterate over the chunks and upload them sequentially
       // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       //   const start = chunkIndex * chunkSize;
-      //   const end = Math.min(start + chunkSize, file.size);
+      //   const end = Math.min(start + chunkSize, fileSize);
       //   const chunk = file.slice(start, end);
       //   console.log(start);
       //   console.log(end);
@@ -304,7 +304,7 @@ const VideoPageVer4 = () => {
       // // Iterate over the chunks and upload them sequentially
       // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       //   const start = chunkIndex * chunkSize;
-      //   const end = Math.min(start + chunkSize, file.size);
+      //   const end = Math.min(start + chunkSize, fileSize);
       //   const chunk = file.slice(start, end);
       //   console.log(start);
       //   console.log(end);
@@ -322,11 +322,13 @@ const VideoPageVer4 = () => {
 
         body: JSON.stringify({
           filename: chunkName,
+          fileSize: fileSize,
         }),
         headers: {
           'Content-Type': 'application/json',
           // 'Content-Type': 'application/x-www-form-urlencoded',
           filename: chunkName,
+          fileSize: fileSize,
         },
       });
       const checkResult = await requestUploadURL.json();
@@ -346,7 +348,7 @@ const VideoPageVer4 = () => {
             console.log('looping'); //  your code here
 
             const start = chunkIndex * chunkSize;
-            const end = Math.min(start + chunkSize, file.size);
+            const end = Math.min(start + chunkSize, fileSize);
             const chunk = file.slice(start, end);
             console.log(start);
             console.log(end);
@@ -354,16 +356,6 @@ const VideoPageVer4 = () => {
             const ext = file.name.split('.')[1];
             const title = chunkName;
             const infoID = '654ef92c9f7e923ef27cf32c';
-            // await uploadChunkHls(
-            //   chunk,
-            //   chunkIndex,
-            //   arrayChunkName[chunkIndex],
-            //   arrayChunkName,
-            //   chunkName,
-            //   ext,
-            //   title,
-            //   infoID
-            // );
             await uploadChunkDashVer2(
               chunk,
               chunkIndex,
@@ -406,16 +398,10 @@ const VideoPageVer4 = () => {
     const LoadVideo = async () => {
       try {
         var urlDash = await getDashUrl(params.videoname);
-        var urlHls = await getHlsUrl(params.videoname);
-        if (urlHls !== undefined) {
-          setReactPlayerURL(() => {
-            return urlHls;
-          });
-        } else {
-          setReactPlayerURL(() => {
-            return urlDash;
-          });
-        }
+
+        setReactPlayerURL(() => {
+          return urlDash;
+        });
       } catch (error) {
         console.log(error);
       }
@@ -457,16 +443,11 @@ const VideoPageVer4 = () => {
                 return false;
               }); /// dòng này thì chạy đc
               var urlDash = await getDashUrl(params.videoname);
-              var urlHls = await getHlsUrl(params.videoname);
-              if (urlHls) {
-                setReactPlayerURL(() => {
-                  return urlHls;
-                });
-              } else {
-                setReactPlayerURL(() => {
-                  return urlDash;
-                });
-              }
+
+              setReactPlayerURL(() => {
+                return urlDash;
+              });
+
               videoReactPlayer.current.seekTo(played); /// cái dòng này không seekTo cái khúc đang coi dở
               setIsPlaying(() => {
                 return true; /// dòng này thì chạy đc
@@ -475,7 +456,6 @@ const VideoPageVer4 = () => {
           }}
           config={{
             forceDASH: true,
-            forceHLS: true,
           }}
         />{' '}
       </Card>

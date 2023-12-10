@@ -8,10 +8,10 @@ const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
 var FormData = require('form-data');
 
-const User = require('./../models/mongo/User');
-const Log = require('./../models/mongo/Log');
-const Server = require('./../models/mongo/Server');
-const Video = require('./../models/mongo/Video');
+const User = require('../models/mongo/User');
+const Log = require('../models/mongo/Log');
+const Server = require('../models/mongo/Server');
+const Video = require('../models/mongo/Video');
 
 const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -32,8 +32,6 @@ const getAllServer = async () => {
 
 const getAvailableServer = async (video) => {
   const servers = await Server.find({ videos: video });
-  // console.log('getAvailableServer result: ');
-  // console.log(servers);
   return servers;
 };
 
@@ -191,7 +189,7 @@ const checkTestErrorCode = (result) => {
 
 const testSpeedLiveResults = async (videoname) => {
   if (!videoname) {
-    console.log('video name is empty');
+    console.log('videoname is empty');
     return [];
   }
   const availableServer = await getAllServer();
@@ -237,8 +235,6 @@ const testSpeedResults = async (video) => {
       testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
     }
   }
-  // console.log('testSpeedResults restult: ');
-  // console.log(testResults);
 
   return testResults;
 };
@@ -289,7 +285,7 @@ const availableLiveOnServer = async (videoname) => {
 const availableVideoOnServer = async (video) => {
   const testResults = await testSpeedResults(video);
   const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
-
+  // console.log(availableVideoOnServer);
   if (availableVideoOnServer === null) {
     return [];
   }
@@ -720,69 +716,35 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   }
 };
 
-const UploadNewFileLargeMultilpartDash = async (req, res, next) => {
-  console.log('Dealing with request UploadNewFileLargeMultilpartDash');
-  console.log(req.headers);
-
-  const { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } = sumUp(req);
-
-  let flag = multipartFileIsUploadedEnough(req);
-  const aliveServers = await checkFileISExistedOnServerYet(filename, 'DASH');
-  if (aliveServers.check) {
-    return { ...aliveServers };
+const firstFitFilter = async (servers) => {
+  try {
+    console.log(servers);
+  } catch (error) {
+    console.log(error);
+    return null;
   }
-  const index = 0;
-  const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || '';
-  if (flag) {
-    console.log('file is completed');
-    await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'DASH');
+};
 
-    const newVideo = await createVideo(req.headers.filename, 'DASH', title);
-    const addVideoToServer = await addToServer(newVideo, url, port);
-    const addVideoToInfo = await addToInfo(newVideo, infoID);
+const bestFitFilter = async (servers) => {
+  try {
+    console.log(servers);
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+};
 
-    return {
-      message: 'success full upload',
-      filename,
-      destination,
-      full: true,
-      addVideoToServer,
-      addVideoToInfo,
-    };
-  } else {
-    console.log('file is not completed');
-    return {
-      message: 'success upload chunk',
-      chunkname,
-      destination,
-      full: false,
-    };
+const weightAllocateFilter = async (servers) => {
+  try {
+    console.log(servers);
+  } catch (error) {
+    console.log(error);
+    return null;
   }
 };
 
 module.exports = {
-  checkFolderOnServer,
-  addToServer,
-  createVideo,
-  SendFileToOtherNodeAndConvertToDash,
-  SendFileToOtherNodeAndConvertToHls,
-  ReplicateVideoFolder,
-  ReplicateWhenEnoughRequest,
-  availableStorageOnServer,
-  availableVideoOnServer,
-  testServerIsFckingAlive,
-  testSpeedResults,
-  getAvailableVideoAndType,
-  getAvailableVideo,
-  getAvailableServer,
-  getAvailableVideoID,
-  addToInfo,
-  UploadNewFileLargeMultilpartHls,
-  UploadNewFileLargeMultilpartDash,
-  sumUp,
-  upload,
-  checkFileISExistedOnServerYet,
-  availableLiveOnServer,
-  addUpVideoReplicant,
+  weightAllocateFilter,
+  bestFitFilter,
+  firstFitFilter,
 };
