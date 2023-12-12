@@ -258,7 +258,9 @@ const VideoPageVer2 = () => {
         const index = 0;
         const uploadURL = checkResult.aliveServers[index].URL;
         const uploadPort = checkResult.aliveServers[index].port || '';
-        const fullUploadURL = checkResult.aliveServers[index].uploadURL;
+        // const fullUploadURL = checkResult.aliveServers[index].uploadURL;
+        const fullUploadURL = 'http://localhost:9100/api/v1/upload/';
+
         console.log({ uploadURL, uploadPort, fullUploadURL });
         async function uploadLoop() {
           //  create a loop function

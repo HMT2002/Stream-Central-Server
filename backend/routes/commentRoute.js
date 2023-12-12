@@ -18,14 +18,14 @@ const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 
 // bê từ redirect qua
 router
-  .route('/:videoID')
+  .route('/video/:videoID')
   .post(
     authController.protect,
     authController.restrictTo('admin', 'user', 'content-creator'),
     actionController.GetVideoByID,
     actionController.CommentVideo
-  );
+  ).get(actionController.GetVideoByID, actionController.GetAllVideoCommentWithVideoID);
 
-router.route('/get-all-comment/:videoID').get(actionController.GetVideoByID, actionController.GetAllVideoCommentWithID);
+router.route('/user/:userID').get(actionController.GetUserByID, actionController.GetAllVideoCommentWithUserID);
 
 module.exports = router;

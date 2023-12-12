@@ -39,6 +39,22 @@ next()
 
 });
 
+exports.GetUserByID = catchAsync(async (req, res, next) => {
+  const userID=req.params.userID;
+  if(!userID){
+    res.status(200).json({
+    status:400,
+    message:'Request params missing userID'
+    });
+    return;
+  }
+  const video=await User.findById(userID);
+
+  req.user=user;
+next()
+
+});
+
 exports.CommentVideo = catchAsync(async (req, res, next) => {
   const user=req.user;
   const video=req.video;
@@ -89,12 +105,22 @@ exports.GetUserAllPlaylist = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.GetAllVideoCommentWithID = catchAsync(async (req, res, next) => {
+exports.GetAllVideoCommentWithVideoID = catchAsync(async (req, res, next) => {
   const video=req.video;
-  const videoComments=await VideoComment.find({video:video._id});
+  const videoComments=await VideoComment.find({video:video._id}).populate('user');
   res.status(200).json({
     status:200,
     message:'Success get video all comments',
-    videoComments,
+    comments:videoComments,
+  });
+});
+
+exports.GetAllVideoCommentWithUserID = catchAsync(async (req, res, next) => {
+  const user=req.user;
+  const videoComments=await VideoComment.find({user:user._id});
+  res.status(200).json({
+    status:200,
+    message:'Success get user all comments',
+    comments:videoComments,
   });
 });

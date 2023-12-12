@@ -356,6 +356,7 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   // res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
 
   const redirectURL = await redirectAPI.ReplicateVideoFolder(videoname, type, toURL, toPort);
+  console.log(redirectURL)
   if (!redirectURL) {
     res.status(200).json({
       message: 'Not found any available server to replicate',
