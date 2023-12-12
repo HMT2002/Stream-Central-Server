@@ -9,9 +9,6 @@ const dbVideoSharing = require('./config/database/db_index');
 
 dbVideoSharing.connect();
 
-const hls = require('hls-server');
-const fs=require('fs')
-
 //console.log(process.env);
 //START SERVER
 const port = process.env.PORT || 9000;
