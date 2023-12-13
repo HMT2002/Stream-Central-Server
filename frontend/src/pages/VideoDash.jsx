@@ -14,7 +14,7 @@ import {
   POSTLargeVideoMutilpartUploadConcatenateAction,
 } from '../APIs/thread-apis';
 import Button from '../components/UI elements/Button';
-
+import axios from 'axios';
 import Utils from '../Utils';
 
 import dashjs from 'dashjs';
@@ -22,7 +22,18 @@ import ControlBar from '../components/dashControlBar/ControlBar';
 import '../components/dashControlBar/controlbar.css';
 import '../components/dashControlBar/icomoon.ttf';
 import '../styles/VideoDemo.css';
+const getDashUrl = async (filename) => {
+  var url = '/redirect/dash/' + filename + '/' + filename;
 
+  const { data } = await axios({
+    method: 'get',
+    url: url,
+    headers: { myaxiosfetch: '123' },
+  });
+  console.log(data);
+  var subserverurl = data.subserverurl;
+  return subserverurl;
+};
 const VideoDash = () => {
   const params = useParams();
   const filename = params.videoname;
@@ -72,7 +83,7 @@ const VideoDash = () => {
 
         if (videoDashWindow.current) {
           const video = videoDashWindow.current;
-          var urlDash = 'http://192.168.1.99:9100/videos/' + filename + 'Dash/init.mpd';
+          var urlDash = await getDashUrl(filename)
           playerDashWindow.current = dashjs.MediaPlayer().create();
 
           playerDashWindow.current.initialize(video, urlDash, true);
@@ -110,7 +121,7 @@ const VideoDash = () => {
 
         <div className="dash-video-player">
           <div className="videoContainer" id="videoContainer">
-            <video ref={videoDashWindow} autoPlay loop></video>
+            <video ref={videoDashWindow} loop></video>
             <div id="videoController" className="video-controller unselectable">
               <div id="playPauseBtn" className="btn-play-pause" title="Play/Pause">
                 <span id="iconPlayPause" className="icon-play"></span>

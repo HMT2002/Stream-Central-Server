@@ -105,6 +105,14 @@ exports.GetUser = catchAsync(async (req, res, next) => {
     data: user,
   });
 });
+exports.GetSelfUser = catchAsync(async (req, res, next) => {
+
+  res.status(200).json({
+    status: 200,
+    data: req.user,
+  });
+});
+
 
 exports.GetUserById = catchAsync(async (req, res, next) => {
   req.query.fields = 'username, email, photo, role';
