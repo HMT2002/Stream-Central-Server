@@ -17,11 +17,12 @@ const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 //ROUTE HANDLER
 
 router
-  .route('/add-playlist/:videoID')
+  .route('/add-playlist')
   .post(
     authController.protect,
     authController.restrictTo('admin', 'user', 'content-creator'),
-    actionController.GetVideoByID,
+    actionController.GetVideoByIDForPlaylist,
+    actionController.GetInfoByID,
     actionController.AddVideoToPlaylist
   );
 router
