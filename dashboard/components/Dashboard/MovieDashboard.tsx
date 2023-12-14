@@ -44,13 +44,6 @@ const MovieDashboard: React.FC = () => {
     return <span>Error: {error.message}</span>;
   }
 
-  function logData() {
-    if (data) {
-      console.log(data.servers);
-    }
-  }
-  logData();
-
   return (
     <>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 md:gap-6 xl:grid-cols-4 2xl:gap-7.5">
