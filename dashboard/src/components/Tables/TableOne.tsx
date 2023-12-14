@@ -134,7 +134,7 @@ const TableOne = ({ data }: { data: Server }) => {
             </div>
 
             <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">${video.size}</p>
+              <p className="text-black dark:text-white">{video.size}</p>
             </div>
 
             <div className="hidden items-center justify-center p-2.5 sm:flex xl:p-5">
