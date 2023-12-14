@@ -1,4 +1,4 @@
-import MovieDashboard from "@/components/Dashboard/MovieDashboard";
+import MovieDashboard from "../components/Dashboard/MovieDashboard";
 
 import { Metadata } from "next";
 
