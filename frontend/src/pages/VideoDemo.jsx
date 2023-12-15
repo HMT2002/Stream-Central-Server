@@ -74,6 +74,7 @@ const VideoDemo = () => {
   const [isPlayingDash, setIsPlaying] = useState(false);
   const [isPlayingHls, setIsPlayingHls] = useState(false);
   const [info, setInfo] = useState({ videos: [] });
+        const index = 0;
 
   const playerDashWindow = useRef(null);
 
@@ -138,7 +139,6 @@ const VideoDemo = () => {
           return fetchInfo;
         });
         console.log(fetchInfo);
-        const index = 0;
         const filename = fetchInfo.videos[index].videoname;
         var urlDash = await getDashUrl(filename);
         var urlHls = await getHlsUrl(filename);
@@ -171,9 +171,10 @@ const VideoDemo = () => {
     }
   }
 
-  const getAllComment = useCallback(async () => {
+  const getAllComment = useCallback(async (videoID) => {
     try {
-      const response = await GETAllCommentAction(filename);
+      
+      const response = await GETAllCommentAction(videoID);
       if (response.status === 200) {
         console.log(response.data);
       }
@@ -183,6 +184,7 @@ const VideoDemo = () => {
   }, []);
 
   useEffect(() => {
+    const videoID= info.videos[index]._id;
     getAllComment();
   });
 
