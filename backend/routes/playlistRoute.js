@@ -25,6 +25,12 @@ router
     actionController.GetInfoByID,
     actionController.AddVideoToPlaylist
   );
+
+  router
+  .route('/delete-playlist')
+  .post(
+    actionController.DeletePlaylist
+  );
 router
   .route('/create-playlist')
   .post(
@@ -32,6 +38,8 @@ router
     authController.restrictTo('admin', 'user', 'content-creator'),
     actionController.CreatePlaylist
   );
+
+
 router
   .route('/get-all-playlist')
   .get(
