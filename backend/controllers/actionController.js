@@ -40,7 +40,7 @@ exports.GetVideoByID = catchAsync(async (req, res, next) => {
 });
 
 exports.GetVideoByIDForPlaylist = catchAsync(async (req, res, next) => {
-  console.log(req.body)
+  console.log(req.body);
   const videoID = req.body.videoID;
   if (!videoID) {
     res.status(200).json({
@@ -121,6 +121,46 @@ exports.AddVideoToPlaylist = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.RemoveVideoFromPlaylist = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  if (!req.body.playlistID) {
+    res.status(400).json({
+      status: 400,
+      message: 'PlaylistID is missing!',
+    });
+  }
+  const playlist = await Playlist.findById(req.body.playlistID);
+  const video = req.video;
+  const info = await Info.findOne({ videos: video._id });
+
+  if (playlist.videos.includes(video._id)) {
+    const index = playlist.videos.indexOf(video._id);
+    if (index > -1) {
+      // only splice array when item is found
+      playlist.videos.splice(index, 1); // 2nd parameter means remove one item only
+
+      let flag = false;
+      for (let count = 0; count < playlist.videos.length; count++) {
+        if (info.videos.includes(playlist.videos[count]._id)) {
+          flag = true;
+        }
+      }
+      if (flag === false) {
+        const indexInfo = playlist.infos.indexOf(info._id);
+        if (indexInfo > -1) {
+          // only splice array when item is found
+          playlist.infos.splice(indexInfo, 1); // 2nd parameter means remove one item only
+        }
+      }
+    }
+  }
+
+  await playlist.save();
+  res.status(200).json({
+    status: 200,
+    message: 'Success remove video from playlist',
+  });
+});
 
 exports.DeletePlaylist = catchAsync(async (req, res, next) => {
   if (!req.body.playlistID) {

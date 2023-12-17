@@ -25,6 +25,14 @@ router
     actionController.GetInfoByID,
     actionController.AddVideoToPlaylist
   );
+  router
+  .route('/remove-from-playlist')
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'user', 'content-creator'),
+    actionController.GetVideoByIDForPlaylist,
+    actionController.RemoveVideoFromPlaylist
+  );
 
   router
   .route('/delete-playlist')
