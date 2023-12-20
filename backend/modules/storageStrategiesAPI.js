@@ -717,30 +717,71 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
 };
 
 const firstFitFilter = async (servers) => {
+  console.log('firstFitFilter');
+  console.log(servers);
+
   try {
-    console.log(servers);
   } catch (error) {
     console.log(error);
-    return null;
   }
+  return servers;
 };
 
 const bestFitFilter = async (servers) => {
+  console.log('bestFitFilter');
+  console.log(servers);
+
   try {
-    console.log(servers);
   } catch (error) {
     console.log(error);
-    return null;
+  }
+  return servers;
+};
+
+const sortWeightAllocateServer = (results) => {
+  if (results === null || results.length === 0) {
+    return [];
+  }
+  try {
+    return results
+      .filter((server) => {
+        return server.afterUploadOccupyPecentage;
+      })
+      .sort((a, b) => a.afterUploadOccupyPecentage - b.afterUploadOccupyPecentage);
+  } catch (err) {
+    console.log(err);
+    return [];
   }
 };
 
-const weightAllocateFilter = async (servers) => {
+const weightAllocateFilter = async (servers, filesize) => {
+  console.log('weightAllocateFilter');
+
+  let filterServers = [];
+
   try {
-    console.log(servers);
+    for (let i = 0; i < servers.length; i++) {
+      console.log('Inspect server ' + i);
+      const afterUploadSize = servers[i].occupy * 1 + filesize * 1 * 3;
+      const afterUploadOccupyPecentage = serverAfterUploadOccupyPecentage(servers[i], afterUploadSize);
+      console.log(afterUploadOccupyPecentage);
+
+      filterServers.push({ ...servers[i], afterUploadOccupyPecentage });
+    }
+    const sort = sortWeightAllocateServer(filterServers);
+    return sort;
   } catch (error) {
     console.log(error);
-    return null;
+    return servers;
   }
+};
+
+const serverAfterUploadOccupyPecentage = (server, afterUploadSize) => {
+  return calculatePercentage(server.storage * 1, afterUploadSize);
+};
+
+const calculatePercentage = (storage, size) => {
+  return (size / storage) * 100;
 };
 
 module.exports = {

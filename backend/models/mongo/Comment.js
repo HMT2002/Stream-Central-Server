@@ -14,6 +14,6 @@ const commentSchema = new mongoose.Schema({
 
   points: { type: Number, required: [true, 'Comment required points'], default: 0 },
 });
-const Comment = mongoose.model('Comment', commentSchema);
+const Comment = mongoose.model('CommentOLD', commentSchema);
 
 module.exports = Comment;

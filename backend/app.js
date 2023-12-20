@@ -72,8 +72,14 @@ const redirectRouter = require('./routes/redirectRoute');
 const uploadRouter = require('./routes/uploadRoute');
 
 const actionRoute = require('./routes/actionRoute');
-const commentRoute = require('./routes/commentRoute');
-const playlistRoute = require('./routes/playlistRoute');
+
+// const commentRoute = require('./routes/commentRoute');
+// const playlistRoute = require('./routes/playlistRoute');
+
+const payRouter = require('./routes/payRouter');
+const ratingRoute = require('./routes/rating.route');
+const playlistRoute = require('./routes/playlist.route');
+const commentRoute = require('./routes/comment.route');
 
 //app.use('/', defaultRoute);
 
@@ -93,6 +99,11 @@ app.use('/api/test', testRouter);
 
 app.use('/redirect', redirectRouter);
 app.use('/upload', uploadRouter);
+
+app.use('/pay', payRouter);
+app.use('/rating', ratingRoute);
+app.use('/playlists', playlistRoute);
+app.use('/comments', commentRoute);
 
 app.all('*', (req, res, next) => {
   next(new AppError('Cant find ' + req.originalUrl + ' on the server', 404));
