@@ -30,7 +30,7 @@ const MovieDashboard: React.FC = () => {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ["servers"],
     queryFn: async () => {
-      const response = await fetch("http://localhost:9000/api/v1/server");
+      const response = await fetch("http://34.126.69.58/api/v1/server");
       const jsonData = response.json();
       return jsonData;
     },

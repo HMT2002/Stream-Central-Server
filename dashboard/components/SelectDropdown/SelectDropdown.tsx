@@ -15,9 +15,10 @@ import { RadioGroup, RadioGroupItem } from "../RadioGroup/RadioGroup";
 import { Label } from "@radix-ui/react-select";
 import { Button } from "../Button/Button";
 import { Textarea } from "../Textaera/Textarea";
+import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 const ServerModal = ({
-  data,
+  data: serverArray,
   title,
   type,
 }: {
@@ -27,7 +28,27 @@ const ServerModal = ({
 }) => {
   const [server, setServer] = useState<Server | null>(null);
   const [videosOfServer, setVideosOfServer] = useState<Video[] | null>(null);
+  const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const { isLoading, isError, data, error } = useQuery({
+    queryKey: ["videos"],
+    queryFn: async () => {
+      const response = await fetch("http://34.126.69.58/api/v1/video");
+      const jsonData = response.json().then((res) => {
+        setVideos(res.data.videos);
+        return res.data.videos;
+      });
+      return null;
+    },
+  });
+
+  if (isLoading) {
+    return <span>Loading...</span>;
+  }
+
+  if (isError) {
+    return <span>Error: {error.message}</span>;
+  }
   const handleChange = () => {
     var input = document.getElementById("videoFile");
     if (!(input instanceof HTMLInputElement)) {
@@ -45,7 +66,7 @@ const ServerModal = ({
     }
   };
   const renderVideoDropdown = () => {
-    if (videosOfServer !== null && type === "1") {
+    if (videos !== null && type === "1") {
       return (
         <div className="">
           <Select
@@ -56,10 +77,10 @@ const ServerModal = ({
             <SelectTrigger className="w-[250px]">
               <SelectValue placeholder="Select your videos" />
             </SelectTrigger>
-            <SelectContent className="overflow-y-auto max-h-40 h-max">
+            <SelectContent className="overflow-y-auto max-h-67 h-max bg-black">
               <SelectGroup>
                 <SelectLabel>Videos</SelectLabel>
-                {videosOfServer.map((videoItem: Video) => (
+                {videos.map((videoItem: Video) => (
                   <SelectItem
                     className="hover:cursor-pointer hover:text-white"
                     value={videoItem ?? ""}
@@ -143,7 +164,7 @@ const ServerModal = ({
             <SelectContent position="popper">
               <SelectGroup className="bg-black">
                 <SelectLabel>Servers</SelectLabel>
-                {data?.map((item) => (
+                {serverArray?.map((item) => (
                   <SelectItem
                     className="min-w-full hover:cursor-pointer hover:text-white"
                     value={item ?? ""}
