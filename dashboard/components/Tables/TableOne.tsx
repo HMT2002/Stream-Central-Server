@@ -73,7 +73,7 @@ const TableOne = ({ data }: { data: Server }) => {
               <p className=" text-black dark:text-white">{video.type}</p>
             </div>
             <div className="flex items-center justify-center p-2.5 xl:p-5">
-              <p className="text-black dark:text-white">{video.title}K</p>
+              <p className="text-black dark:text-white">{video.title}</p>
             </div>
 
             <div className="flex items-center justify-center p-2.5 xl:p-5">
@@ -96,7 +96,7 @@ const TableOne = ({ data }: { data: Server }) => {
             </div>
             <div className="items-center justify-center p-2.5 sm:flex xl:p-5">
               {/* <p className="text-black dark:text-white">{video.avarageSpeed}</p> */}
-              <DeleteButton />
+              <DeleteButton server={data} video={video}/>
             </div>
           </div>
         ))}

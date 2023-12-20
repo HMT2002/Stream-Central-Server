@@ -363,17 +363,97 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
     });
     return;
   }
-  res.redirect(308, redirectURL);
-  res.end();
+
+  // res.redirect(308, redirectURL);
+  // res.end();
+
+  try {
+    const { data } = await axios({
+      method: 'post',
+      url: redirectURL,
+      data: req.body,
+      headers: req.headers,
+      validateStatus: () => true,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+
+  res.status(200).json({
+    message: 'Command sent!',
+    redirectURL,
+  });
 });
 
 exports.RedirectDeleteFolderRequest = catchAsync(async (req, res, next) => {
-  console.log('redirect post replicate');
+  console.log('RedirectDeleteFolderRequest');
   console.log(req.body);
   const url = req.body.url || 'localhost';
   const port = req.body.port || '';
-  res.redirect(308, 'http://' + url + port + '/api/v1/delete/folder');
-  res.end();
+  const server = await Server.findOne({ URL: url, port: port });
+  if (!server) {
+    res.status(200).json({
+      message: 'Cant find server on that database',
+    });
+    return;
+  }
+  const filename = req.body.filename;
+  const videoname = filename.split('Hls')[0].split('Dash')[0];
+  const video = await Video.findOne({ videoname, type: 'DASH' });
+  if (!video) {
+    res.status(200).json({
+      message: 'Cant find video on database',
+    });
+    return;
+  }
+
+  if (!server.videos.includes(video._id)) {
+    res.status(200).json({
+      message: 'Cant find video on that server',
+    });
+    return;
+  }
+  const reduced_index = video.numberOfReplicant - 1;
+  if (reduced_index === 0) {
+    res.status(200).json({
+      message: 'Cant delete the last copy, if you insist, delete manually!',
+      failed: true,
+    });
+    return;
+  }
+
+  // res.redirect(308, 'http://' + url + port + '/api/v1/delete/folder');
+  // res.end();
+
+  const redirectURL = 'http://' + url + port + '/api/v1/delete/folder';
+  try {
+    const { data } = await axios({
+      method: 'post',
+      url: redirectURL,
+      data: req.body,
+      headers: req.headers,
+      validateStatus: () => true,
+    });
+
+    console.log(data);
+    const index = server.videos.indexOf(video._id);
+    server.videos.splice(index, 1);
+    video.numberOfReplicant -= 1;
+    await video.save();
+    await server.save();
+    res.status(200).json({
+      message: 'Deleted video on server!',
+      hint: data.message,
+    });
+    return;
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({
+      message: 'Somethings happended!',
+      error,
+    });
+    return;
+  }
 });
 
 exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {

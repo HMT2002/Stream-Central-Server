@@ -17,6 +17,7 @@ import { Button } from "../Button/Button";
 import { Textarea } from "../Textaera/Textarea";
 import { useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
+import transferAPI from "../../APIs/transfer-apis"
 const ServerModal = ({
   data: serverArray,
   title,
@@ -72,6 +73,8 @@ const ServerModal = ({
           <Select
             onValueChange={(value) => {
               if (value) setSelectedVideo(value as Video);
+              console.log('selectedVideo');
+              console.log(selectedVideo);
             }}
           >
             <SelectTrigger className="w-[250px]">
@@ -95,6 +98,15 @@ const ServerModal = ({
       );
     }
   };
+
+  const handleStartTransfer=async ()=>{
+    console.log('handleStartTransfer')
+
+    const response= await transferAPI.POSTTranferAction(server,selectedVideo);
+    
+  };
+
+
   return (
     <div>
       <div
@@ -155,6 +167,8 @@ const ServerModal = ({
             onValueChange={(value) => {
               // alert((value as Server).URL);
               setServer(value as Server);
+              console.log('server');
+              console.log(server);
               setVideosOfServer((value as Server).videos ?? null);
             }}
           >
@@ -231,7 +245,7 @@ const ServerModal = ({
         )}
       </div>
       <div className="text-center my-5 text-white">
-        <Button>Start</Button>
+        <Button onClick={handleStartTransfer}>Start</Button>
       </div>
     </div>
   );

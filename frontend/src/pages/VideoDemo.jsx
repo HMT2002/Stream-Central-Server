@@ -74,7 +74,7 @@ const VideoDemo = () => {
   const [isPlayingDash, setIsPlaying] = useState(false);
   const [isPlayingHls, setIsPlayingHls] = useState(false);
   const [info, setInfo] = useState({ videos: [] });
-        const index = 0;
+  const index = 0;
 
   const playerDashWindow = useRef(null);
 
@@ -173,7 +173,6 @@ const VideoDemo = () => {
 
   const getAllComment = useCallback(async (videoID) => {
     try {
-      
       const response = await GETAllCommentAction(videoID);
       if (response.status === 200) {
         console.log(response.data);
@@ -183,10 +182,7 @@ const VideoDemo = () => {
     }
   }, []);
 
-  useEffect(() => {
-    const videoID= info.videos[index]._id;
-    getAllComment();
-  });
+  useEffect(() => {});
 
   function getVideoStatus(status) {
     if (status === 'Ended') {
