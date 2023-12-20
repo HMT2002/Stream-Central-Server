@@ -50,7 +50,7 @@ const MovieDashboard: React.FC = () => {
         <Dialog>
           <DialogTrigger asChild>
             <Button className="text-white" variant={"default"}>
-              BUTTON 1
+              TRANSFER VIDEO
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:min-w-[700px] bg-black">
@@ -74,7 +74,7 @@ const MovieDashboard: React.FC = () => {
         <Dialog>
           <DialogTrigger asChild>
             <Button className="text-white" variant={"default"}>
-              BUTTON 2
+              UPLOAD VIDEO
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:min-w-[700px] bg-black">
