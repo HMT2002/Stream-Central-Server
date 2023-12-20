@@ -775,6 +775,15 @@ exports.GetAvailableStorageForVideo = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.AllVideos = catchAsync(async (req, res, next) => {
+  console.log('Dealing with AllVideos');
+  const videos = await Video.find({});
+  res.status(200).json({
+    message: 'All videos',
+    data: { videos },
+  });
+});
+
 exports.SendFolderFileToOtherNode = catchAsync(async (req, res, next) => {
   console.log('replicate folder controller');
   const filename = req.body.filename || 'World Domination How-ToHls';
