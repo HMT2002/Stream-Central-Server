@@ -23,6 +23,7 @@ const axios = require('axios');
 const Playlist = require('../models/mongo/Playlist');
 const VideoComment = require('../models/mongo/VideoComment');
 const Info = require('../models/mongo/Info');
+const InfoComment = require('../models/mongo/InfoComment');
 
 exports.GetVideoByID = catchAsync(async (req, res, next) => {
   const videoID = req.params.videoID;
@@ -39,6 +40,21 @@ exports.GetVideoByID = catchAsync(async (req, res, next) => {
   next();
 });
 
+exports.GetInfoByID = catchAsync(async (req, res, next) => {
+  const infoID = req.params.infoID;
+  if (!infoID) {
+    res.status(200).json({
+      status: 400,
+      message: 'Request body missing infoID',
+    });
+    return;
+  }
+  const info = await Info.findById(infoID);
+
+  req.info = info;
+  next();
+});
+
 exports.GetVideoByIDForPlaylist = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const videoID = req.body.videoID;
@@ -52,21 +68,6 @@ exports.GetVideoByIDForPlaylist = catchAsync(async (req, res, next) => {
   const video = await Video.findById(videoID);
 
   req.video = video;
-  next();
-});
-
-exports.GetInfoByID = catchAsync(async (req, res, next) => {
-  const infoID = req.body.infoID;
-  if (!infoID) {
-    res.status(200).json({
-      status: 400,
-      message: 'Request body missing infoID',
-    });
-    return;
-  }
-  const info = await Info.findById(infoID);
-
-  req.info = info;
   next();
 });
 
@@ -96,6 +97,19 @@ exports.CommentVideo = catchAsync(async (req, res, next) => {
     comment,
   });
 });
+
+exports.CommentInfo = catchAsync(async (req, res, next) => {
+  const user = req.user;
+  const info = req.info;
+  const content = req.body.content;
+  const comment = await InfoComment.create({ user, info, content });
+  res.status(200).json({
+    status: 200,
+    message: 'Success comment to info',
+    comment,
+  });
+});
+
 exports.AddVideoToPlaylist = catchAsync(async (req, res, next) => {
   const user = req.user;
   if (!req.body.playlistID) {
@@ -205,6 +219,16 @@ exports.GetAllVideoCommentWithVideoID = catchAsync(async (req, res, next) => {
     status: 200,
     message: 'Success get video all comments',
     comments: videoComments,
+  });
+});
+
+exports.GetAllVideoCommentWithInfoID = catchAsync(async (req, res, next) => {
+  const info = req.info;
+  const infoComments = await InfoComment.find({ info: info._id }).populate('user');
+  res.status(200).json({
+    status: 200,
+    message: 'Success get info all comments',
+    comments: infoComments,
   });
 });
 
