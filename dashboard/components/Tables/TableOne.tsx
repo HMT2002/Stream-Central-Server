@@ -1,27 +1,7 @@
 // import { BRAND } from "@/types/brand";
 import Image from "next/image";
-
-type Video = {
-  avarageSpeed?: number;
-  numberOfReplicant?: number;
-  numberOfRequest?: number;
-  size?: number;
-  title?: string;
-  type?: string;
-  videoname?: string;
-};
-
-type Server = {
-  URL?: string;
-  avarageSpeed?: number;
-  numberOfRequest?: number;
-  occupy?: number;
-  occupyPercentage?: number;
-  port?: string;
-  storage?: number;
-  videos?: Array<Number>;
-};
-
+import { Server } from "../../types/server";
+import { Video } from "../../types/video";
 const TableOne = ({ data }: { data: Server }) => {
   const videos = data.videos as Video[];
   return (
