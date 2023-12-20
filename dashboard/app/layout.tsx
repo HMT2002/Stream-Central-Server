@@ -8,6 +8,7 @@ import Loader from "..//components/common/Loader";
 import Sidebar from "../components/Sidebar";
 import Header from "..//components/Header";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Toaster, toast } from "sonner";
 export default function RootLayout({
   children,
 }: {
@@ -51,6 +52,7 @@ export default function RootLayout({
                 <main>
                   <QueryClientProvider client={queryClient}>
                     <div className="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+                      <Toaster />
                       {children}
                     </div>
                   </QueryClientProvider>
