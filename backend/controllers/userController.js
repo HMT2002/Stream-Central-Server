@@ -105,6 +105,14 @@ exports.GetUser = catchAsync(async (req, res, next) => {
     data: user,
   });
 });
+exports.GetSelfUser = catchAsync(async (req, res, next) => {
+
+  res.status(200).json({
+    status: 200,
+    data: req.user,
+  });
+});
+
 
 exports.GetUserById = catchAsync(async (req, res, next) => {
   req.query.fields = 'username, email, photo, role';
@@ -141,11 +149,19 @@ exports.UpdateUser = catchAsync(async (req, res, next) => {
   if (!(user.account === req.user.account || req.user.role === 'admin')) {
     return next(new AppError('You are not the admin or owner of this account!', 401));
   }
-
+  if (!req.body.birthday||!req.body.living_city||!req.body.phone||!req.body.address||!req.body.photo) {
+    return next(new AppError('You are not the admin or owner of this account!', 401));
+  }
   user.username = req.body.username;
   user.email = req.body.email;
   // user.role = req.body.role;
   user.photo = req.body.photo;
+  user.birthday=req.body.birthday
+  user.photo=req.body.photo
+  user.address=req.body.address
+  user.phone=req.body.phone
+  user.living_city=req.body.living_city
+
   await user.save({ validateBeforeSave: false });
 
   res.status(201).json({

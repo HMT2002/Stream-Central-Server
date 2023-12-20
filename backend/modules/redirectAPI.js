@@ -32,6 +32,8 @@ const getAllServer = async () => {
 
 const getAvailableServer = async (video) => {
   const servers = await Server.find({ videos: video });
+  // console.log('getAvailableServer result: ');
+  // console.log(servers);
   return servers;
 };
 
@@ -189,7 +191,7 @@ const checkTestErrorCode = (result) => {
 
 const testSpeedLiveResults = async (videoname) => {
   if (!videoname) {
-    console.log('Video not found on database, check name');
+    console.log('video name is empty');
     return [];
   }
   const availableServer = await getAllServer();
@@ -235,6 +237,8 @@ const testSpeedResults = async (video) => {
       testResults.push({ ...speedDownload, URL: availableServer[i].URL, port: availableServer[i].port });
     }
   }
+  // console.log('testSpeedResults restult: ');
+  // console.log(testResults);
 
   return testResults;
 };
@@ -249,7 +253,17 @@ const testServerIsFckingAlive = async () => {
   for (let i = 0; i < availableServer.length; i++) {
     condition = await getMyNetworkAliveCondition(availableServer[i].URL, availableServer[i].port);
     if (condition !== null) {
-      testResults.push({ ...condition, URL: availableServer[i].URL, port: availableServer[i].port });
+      testResults.push({
+        ...condition,
+        URL: availableServer[i].URL,
+        port: availableServer[i].port,
+        numberOfRequest: availableServer[i].numberOfRequest,
+        avarageSpeed: availableServer[i].avarageSpeed,
+        occupy: availableServer[i].occupy,
+        occupyPercentage: availableServer[i].occupyPercentage,
+        storage: availableServer[i].storage,
+        videos: availableServer[i].videos,
+      });
     }
   }
   return testResults;
@@ -284,8 +298,11 @@ const availableLiveOnServer = async (videoname) => {
 
 const availableVideoOnServer = async (video) => {
   const testResults = await testSpeedResults(video);
+  console.log('testSpeedResults(video)');
+  console.log(testResults);
   const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
-  // console.log(availableVideoOnServer);
+  console.log('sortAvailableVideoOnServer(testResults)');
+  console.log(availableVideoOnServer);
   if (availableVideoOnServer === null) {
     return [];
   }
@@ -332,10 +349,19 @@ const countVideoAccessing = async (videoname, url, port, type) => {
 };
 
 const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
+  const checkDestinationServer = await getServerWithURLAndPort(toURL, toPort);
+  console.log('getServerWithURLAndPort(toURL, toPort)');
+  console.log(checkDestinationServer);
+  if (checkDestinationServer === null) {
+    console.log('Check URL and port, invalid!');
+    return null;
+  }
   const video = await Video.findOne({ videoname, type });
+  console.log('Video.findOne({ videoname, type })');
+  console.log(video);
   // const availableServer = await getAvailableServer(video);
   const server = await availableVideoOnServer(video);
-
+  console.log('availableVideoOnServer(video)');
   console.log(server);
   console.log({ videoname, type });
   if (server.length === 0) {
@@ -345,6 +371,7 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const url = server[index].URL;
   const port = server[index].port;
   // nên nhớ 2 port này khác nhau
+
   await addToServer(video, toURL, toPort);
   await addUpVideoReplicant(video);
 
@@ -466,8 +493,8 @@ const SendFileToOtherNodeAndConvertToDash = async (
   }
 };
 
-const createVideo = async (videoname, type, title) => {
-  const video = await Video.create({ videoname, type, title });
+const createVideo = async (videoname, type, title, size) => {
+  const video = await Video.create({ videoname, type, title, size });
   return video;
 };
 
@@ -491,6 +518,10 @@ const getInfoWithID = async (id) => {
 const addToServer = async (video, URL, port) => {
   const server = await getServerWithURLAndPort(URL, port);
   console.log(server);
+  if (server === null) {
+    console.log('Check URL and port, invalid!');
+    return null;
+  }
   if (server.videos.includes(video._id)) {
     console.log('Video already on server');
     return server;
@@ -524,9 +555,15 @@ const addToInfo = async (video, infoID) => {
 };
 
 const checkFolderOnServer = async (baseUrl) => {
-  console.log(baseUrl);
-  const { data } = await axios.get(baseUrl);
-  return data;
+  try {
+    console.log(baseUrl);
+    const { data } = await axios.get(baseUrl, { validateStatus: () => true });
+
+    return data;
+  } catch (error) {
+    console.log(error);
+    return error;
+  }
 };
 
 const sumUp = (req) => {
@@ -539,7 +576,8 @@ const sumUp = (req) => {
   let chunkname = req.headers.chunkname;
   let title = req.headers.title;
   let infoID = req.headers.infoid;
-  return { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID };
+  let fileSize = req.headers.filesize;
+  return { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, fileSize };
 };
 
 const upload = async (index, url, port, arrayChunkName, ext, destination, orginalname, type) => {

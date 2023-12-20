@@ -5,6 +5,8 @@ const helperAPI = require('../modules/helperAPI');
 const driveAPI = require('../modules/driveAPI');
 const firebaseAPI = require('../modules/firebaseAPI');
 const redirectAPI = require('../modules/redirectAPI');
+const storageStrategiesAPI = require('../modules/storageStrategiesAPI');
+
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
@@ -20,39 +22,6 @@ const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 const axios = require('axios');
-
-const availTestRTMP = [
-  {
-    url: 'localhost',
-    port: ':1936',
-    videoname: 'stein',
-  },
-  {
-    url: 'localhost',
-    port: ':1936',
-    videoname: 'stein',
-  },
-  {
-    url: 'localhost',
-    port: ':1936',
-    videoname: 'stein',
-  },
-  {
-    url: 'localhost',
-    port: ':1936',
-    videoname: 'steinop',
-  },
-  {
-    url: 'localhost',
-    port: ':1936',
-    videoname: 'mediumtest',
-  },
-  {
-    url: 'localhost',
-    port: ':1936',
-    videoname: 'largetest5',
-  },
-];
 
 exports.GetAvailableServerHls = catchAsync(async (req, res, next) => {
   console.log('check hls server');
@@ -280,7 +249,6 @@ exports.AvailableServerForVideoDash = catchAsync(async (req, res, next) => {
 exports.RedirectDash = catchAsync(async (req, res, next) => {
   const videoname = req.params.filename;
   const video = await redirectAPI.getAvailableVideoAndType(videoname, 'DASH');
-
   const server = await redirectAPI.availableVideoOnServer(video);
   if (server.length === 0) {
     res.status(200).json({
@@ -289,15 +257,15 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
     return;
   }
 
-  const videoNumberOfRequest = video.numberOfRequest;
-  video.numberOfRequest += 0.5;
-  await video.save();
+  // const videoNumberOfRequest = video.numberOfRequest;
+  // video.numberOfRequest += 0.5;
+  // await video.save();
 
-  if (videoNumberOfRequest === 50 || videoNumberOfRequest === 100) {
-    console.log('Request Reached! ' + videoNumberOfRequest);
-    const replicateResult = await redirectAPI.ReplicateWhenEnoughRequest(video);
-    console.log(replicateResult);
-  }
+  // if (videoNumberOfRequest === 50 || videoNumberOfRequest === 100) {
+  //   console.log('Request Reached! ' + videoNumberOfRequest);
+  //   const replicateResult = await redirectAPI.ReplicateWhenEnoughRequest(video);
+  //   console.log(replicateResult);
+  // }
 
   const index = 0;
   const url = server[index].URL || 'localhost';
@@ -388,6 +356,7 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   // res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
 
   const redirectURL = await redirectAPI.ReplicateVideoFolder(videoname, type, toURL, toPort);
+  console.log(redirectURL);
   if (!redirectURL) {
     res.status(200).json({
       message: 'Not found any available server to replicate',
@@ -586,9 +555,56 @@ exports.RequestUploadURLHls = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.PreferUploadURL = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request PreferUploadURL');
+  let { filename, title, infoID, filesize, preferurl } = req.headers;
+  if (!preferurl) {
+    next();
+    return;
+  }
+  let preferport = req.headers.preferport || '';
+  const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
+  if (video !== null) {
+    res.status(200).json({
+      message: 'There is the same video with filename and type, pick another',
+      failed: true,
+    });
+    return;
+  }
+  const baseUrl = 'http://' + preferurl + preferport + '/api/v1/check/folder/' + filename + 'Dash';
+  const check = await redirectAPI.checkFolderOnServer(baseUrl);
+  if (check.existed === true) {
+    res.status(200).json({
+      message: 'Folder already existed on sub server',
+      existed: true,
+    });
+    return;
+  }
+  if (check.code === 'ECONNREFUSED') {
+    res.status(200).json({
+      message: 'Error with connection, maybe the server is down or not existed',
+      error: true,
+    });
+    return;
+  }
+  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
+  // const addVideoToServer = await redirectAPI.addToServer(newVideo, preferurl, preferport);
+  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+
+  res.status(200).json({
+    status: 200,
+    message: 'You have prefered server!',
+    aliveServers: [
+      { URL: preferurl, PORT: preferport, uploadURL: 'http://' + preferurl + preferport + '/api/v1/upload/' },
+    ],
+  });
+});
+
 exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
   console.log('Dealing with request RequestUploadURLDash');
-  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID } = req.headers;
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
+    req.headers;
+  console.log(req.headers);
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -602,25 +618,140 @@ exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
 
   const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
   if (aliveServers.existed === true || aliveServers.noalive === true) {
-    res.status(200).json({
+    res.status(400).json({
+      status: 400,
       ...aliveServers,
+      failed: true,
+      message: 'Server already existed video or there is no server alive for upload!',
+    });
+    return;
+  }
+  const index = 0;
+  const url = aliveServers[index].URL || 'localhost';
+  const port = aliveServers[index].port || '';
+
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
+  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+
+  // res.status(400).json({
+  //   status: 400,
+  //   message: 'no, still updated! found servers for upload',
+  //   aliveServers,
+  // });
+  // return;
+  res.status(200).json({
+    status: 200,
+    message: 'found servers for upload',
+    aliveServers,
+  });
+});
+
+exports.RequestUploadURLDashWeightAllocate = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request RequestUploadURLDashWeightAllocate');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
+    req.headers;
+  console.log(req.headers);
+  let flag = true;
+
+  const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
+  if (video !== null) {
+    res.status(200).json({
+      message: 'There is the same video with filename and type, pick another',
       failed: true,
     });
     return;
   }
 
-  const index = 0;
-  const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || '';
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
+  if (aliveServers.existed === true || aliveServers.noalive === true) {
+    res.status(400).json({
+      status: 400,
+      ...aliveServers,
+      failed: true,
+      message: 'Server already existed video or there is no server alive for upload!',
+    });
+    return;
+  }
 
-  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title);
-  const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
-  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+  const filteredServer = await storageStrategiesAPI.weightAllocateFilter(aliveServers, filesize);
 
   res.status(200).json({
     status: 200,
     message: 'found servers for upload',
-    aliveServers,
+    filteredServer,
+  });
+});
+
+exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request RequestUploadURLDashWeightAllocate');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, fileSize } =
+    req.headers;
+  console.log(req.headers);
+  let flag = true;
+
+  const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
+  if (video !== null) {
+    res.status(200).json({
+      message: 'There is the same video with filename and type, pick another',
+      failed: true,
+    });
+    return;
+  }
+
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
+  if (aliveServers.existed === true || aliveServers.noalive === true) {
+    res.status(400).json({
+      status: 400,
+      ...aliveServers,
+      failed: true,
+      message: 'Server already existed video or there is no server alive for upload!',
+    });
+    return;
+  }
+
+  const filteredServer = await storageStrategiesAPI.bestFitFilter(aliveServers);
+
+  res.status(200).json({
+    status: 200,
+    message: 'found servers for upload',
+    filteredServer,
+  });
+});
+
+exports.RequestUploadURLDashFirstFit = catchAsync(async (req, res, next) => {
+  console.log('Dealing with request RequestUploadURLDashWeightAllocate');
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, fileSize } =
+    req.headers;
+  console.log(req.headers);
+  let flag = true;
+
+  const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
+  if (video !== null) {
+    res.status(200).json({
+      message: 'There is the same video with filename and type, pick another',
+      failed: true,
+    });
+    return;
+  }
+
+  const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
+  if (aliveServers.existed === true || aliveServers.noalive === true) {
+    res.status(400).json({
+      status: 400,
+      ...aliveServers,
+      failed: true,
+      message: 'Server already existed video or there is no server alive for upload!',
+    });
+    return;
+  }
+
+  const filteredServer = await storageStrategiesAPI.firstFitFilter(aliveServers);
+
+  res.status(200).json({
+    status: 200,
+    message: 'found servers for upload',
+    filteredServer,
   });
 });
 
@@ -641,6 +772,15 @@ exports.GetAvailableStorageForVideo = catchAsync(async (req, res, next) => {
     server,
     videoname,
     type,
+  });
+});
+
+exports.AllVideos = catchAsync(async (req, res, next) => {
+  console.log('Dealing with AllVideos');
+  const videos = await Video.find({});
+  res.status(200).json({
+    message: 'All videos',
+    data: { videos },
   });
 });
 

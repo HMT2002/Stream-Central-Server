@@ -11,6 +11,9 @@ const serverSchema = new mongoose.Schema({
   videos: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Video' }],
   createdDate: { type: Date, default: Date.now },
   lastUpdated: { type: Date, default: Date.now },
+  storage: { type: Number, default: 0 * 1 },
+  occupy: { type: Number, default: 0 * 1 },
+  occupyPercentage: { type: Number, default: 0 * 1 },
 });
 
 const Server = mongoose.model('Server', serverSchema);

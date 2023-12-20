@@ -17,12 +17,27 @@ const tempHls = fs.readFileSync('./public/client.html', 'utf-8');
 //ROUTE HANDLER
 
 router
-  .route('/add-playlist/:videoID')
+  .route('/add-playlist')
   .post(
     authController.protect,
     authController.restrictTo('admin', 'user', 'content-creator'),
-    actionController.GetVideoByID,
+    actionController.GetVideoByIDForPlaylist,
+    actionController.GetInfoByID,
     actionController.AddVideoToPlaylist
+  );
+  router
+  .route('/remove-from-playlist')
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'user', 'content-creator'),
+    actionController.GetVideoByIDForPlaylist,
+    actionController.RemoveVideoFromPlaylist
+  );
+
+  router
+  .route('/delete-playlist')
+  .post(
+    actionController.DeletePlaylist
   );
 router
   .route('/create-playlist')
@@ -31,6 +46,8 @@ router
     authController.restrictTo('admin', 'user', 'content-creator'),
     actionController.CreatePlaylist
   );
+
+
 router
   .route('/get-all-playlist')
   .get(

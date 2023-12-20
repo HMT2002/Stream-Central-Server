@@ -43,5 +43,6 @@ router
   .route('/upload-video-large-multipart-dash')
   .post(uploadMultipartFileChunk, redirectController.UploadNewFileLargeMultilpartDash);
 router.route('/get-available-storage').post(redirectController.GetAvailableStorageForVideo);
+router.route('/').get(redirectController.AllVideos);
 
 module.exports = router;

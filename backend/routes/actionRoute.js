@@ -52,7 +52,7 @@ router
   .route('/get-all-comment/:videoID')
   .get(
     actionController.GetVideoByID,
-    actionController.GetAllVideoCommentWithID
+    actionController.GetAllVideoCommentWithVideoID
   );
 
 module.exports = router;

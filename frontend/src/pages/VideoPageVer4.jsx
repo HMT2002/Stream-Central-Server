@@ -210,16 +210,14 @@ const loadSubtitleRed5 = async (player, VideoJS_player) => {
 const loadSubtitle = async (player, VideoJS_player, videoname) => {
   try {
     console.log(player);
-    const video = player.current;
+    const video = player.getInternalPlayer();
+    console.log(video);
     const subASSResponse = await fetch('/videos/' + videoname + '.ass', {
       method: 'GET',
     });
     const subSRTResponse = await fetch('/videos/' + videoname + '.srt', {
       method: 'GET',
     });
-    console.log(subASSResponse);
-    console.log(subSRTResponse);
-
     if (subSRTResponse.status != 500) {
       //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
       //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
@@ -234,7 +232,7 @@ const loadSubtitle = async (player, VideoJS_player, videoname) => {
       console.log(WebVTT_sutitle);
 
       // const localURL = await URL.createObjectURL(vtt);
-      VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
+      // VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
       // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành 1 obj blob
       // Dùng obj blob đó cùng phương thức toWebVTT thành blob nguồn(src) cho _player videojs blob:http://localhost:3000/xxxxx-xxx-xxxxxxx-xxxxxxx
     }
@@ -277,8 +275,8 @@ const VideoPageVer4 = () => {
       console.log('press create new thread btn');
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
-      const totalChunks = Math.ceil(file.size / chunkSize);
-
+      const fileSize = fileSize;
+      const totalChunks = Math.ceil(fileSize / chunkSize);
       // let chunkNameHls = Utils.RandomString(7);
       // let arrayChunkNameHls = [];
       // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
@@ -288,7 +286,7 @@ const VideoPageVer4 = () => {
       // // Iterate over the chunks and upload them sequentially
       // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       //   const start = chunkIndex * chunkSize;
-      //   const end = Math.min(start + chunkSize, file.size);
+      //   const end = Math.min(start + chunkSize, fileSize);
       //   const chunk = file.slice(start, end);
       //   console.log(start);
       //   console.log(end);
@@ -306,7 +304,7 @@ const VideoPageVer4 = () => {
       // // Iterate over the chunks and upload them sequentially
       // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
       //   const start = chunkIndex * chunkSize;
-      //   const end = Math.min(start + chunkSize, file.size);
+      //   const end = Math.min(start + chunkSize, fileSize);
       //   const chunk = file.slice(start, end);
       //   console.log(start);
       //   console.log(end);
@@ -324,11 +322,13 @@ const VideoPageVer4 = () => {
 
         body: JSON.stringify({
           filename: chunkName,
+          fileSize: fileSize,
         }),
         headers: {
           'Content-Type': 'application/json',
           // 'Content-Type': 'application/x-www-form-urlencoded',
           filename: chunkName,
+          fileSize: fileSize,
         },
       });
       const checkResult = await requestUploadURL.json();
@@ -348,7 +348,7 @@ const VideoPageVer4 = () => {
             console.log('looping'); //  your code here
 
             const start = chunkIndex * chunkSize;
-            const end = Math.min(start + chunkSize, file.size);
+            const end = Math.min(start + chunkSize, fileSize);
             const chunk = file.slice(start, end);
             console.log(start);
             console.log(end);
@@ -356,16 +356,6 @@ const VideoPageVer4 = () => {
             const ext = file.name.split('.')[1];
             const title = chunkName;
             const infoID = '654ef92c9f7e923ef27cf32c';
-            // await uploadChunkHls(
-            //   chunk,
-            //   chunkIndex,
-            //   arrayChunkName[chunkIndex],
-            //   arrayChunkName,
-            //   chunkName,
-            //   ext,
-            //   title,
-            //   infoID
-            // );
             await uploadChunkDashVer2(
               chunk,
               chunkIndex,
@@ -408,17 +398,10 @@ const VideoPageVer4 = () => {
     const LoadVideo = async () => {
       try {
         var urlDash = await getDashUrl(params.videoname);
-        var urlHls = await getHlsUrl(params.videoname);
-        if (urlHls !== undefined) {
-          setReactPlayerURL(() => {
-            return urlHls;
-          });
-        } else {
-          setReactPlayerURL(() => {
-            return urlDash;
-          });
-        }
-        loadSubtitle(videoReactPlayer, null, params.videoname);
+
+        setReactPlayerURL(() => {
+          return urlDash;
+        });
       } catch (error) {
         console.log(error);
       }
@@ -438,11 +421,19 @@ const VideoPageVer4 = () => {
           autoPlay
           controls
           playing={isPlayingDash}
+          onReady={() => {
+            const innerPalyer = videoReactPlayer.current.getInternalPlayer();
+            console.log(innerPalyer);
+            loadSubtitle(videoReactPlayer.current, null, params.videoname);
+          }}
           // onSeek={() => console.log('Seeking!')}
           // onBuffer={() => console.log('onBuffer')}
           // onBufferEnd={() => console.log('onBufferEnd')}
           onProgress={(progress) => {
             setPlayed(progress.playedSeconds);
+            if (played === 5) {
+              // loadSubtitle(videoReactPlayer.current, null, params.videoname);
+            }
           }}
           onError={async (event, data, instance, global) => {
             console.log({ event, data, instance, global });
@@ -452,16 +443,11 @@ const VideoPageVer4 = () => {
                 return false;
               }); /// dòng này thì chạy đc
               var urlDash = await getDashUrl(params.videoname);
-              var urlHls = await getHlsUrl(params.videoname);
-              if (urlHls) {
-                setReactPlayerURL(() => {
-                  return urlHls;
-                });
-              } else {
-                setReactPlayerURL(() => {
-                  return urlDash;
-                });
-              }
+
+              setReactPlayerURL(() => {
+                return urlDash;
+              });
+
               videoReactPlayer.current.seekTo(played); /// cái dòng này không seekTo cái khúc đang coi dở
               setIsPlaying(() => {
                 return true; /// dòng này thì chạy đc
@@ -470,10 +456,10 @@ const VideoPageVer4 = () => {
           }}
           config={{
             forceDASH: true,
-            forceHLS: true,
           }}
         />{' '}
       </Card>
+
       <input ref={threadVideoRef} type="file" accept="video/*|mkv/*.mkv" onChange={VideoChangeHandler} />
       <Button className="workshop-new-thread-tab__complete-btn" content="Upload" onClick={CreateNewThreadHandler} />
     </React.Fragment>

@@ -30,7 +30,7 @@ router.route('/dash/:filenamebase/:filename').get(redirectController.RedirectDas
 //bỏ cuộc đi, không rediect sang rtmp đc đâu
 // router.route('/live/:filename').get(redirectController.RedirectLive);
 
-router.route('/replicate/send').post(redirectController.RedirectReplicateRequest);
+router.route('/replicate/send-file').post(redirectController.RedirectReplicateRequest);
 router.route('/delete').post(redirectController.RedirectDeleteRequest);
 router.route('/replicate/send-folder').post(redirectController.RedirectReplicateFolderRequest);
 router.route('/delete-folder').post(redirectController.RedirectDeleteFolderRequest);
@@ -64,6 +64,11 @@ router
 //       ext,
 //     },
 router.route('/request-upload-url-hls').post(redirectController.RequestUploadURLHls);
-router.route('/request-upload-url-dash').post(redirectController.RequestUploadURLDash);
+router
+  .route('/request-upload-url-dash')
+  .post(redirectController.PreferUploadURL, redirectController.RequestUploadURLDash);
+router.route('/available-upload-url-dash-weight-allocate').post(redirectController.RequestUploadURLDashWeightAllocate);
+router.route('/available-upload-url-dash-first-fit').post(redirectController.RequestUploadURLDashFirstFit);
+router.route('/available-upload-url-dash-best-fit').post(redirectController.RequestUploadURLDashBestFit);
 
 module.exports = router;
