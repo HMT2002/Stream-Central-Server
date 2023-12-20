@@ -19,6 +19,6 @@ const playlistSchema = new mongoose.Schema({
   createDate: { type: Date, required: false, default: Date.now },
   updateDate: { type: Date, required: false, default: Date.now },
 });
-const Playlist = mongoose.model('PlaylistOLD', playlistSchema);
+const Playlist = mongoose.model('Playlist', playlistSchema);
 
 module.exports = Playlist;
