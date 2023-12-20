@@ -18,8 +18,10 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
+  DialogOverlay,
 } from "../Dialog/Dialog";
 import ServerModal from "../SelectDropdown/SelectDropdown";
+import { Button } from "../Button/Button";
 const MapOne = dynamic(() => import("../Maps/MapOne"), {
   ssr: false,
 });
@@ -44,12 +46,14 @@ const MovieDashboard: React.FC = () => {
 
   return (
     <>
-      <div className="flex mb-5 gap-10">
+      <div className="flex mb-5 gap-10 justify-end">
         <Dialog>
           <DialogTrigger asChild>
-            <button>BUTTON 1</button>
+            <Button className="text-white" variant={"default"}>
+              BUTTON 1
+            </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:min-w-[700px] bg-black">
             <DialogHeader>
               <DialogTitle></DialogTitle>
               <DialogDescription>
@@ -69,9 +73,11 @@ const MovieDashboard: React.FC = () => {
         </Dialog>
         <Dialog>
           <DialogTrigger asChild>
-            <button>BUTTON 2</button>
+            <Button className="text-white" variant={"default"}>
+              BUTTON 2
+            </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:min-w-[700px] bg-black">
             <DialogHeader>
               <DialogTitle></DialogTitle>
               <DialogDescription>
