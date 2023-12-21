@@ -249,17 +249,17 @@ exports.AvailableServerForVideoDash = catchAsync(async (req, res, next) => {
 exports.RedirectDash = catchAsync(async (req, res, next) => {
   const videoname = req.params.filename;
   const video = await redirectAPI.getAvailableVideoAndType(videoname, 'DASH');
-  const server = await redirectAPI.availableVideoOnServer(video);
-  if (server.length === 0) {
+  const servers = await redirectAPI.availableVideoOnServer(video);
+  if (servers.length === 0) {
     res.status(200).json({
-      message: 'Not found Server with Video, check name or server connections',
+      message: 'Not found Server with Video, check name or servers connections',
     });
     return;
   }
 
-  // const videoNumberOfRequest = video.numberOfRequest;
-  // video.numberOfRequest += 0.5;
-  // await video.save();
+  const videoNumberOfRequest = video.numberOfRequest;
+  video.numberOfRequest += 0.5;
+  await video.save();
 
   // if (videoNumberOfRequest === 50 || videoNumberOfRequest === 100) {
   //   console.log('Request Reached! ' + videoNumberOfRequest);
@@ -268,8 +268,11 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
   // }
 
   const index = 0;
-  const url = server[index].URL || 'localhost';
-  const port = server[index].port || '';
+  const url = servers[index].URL || 'localhost';
+  const port = servers[index].port || '';
+  const server = await redirectAPI.getServerWithURLAndPort(url, port);
+  server.numberOfRequest += 0.5;
+  await server.save();
   const oriURL = 'http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd';
   if (req.headers.myaxiosfetch) {
     console.log('req.headers.myaxiosfetch existed');
@@ -668,7 +671,9 @@ exports.PreferUploadURL = catchAsync(async (req, res, next) => {
     return;
   }
   // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
-  // const addVideoToServer = await redirectAPI.addToServer(newVideo, preferurl, preferport);
+  //const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+
+  // const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
   // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
@@ -679,14 +684,13 @@ exports.PreferUploadURL = catchAsync(async (req, res, next) => {
     ],
   });
 });
-
 exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
   console.log('Dealing with request RequestUploadURLDash');
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
+  const actual_size = filesize * 3;
   console.log(req.headers);
   let flag = true;
-
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
   if (video !== null) {
     res.status(200).json({
@@ -695,7 +699,6 @@ exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
     });
     return;
   }
-
   const aliveServers = await redirectAPI.checkFileISExistedOnServerYet(filename, 'DASH');
   if (aliveServers.existed === true || aliveServers.noalive === true) {
     res.status(400).json({
@@ -706,12 +709,15 @@ exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
     });
     return;
   }
+  const filteredServer = await storageStrategiesAPI.bestFitFilter(aliveServers, actual_size);
   const index = 0;
-  const url = aliveServers[index].URL || 'localhost';
-  const port = aliveServers[index].port || '';
+  const url = filteredServer[index].URL || 'localhost';
+  const port = filteredServer[index].port || '';
 
-  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
-  const addVideoToServer = await redirectAPI.addToServer(newVideo, url, port);
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, actual_size);
+  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
+
   const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   // res.status(400).json({
@@ -732,6 +738,7 @@ exports.RequestUploadURLDashWeightAllocate = catchAsync(async (req, res, next) =
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
+  const actual_size = filesize * 1 * 3;
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -754,7 +761,16 @@ exports.RequestUploadURLDashWeightAllocate = catchAsync(async (req, res, next) =
     return;
   }
 
-  const filteredServer = await storageStrategiesAPI.weightAllocateFilter(aliveServers, filesize);
+  const filteredServer = await storageStrategiesAPI.weightAllocateFilter(aliveServers, actual_size);
+
+  const index = 0;
+  // const url = filteredServer[index].URL || 'localhost';
+  // const port = filteredServer[index].port || '';
+
+  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
+  //const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+  // const addVideoToServer = await redirectAPI.addToServer(newVideo,d_server);
+  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,
@@ -765,9 +781,11 @@ exports.RequestUploadURLDashWeightAllocate = catchAsync(async (req, res, next) =
 
 exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
   console.log('Dealing with request RequestUploadURLDashWeightAllocate');
-  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, fileSize } =
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
+  const actual_size = filesize * 1 * 3;
+
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -790,7 +808,17 @@ exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
     return;
   }
 
-  const filteredServer = await storageStrategiesAPI.bestFitFilter(aliveServers);
+  const filteredServer = await storageStrategiesAPI.bestFitFilter(aliveServers, actual_size);
+
+  const index = 0;
+  // const url = filteredServer[index].URL || 'localhost';
+  // const port = filteredServer[index].port || '';
+
+  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
+  //  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+
+  // const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
+  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,
@@ -801,9 +829,10 @@ exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
 
 exports.RequestUploadURLDashFirstFit = catchAsync(async (req, res, next) => {
   console.log('Dealing with request RequestUploadURLDashWeightAllocate');
-  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, fileSize } =
+  let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
+  const actual_size = filesize * 3;
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -826,7 +855,17 @@ exports.RequestUploadURLDashFirstFit = catchAsync(async (req, res, next) => {
     return;
   }
 
-  const filteredServer = await storageStrategiesAPI.firstFitFilter(aliveServers);
+  const filteredServer = await storageStrategiesAPI.firstFitFilter(aliveServers, actual_size);
+
+  const index = 0;
+  // const url = filteredServer[index].URL || 'localhost';
+  // const port = filteredServer[index].port || '';
+
+  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
+  //const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+
+  // const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
+  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,

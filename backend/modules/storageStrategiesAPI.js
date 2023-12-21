@@ -105,6 +105,7 @@ const calculateTime = async (baseUrl) => {
 
 const calculateTimeStorage = async (baseUrl) => {
   try {
+    const fileSizeInBytes = 200000; // ~ 0,2 mb
     const startTime = new Date().getTime();
     const { data } = await axios.get(baseUrl, {
       timeout: 500, // Set a timeout of 0,5 seconds
@@ -112,7 +113,13 @@ const calculateTimeStorage = async (baseUrl) => {
     // console.log(data);
     const endTime = new Date().getTime();
     const duration = (endTime - startTime) / 1000;
-    return { ...data, duration };
+
+    const bitsLoaded = fileSizeInBytes * 8;
+    const bps = (bitsLoaded / duration).toFixed(2);
+    const kbps = (bps / 1000).toFixed(2);
+    const mbps = (kbps / 1000).toFixed(2);
+
+    return { ...data, duration, mbps };
   } catch (err) {
     // const endTime = new Date().getTime();
     // const duration = (endTime - startTime) / 1000;
@@ -716,22 +723,63 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   }
 };
 
-const firstFitFilter = async (servers) => {
+const firstFitFilter = async (servers, filesize) => {
   console.log('firstFitFilter');
   console.log(servers);
+  let filterServers = [];
 
   try {
+    for (let i = 0; i < servers.length; i++) {
+      console.log('firstFitFilter: Inspect server ' + i);
+      const afterUploadSize = servers[i].occupy * 1 + filesize * 1;
+      const leftStorage = servers[i].storage * 1 - afterUploadSize;
+      if (leftStorage <= 0) {
+        continue;
+      }
+      const url = servers[i].URL;
+      const port = servers[i].port;
+      const baseUrl = 'http://' + url + port + '/is-this-alive';
+      const calculate = await calculateTimeStorage(baseUrl);
+      const testSpeed = calculate.mbps * 1;
+      const avgSpeed = servers[i].avarageSpeed * 1;
+      let numberOfRequest = servers[i].numberOfRequest * 1;
+      if (numberOfRequest <= 0) {
+        numberOfRequest = 1;
+      }
+      const fitSpeed = (avgSpeed * numberOfRequest * 1 + testSpeed) / numberOfRequest + 1;
+      console.log(fitSpeed);
+      filterServers.push({ ...servers[i], fitSpeed });
+    }
+
+    const sort = sortFirstFitServer(filterServers);
+    console.log(sort);
+    return sort;
   } catch (error) {
     console.log(error);
   }
   return servers;
 };
 
-const bestFitFilter = async (servers) => {
+const bestFitFilter = async (servers, filesize) => {
   console.log('bestFitFilter');
-  console.log(servers);
+  // console.log(servers);
+  let filterServers = [];
 
   try {
+    for (let i = 0; i < servers.length; i++) {
+      console.log('bestFitFilter: Inspect server ' + i);
+      const afterUploadSize = servers[i].occupy * 1 + filesize * 1;
+      const leftStorage = servers[i].storage * 1 - afterUploadSize;
+      if (leftStorage <= 0) {
+        continue;
+      }
+
+      filterServers.push({ ...servers[i], leftStorage });
+    }
+
+    const sort = sortBestFitServer(filterServers);
+    console.log(sort);
+    return sort;
   } catch (error) {
     console.log(error);
   }
@@ -753,6 +801,36 @@ const sortWeightAllocateServer = (results) => {
     return [];
   }
 };
+const sortFirstFitServer = (results) => {
+  if (results === null || results.length === 0) {
+    return [];
+  }
+  try {
+    return results
+      .filter((server) => {
+        return server.fitSpeed;
+      })
+      .sort((a, b) => b.fitSpeed - a.fitSpeed);
+  } catch (err) {
+    console.log(err);
+    return results;
+  }
+};
+const sortBestFitServer = (results) => {
+  if (results === null || results.length === 0) {
+    return [];
+  }
+  try {
+    return results
+      .filter((server) => {
+        return server.leftStorage;
+      })
+      .sort((a, b) => b.leftStorage - a.leftStorage);
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+};
 
 const weightAllocateFilter = async (servers, filesize) => {
   console.log('weightAllocateFilter');
@@ -762,7 +840,11 @@ const weightAllocateFilter = async (servers, filesize) => {
   try {
     for (let i = 0; i < servers.length; i++) {
       console.log('Inspect server ' + i);
-      const afterUploadSize = servers[i].occupy * 1 + filesize * 1 * 3;
+      const afterUploadSize = servers[i].occupy * 1 + filesize * 1;
+      const leftStorage = servers[i].storage * 1 - afterUploadSize;
+      if (leftStorage <= 0) {
+        continue;
+      }
       const afterUploadOccupyPecentage = serverAfterUploadOccupyPecentage(servers[i], afterUploadSize);
       console.log(afterUploadOccupyPecentage);
 
@@ -788,4 +870,5 @@ module.exports = {
   weightAllocateFilter,
   bestFitFilter,
   firstFitFilter,
+  calculatePercentage,
 };

@@ -372,7 +372,9 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const port = server[index].port;
   // nên nhớ 2 port này khác nhau
 
-  await addToServer(video, toURL, toPort);
+  const d_server = await getServerWithURLAndPort(toURL, toURL);
+  console.log(d_server);
+  await addToServer(video, d_server);
   await addUpVideoReplicant(video);
 
   return 'http://' + url + port + '/api/v1/replicate/send-folder';
@@ -515,9 +517,14 @@ const getInfoWithID = async (id) => {
   return info;
 };
 
-const addToServer = async (video, URL, port) => {
-  const server = await getServerWithURLAndPort(URL, port);
-  console.log(server);
+const serverAfterUploadOccupyPecentage = (server, afterUploadSize) => {
+  return calculatePercentage(server.storage * 1, afterUploadSize);
+};
+const calculatePercentage = (storage, size) => {
+  return (size / storage) * 100;
+};
+
+const addToServer = async (video, server) => {
   if (server === null) {
     console.log('Check URL and port, invalid!');
     return null;
@@ -527,6 +534,9 @@ const addToServer = async (video, URL, port) => {
     return server;
   }
   server.videos.push(video);
+  server.occupy += video.size * 1;
+  const occu = server.occupy;
+  server.occupyPercentage = (occu / server.storage) * 100;
   await server.save();
   return server;
 };
@@ -731,7 +741,8 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
     // await uploadLoop();
 
     const newVideo = await createVideo(req.headers.filename, 'HLS', title);
-    const addVideoToServer = await addToServer(newVideo, url, port);
+    const d_server = await getServerWithURLAndPort(url, port);
+    const addVideoToServer = await addToServer(newVideo, d_server);
     const addVideoToInfo = await addToInfo(newVideo, infoID);
 
     return {
@@ -772,7 +783,8 @@ const UploadNewFileLargeMultilpartDash = async (req, res, next) => {
     await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'DASH');
 
     const newVideo = await createVideo(req.headers.filename, 'DASH', title);
-    const addVideoToServer = await addToServer(newVideo, url, port);
+    const d_server = await getServerWithURLAndPort(url, port);
+    const addVideoToServer = await addToServer(newVideo, d_server);
     const addVideoToInfo = await addToInfo(newVideo, infoID);
 
     return {
@@ -818,4 +830,5 @@ module.exports = {
   checkFileISExistedOnServerYet,
   availableLiveOnServer,
   addUpVideoReplicant,
+  getServerWithURLAndPort,
 };
