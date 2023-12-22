@@ -4,7 +4,6 @@ export const POSTTranferAction = async (server, video) => {
   if (!server || !video) {
     return { status: 'fail' };
   }
-  console.log;
   console.log({ server, video, proxy });
   const url = proxy + '/redirect/replicate/send-folder';
   const { data } = await axios.post(

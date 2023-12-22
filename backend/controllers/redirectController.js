@@ -670,11 +670,11 @@ exports.PreferUploadURL = catchAsync(async (req, res, next) => {
     });
     return;
   }
-  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
-  //const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
+  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
 
-  // const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
-  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
+  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,
@@ -688,7 +688,7 @@ exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
   console.log('Dealing with request RequestUploadURLDash');
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
-  const actual_size = filesize * 3;
+  const actual_size = (filesize * 1 * 1.5) / 1000000;
   console.log(req.headers);
   let flag = true;
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -738,7 +738,7 @@ exports.RequestUploadURLDashWeightAllocate = catchAsync(async (req, res, next) =
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
-  const actual_size = filesize * 1 * 3;
+  const actual_size = (filesize * 1 * 1.5) / 1000000;
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -764,18 +764,18 @@ exports.RequestUploadURLDashWeightAllocate = catchAsync(async (req, res, next) =
   const filteredServer = await storageStrategiesAPI.weightAllocateFilter(aliveServers, actual_size);
 
   const index = 0;
-  // const url = filteredServer[index].URL || 'localhost';
-  // const port = filteredServer[index].port || '';
+  const url = filteredServer[index].URL || 'localhost';
+  const port = filteredServer[index].port || '';
 
-  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
-  //const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
-  // const addVideoToServer = await redirectAPI.addToServer(newVideo,d_server);
-  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, actual_size);
+  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
+  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,
     message: 'found servers for upload',
-    filteredServer,
+    servers: filteredServer,
   });
 });
 
@@ -784,7 +784,7 @@ exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
-  const actual_size = filesize * 1 * 3;
+  const actual_size = (filesize * 1 * 1.5) / 1000000;
 
   let flag = true;
 
@@ -823,7 +823,7 @@ exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 200,
     message: 'found servers for upload',
-    filteredServer,
+    servers: filteredServer,
   });
 });
 
@@ -832,7 +832,7 @@ exports.RequestUploadURLDashFirstFit = catchAsync(async (req, res, next) => {
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
-  const actual_size = filesize * 3;
+  const actual_size = (filesize * 1 * 1.5) / 1000000;
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -870,7 +870,7 @@ exports.RequestUploadURLDashFirstFit = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: 200,
     message: 'found servers for upload',
-    filteredServer,
+    servers: filteredServer,
   });
 });
 

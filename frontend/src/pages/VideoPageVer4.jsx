@@ -291,7 +291,7 @@ const VideoPageVer4 = () => {
       //   console.log(start);
       //   console.log(end);
       //   // Make an API call to upload the chunk to the backend
-      //   const ext = file.name.split('.')[1];
+      //   const ext = file.name.split('.').pop();
       //   await uploadChunkHls(chunk, chunkIndex, arrayChunkNameHls[chunkIndex], arrayChunkNameHls, chunkNameHls, ext);
       // }
 
@@ -309,7 +309,7 @@ const VideoPageVer4 = () => {
       //   console.log(start);
       //   console.log(end);
       //   // Make an API call to upload the chunk to the backend
-      //   const ext = file.name.split('.')[1];
+      //   const ext = file.name.split('.').pop();
 
       //   await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
       // }
@@ -353,7 +353,7 @@ const VideoPageVer4 = () => {
             console.log(start);
             console.log(end);
             // Make an API call to upload the chunk to the backend
-            const ext = file.name.split('.')[1];
+            const ext = file.name.split('.').pop();
             const title = chunkName;
             const infoID = '654ef92c9f7e923ef27cf32c';
             await uploadChunkDashVer2(

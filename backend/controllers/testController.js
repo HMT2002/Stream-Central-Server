@@ -440,7 +440,7 @@ exports.VideoStreamingFile = catchAsync(async (req, res, next) => {
 
 exports.VideoStreamingHLS = catchAsync(async (req, res, next) => {
   var filename = req.params.filename.split('.')[0];
-  var ext = req.params.filename.split('.')[1];
+  var ext = req.params.filename.split('.').pop();
   if (!fs.existsSync('videos/convert/outputm3u8_' + filename + '.m3u8')) {
     if (!fs.existsSync('videos/' + req.params.filename)) {
       console.log('File not exist, please check name!: videos/' + req.params.filename);
@@ -518,7 +518,7 @@ exports.VideoStreamingHLS = catchAsync(async (req, res, next) => {
 exports.VideoTemplateHLSStreaming = catchAsync(async (req, res, next) => {
   var filename = req.params.filename.split('.')[0];
   req.filename = filename;
-  var ext = req.params.filename.split('.')[1];
+  var ext = req.params.filename.split('.').pop();
   if (!fs.existsSync('videos/convert/' + filename + '.m3u8')) {
     if (!fs.existsSync('videos/' + req.params.filename)) {
       console.log('File not exist, please check name!: videos/' + req.params.filename);

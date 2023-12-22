@@ -21,6 +21,7 @@ import transferAPI from '../../APIs/transfer-apis';
 
 import helperUtils from '../../utils/helperUtils';
 import uploadUtils from '../../utils/uploadUtils';
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
 
 const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; title?: string; type?: string }) => {
   const [server, setServer] = useState<Server | null>(null);
@@ -99,101 +100,98 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const handleStartTransfer = async () => {
     console.log('handleStartTransfer');
 
-    const response = await transferAPI.POSTTranferAction(server, selectedVideo);
+    // const response = await transferAPI.POSTTranferAction(server, selectedVideo);
   };
-
+  async function uploadLoop(
+    chunkIndex,
+    chunkSize,
+    fileSize,
+    file,
+    chunkName,
+    arrayChunkName,
+    fullUploadURL,
+    totalChunks
+  ) {
+    setTimeout(async function () {
+      const start = chunkIndex * chunkSize;
+      const end = Math.min(start + chunkSize, fileSize);
+      const chunk = file?.slice(start, end);
+      // Make an API call to upload the chunk to the backend
+      const ext = file?.name.split('.').pop();
+      const title = chunkName;
+      const infoID = '';
+      await uploadUtils.uploadChunkDashVer2(
+        chunk,
+        chunkIndex,
+        arrayChunkName[chunkIndex],
+        arrayChunkName,
+        chunkName,
+        ext,
+        title,
+        infoID,
+        fullUploadURL
+      );
+      console.log({
+        chunk,
+        chunkIndex,
+        arrayChunkNamechunkIndex: arrayChunkName[chunkIndex],
+        arrayChunkName,
+        chunkName,
+        ext,
+        title,
+        infoID,
+        fullUploadURL,
+      });
+      chunkIndex++;
+      if (chunkIndex < totalChunks) {
+        uploadLoop(chunkIndex, chunkSize, fileSize, file, chunkName, arrayChunkName, fullUploadURL, totalChunks);
+      }
+    }, 500);
+  }
   const handleUploadNewVideo = async () => {
     try {
       console.log('press create new thread btn');
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
-      const fileSize = file.size;
+
+      const fileSize = file?.size || 0;
       const totalChunks = Math.ceil(fileSize / chunkSize);
 
       let chunkName = helperUtils.RandomString(7);
-      let arrayChunkName = [];
+      let arrayChunkName: Array<string> = [];
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         arrayChunkName.push(chunkName + '_' + chunkIndex);
       }
-      var chunkIndex = 0;
+      const requestHeaders: HeadersInit = new Headers();
+      requestHeaders.set('Content-Type', 'application/json');
+      requestHeaders.set('filename', chunkName);
+      requestHeaders.set('filesize', fileSize.toString());
 
-      const requestUploadURL = await fetch('/redirect/request-upload-url-dash', {
+      const requestUploadURL = await fetch(proxy + '/redirect/available-upload-url-dash-weight-allocate', {
         method: 'POST',
         mode: 'cors', // no-cors, *cors, same-origin
-
         body: JSON.stringify({
           filename: chunkName,
           filesize: fileSize,
         }),
-        headers: {
-          'Content-Type': 'application/json',
-          // 'Content-Type': 'application/x-www-form-urlencoded',
-          filename: chunkName,
-          filesize: fileSize,
-        },
+        headers: requestHeaders,
       });
       const checkResult = await requestUploadURL.json();
       console.log(checkResult);
       if (checkResult.status === 200) {
+        let chunkIndex = 0;
         console.log(chunkName);
 
         const index = 0;
-        const uploadURL = checkResult.aliveServers[index].URL;
-        const uploadPort = checkResult.aliveServers[index].port || '';
-        const fullUploadURL = checkResult.aliveServers[index].uploadURL;
+        const uploadURL = checkResult.servers[index].URL;
+        const uploadPort = checkResult.servers[index].port || '';
+        const fullUploadURL = checkResult.servers[index].uploadURL;
+        // const fullUploadURL = 'http://localhost:9100/api/v1/upload/';
 
         console.log({ uploadURL, uploadPort, fullUploadURL });
-        async function uploadLoop() {
-          //  create a loop function
-          setTimeout(async function () {
-            //  call a 3s setTimeout when the loop is called
-            console.log('looping'); //  your code here
 
-            const start = chunkIndex * chunkSize;
-            const end = Math.min(start + chunkSize, fileSize);
-            const chunk = file.slice(start, end);
-            console.log(start);
-            console.log(end);
-            // Make an API call to upload the chunk to the backend
-            const ext = file.name.split('.')[1];
-            const title = chunkName;
-            const infoID = '';
-            // await uploadChunkHls(
-            //   chunk,
-            //   chunkIndex,
-            //   arrayChunkName[chunkIndex],
-            //   arrayChunkName,
-            //   chunkName,
-            //   ext,
-            //   title,
-            //   infoID
-            // );
-            await uploadUtils.uploadChunkDashVer2(
-              chunk,
-              chunkIndex,
-              arrayChunkName[chunkIndex],
-              arrayChunkName,
-              chunkName,
-              ext,
-              title,
-              infoID,
-              fullUploadURL
-            );
-
-            chunkIndex++; //  increment the counter
-            if (chunkIndex < totalChunks) {
-              //  if the counter < totalChunks, call the loop function
-              uploadLoop(); //  ..  again which will trigger another
-            } //  ..  setTimeout()
-          }, 500);
-        }
-        uploadLoop();
+        uploadLoop(chunkIndex, chunkSize, fileSize, file, chunkName, arrayChunkName, fullUploadURL, totalChunks);
       }
-
-      // const formData = new FormData();
-      // formData.append('myMultilPartFile', threadVideo);
-      // const response = await POSTLargeVideoMultipartUploadAction(formData);
-      // console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -321,7 +319,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         )}
       </div>
       <div className="text-center my-5 text-white">
-        <Button onClick={handleStartTransfer}>Start</Button>
+        <Button onClick={handleUploadNewVideo}>Start</Button>
       </div>
     </div>
   );

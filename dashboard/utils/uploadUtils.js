@@ -1,5 +1,37 @@
 import axios from 'axios';
 
+const POSTLargeVideoMultipartUploadDashActionVer2 = async (
+  formData,
+  index,
+  chunkName,
+  arrayChunkName,
+  filename,
+  ext,
+  title,
+  infoID,
+  fullUploadURL
+) => {
+  if (!formData) {
+    return { status: 'fail' };
+  }
+  const { data } = await axios.post(fullUploadURL, formData, {
+    validateStatus: () => true,
+    headers: {
+      type: 'blob',
+      index: index,
+      chunkname: chunkName,
+      filename: filename,
+      arrayChunkName,
+      ext,
+      title,
+      infoID,
+      // preferurl: '192.168.1.99',
+      // preferport: ':9100',
+    },
+  });
+  return data;
+};
+
 const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) => {
   const formData = axios.toFormData({
     myMultilPartFileChunk: chunk,
