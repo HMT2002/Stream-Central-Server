@@ -162,12 +162,29 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         arrayChunkName.push(chunkName + '_' + chunkIndex);
       }
+      // const requestHeaders: HeadersInit = new Headers();
+      // requestHeaders.set('Content-Type', 'application/json');
+      // requestHeaders.set('filename', chunkName);
+      // requestHeaders.set('filesize', fileSize.toString());
+
+      // const requestUploadURL = await fetch(proxy + '/redirect/available-upload-url-dash-weight-allocate', {
+      //   method: 'POST',
+      //   mode: 'cors', // no-cors, *cors, same-origin
+      //   body: JSON.stringify({
+      //     filename: chunkName,
+      //     filesize: fileSize,
+      //   }),
+      //   headers: requestHeaders,
+      // });
+
       const requestHeaders: HeadersInit = new Headers();
       requestHeaders.set('Content-Type', 'application/json');
       requestHeaders.set('filename', chunkName);
       requestHeaders.set('filesize', fileSize.toString());
-
-      const requestUploadURL = await fetch(proxy + '/redirect/available-upload-url-dash-weight-allocate', {
+      // requestHeaders.set('preferurl', '192.168.1.99');
+      // requestHeaders.set('preferport', ':9100');
+      // default is best fit
+      const requestUploadURL = await fetch(proxy + '/redirect/request-upload-url-dash', {
         method: 'POST',
         mode: 'cors', // no-cors, *cors, same-origin
         body: JSON.stringify({
@@ -176,6 +193,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         }),
         headers: requestHeaders,
       });
+
       const checkResult = await requestUploadURL.json();
       console.log(checkResult);
       if (checkResult.status === 200) {

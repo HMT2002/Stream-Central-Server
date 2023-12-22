@@ -645,6 +645,8 @@ exports.PreferUploadURL = catchAsync(async (req, res, next) => {
     next();
     return;
   }
+  const actual_size = (filesize * 1 * 1.5) / 1000000;
+
   let preferport = req.headers.preferport || '';
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
   if (video !== null) {
@@ -665,23 +667,20 @@ exports.PreferUploadURL = catchAsync(async (req, res, next) => {
   }
   if (check.code === 'ECONNREFUSED') {
     res.status(200).json({
-      message: 'Error with connection, maybe the server is down or not existed',
+      message: 'Error with connection, maybe the prefer server is down or not existed, check url and port',
       error: true,
     });
     return;
   }
-  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
-  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
-
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, actual_size);
+  const d_server = await redirectAPI.getServerWithURLAndPort(preferurl, preferport);
   const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
   const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,
     message: 'You have prefered server!',
-    aliveServers: [
-      { URL: preferurl, PORT: preferport, uploadURL: 'http://' + preferurl + preferport + '/api/v1/upload/' },
-    ],
+    servers: [{ URL: preferurl, PORT: preferport, uploadURL: 'http://' + preferurl + preferport + '/api/v1/upload/' }],
   });
 });
 exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
@@ -717,7 +716,6 @@ exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
   const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, actual_size);
   const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
   const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
-
   const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   // res.status(400).json({
@@ -811,14 +809,14 @@ exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
   const filteredServer = await storageStrategiesAPI.bestFitFilter(aliveServers, actual_size);
 
   const index = 0;
-  // const url = filteredServer[index].URL || 'localhost';
-  // const port = filteredServer[index].port || '';
+  const url = filteredServer[index].URL || 'localhost';
+  const port = filteredServer[index].port || '';
 
-  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
-  //  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, actual_size);
+  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
 
-  // const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
-  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
+  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,
@@ -858,14 +856,13 @@ exports.RequestUploadURLDashFirstFit = catchAsync(async (req, res, next) => {
   const filteredServer = await storageStrategiesAPI.firstFitFilter(aliveServers, actual_size);
 
   const index = 0;
-  // const url = filteredServer[index].URL || 'localhost';
-  // const port = filteredServer[index].port || '';
+  const url = filteredServer[index].URL || 'localhost';
+  const port = filteredServer[index].port || '';
 
-  // const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, filesize);
-  //const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
-
-  // const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
-  // const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
+  const newVideo = await redirectAPI.createVideo(filename, 'DASH', title, actual_size);
+  const d_server = await redirectAPI.getServerWithURLAndPort(url, port);
+  const addVideoToServer = await redirectAPI.addToServer(newVideo, d_server);
+  const addVideoToInfo = await redirectAPI.addToInfo(newVideo, infoID);
 
   res.status(200).json({
     status: 200,
