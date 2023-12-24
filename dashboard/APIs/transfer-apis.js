@@ -89,8 +89,8 @@ export const POSTLargeVideoMultipartUploadDashActionVer2 = async (
       ext,
       title,
       infoID,
-      preferurl: '192.168.1.99',
-      preferport: ':9100',
+      // preferurl: '192.168.1.99',
+      // preferport: ':9100',
     },
   });
   return data;
