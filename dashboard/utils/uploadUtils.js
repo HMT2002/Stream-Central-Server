@@ -30,12 +30,13 @@ const POSTLargeVideoMultipartUploadDashActionVer2 = async (
   return data;
 };
 
-const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, ext) => {
+const chunkFormData = (chunk, chunkIndex, chunkName, arrayChunkName, filename, ext, statusID) => {
   const formData = axios.toFormData({
     myMultilPartFileChunk: chunk,
     myMultilPartFileChunkIndex: chunkIndex,
     arraychunkname: arrayChunkName,
     filename: filename + '.' + ext,
+    statusID,
   });
   return formData;
 };
@@ -48,10 +49,11 @@ const uploadChunkDashVer2 = async (
   ext,
   title,
   infoID,
-  fullUploadURL
+  fullUploadURL,
+  statusID
 ) => {
   try {
-    const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext);
+    const formData = chunkFormData(chunk, chunkIndex, chunkName, arrayChunkName, filename, ext, statusID);
     console.log(arrayChunkName);
     const responseDash = await POSTLargeVideoMultipartUploadDashActionVer2(
       formData,

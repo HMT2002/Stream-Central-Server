@@ -21,7 +21,7 @@ import transferAPI from '../../APIs/transfer-apis';
 
 import helperUtils from '../../utils/helperUtils';
 import uploadUtils from '../../utils/uploadUtils';
-const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
 
 const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; title?: string; type?: string }) => {
   const [server, setServer] = useState<Server | null>(null);
@@ -100,7 +100,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const handleStartTransfer = async () => {
     console.log('handleStartTransfer');
 
-    // const response = await transferAPI.POSTTranferAction(server, selectedVideo);
+    const response = await transferAPI.POSTTranferAction(server, selectedVideo);
   };
   async function uploadLoop(
     chunkIndex,
@@ -110,7 +110,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
     chunkName,
     arrayChunkName,
     fullUploadURL,
-    totalChunks
+    totalChunks,
+    statusID
   ) {
     setTimeout(async function () {
       const start = chunkIndex * chunkSize;
@@ -129,7 +130,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         ext,
         title,
         infoID,
-        fullUploadURL
+        fullUploadURL,
+        statusID
       );
       console.log({
         chunk,
@@ -141,10 +143,21 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         title,
         infoID,
         fullUploadURL,
+        statusID,
       });
       chunkIndex++;
       if (chunkIndex < totalChunks) {
-        uploadLoop(chunkIndex, chunkSize, fileSize, file, chunkName, arrayChunkName, fullUploadURL, totalChunks);
+        uploadLoop(
+          chunkIndex,
+          chunkSize,
+          fileSize,
+          file,
+          chunkName,
+          arrayChunkName,
+          fullUploadURL,
+          totalChunks,
+          statusID
+        );
       }
     }, 500);
   }
@@ -181,8 +194,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       requestHeaders.set('Content-Type', 'application/json');
       requestHeaders.set('filename', chunkName);
       requestHeaders.set('filesize', fileSize.toString());
-      requestHeaders.set('preferurl', '192.168.1.99');
-      requestHeaders.set('preferport', ':9100');
+      // requestHeaders.set('preferurl', '192.168.1.99');
+      // requestHeaders.set('preferport', ':9100');
       // default is best fit
       const requestUploadURL = await fetch(proxy + '/redirect/request-upload-url-dash', {
         method: 'POST',
@@ -205,10 +218,20 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         const uploadPort = checkResult.servers[index].port || '';
         const fullUploadURL = checkResult.servers[index].uploadURL;
         // const fullUploadURL = 'http://localhost:9100/api/v1/upload/';
-
+        const statusID = checkResult.videoStatus._id;
         console.log({ uploadURL, uploadPort, fullUploadURL });
 
-        uploadLoop(chunkIndex, chunkSize, fileSize, file, chunkName, arrayChunkName, fullUploadURL, totalChunks);
+        uploadLoop(
+          chunkIndex,
+          chunkSize,
+          fileSize,
+          file,
+          chunkName,
+          arrayChunkName,
+          fullUploadURL,
+          totalChunks,
+          statusID
+        );
       }
     } catch (error) {
       console.log(error);

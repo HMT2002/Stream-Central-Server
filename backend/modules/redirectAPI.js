@@ -12,6 +12,7 @@ const User = require('./../models/mongo/User');
 const Log = require('./../models/mongo/Log');
 const Server = require('./../models/mongo/Server');
 const Video = require('./../models/mongo/Video');
+const VideoStatus = require('./../models/mongo/VideoStatus');
 
 const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -376,6 +377,7 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   console.log(d_server);
   await addToServer(video, d_server);
   await addUpVideoReplicant(video);
+  await createVideoStatus(video, d_server, 'ready');
 
   return 'http://' + url + port + '/api/v1/replicate/send-folder';
 };
@@ -539,6 +541,24 @@ const addToServer = async (video, server) => {
   server.occupyPercentage = (occu / server.storage) * 100;
   await server.save();
   return server;
+};
+
+const createVideoStatus = async (video, server, status) => {
+  if (server === null) {
+    console.log('Check URL and port, invalid!');
+    return null;
+  }
+  if (video === null) {
+    console.log('Check video, doesnt existed!');
+    return null;
+  }
+
+  if (status === null) {
+    console.log('Need status, default will be ready');
+    return null;
+  }
+  const videoStatus = await VideoStatus.create({ video, server, status });
+  return videoStatus;
 };
 
 const addUpVideoReplicant = async (video) => {
@@ -831,4 +851,5 @@ module.exports = {
   availableLiveOnServer,
   addUpVideoReplicant,
   getServerWithURLAndPort,
+  createVideoStatus,
 };

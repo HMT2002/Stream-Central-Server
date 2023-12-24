@@ -410,6 +410,8 @@ exports.GetAllAliveServer = async () => {
   return getAllAliveServer();
 };
 
+exports.DeleteSelectedVideoFromServer = async (video, server) => {};
+
 exports.GetAllAliveServerFromAllVideo = async () => {
   const videos = await Video.find({}).select(
     '_id videoname type size numberOfRequest numberOfReplicant avarageSpeed title'
@@ -420,9 +422,7 @@ exports.GetAllAliveServerFromAllVideo = async () => {
     const videoServers = await Server.find({ videos: video }).select(
       '_id URL port avarageSpeed numberOfRequest occupy occupyPercentage storage'
     );
-
     const sum = { video, videoServers };
-
     if (sum.video.numberOfRequest < 50 && sum.video.numberOfReplicant > 1) {
       console.log(
         'Video viewed is too low, need reduced ' +
@@ -434,6 +434,7 @@ exports.GetAllAliveServerFromAllVideo = async () => {
           ' ' +
           sum.video.numberOfReplicant
       );
+      console.log('These are the server of this video: ' + videoServers);
     }
     servers.push(sum);
   }
