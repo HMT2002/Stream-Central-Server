@@ -30,6 +30,6 @@ exports.AllVideoOnServer = catchAsync(async (req, res, next) => {
     return;
   }
   res.status(200).json({
-    servers,
+    data: servers,
   });
 });

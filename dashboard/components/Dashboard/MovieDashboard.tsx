@@ -1,16 +1,16 @@
-"use client";
-import React from "react";
-import ChartOne from "../Charts/ChartOne";
-import ChartThree from "../Charts/ChartThree";
-import ChartTwo from "../Charts/ChartTwo";
-import ChatCard from "../Chat/ChatCard";
-import TableOne from "../Tables/TableOne";
-import CardDataStats from "../CardDataStats";
-import { useQuery } from "@tanstack/react-query";
+'use client';
+import React from 'react';
+import ChartOne from '../Charts/ChartOne';
+import ChartThree from '../Charts/ChartThree';
+import ChartTwo from '../Charts/ChartTwo';
+import ChatCard from '../Chat/ChatCard';
+import TableOne from '../Tables/TableOne';
+import CardDataStats from '../CardDataStats';
+import { useQuery } from '@tanstack/react-query';
 // import Map from "../Maps/TestMap";
-import { Server } from "../../types/server";
+import { Server } from '../../types/server';
 // without this the component renders on server and throws an error
-import dynamic from "next/dynamic";
+import dynamic from 'next/dynamic';
 import {
   Dialog,
   DialogContent,
@@ -19,18 +19,18 @@ import {
   DialogTrigger,
   DialogDescription,
   DialogOverlay,
-} from "../Dialog/Dialog";
-import ServerModal from "../SelectDropdown/SelectDropdown";
-import { Button } from "../Button/Button";
-const MapOne = dynamic(() => import("../Maps/MapOne"), {
+} from '../Dialog/Dialog';
+import ServerModal from '../SelectDropdown/SelectDropdown';
+import { Button } from '../Button/Button';
+const MapOne = dynamic(() => import('../Maps/MapOne'), {
   ssr: false,
 });
 
 const MovieDashboard: React.FC = () => {
   const { isLoading, isError, data, error } = useQuery({
-    queryKey: ["servers"],
+    queryKey: ['servers'],
     queryFn: async () => {
-      const response = await fetch("http://34.126.69.58/api/v1/server");
+      const response = await fetch('http://34.126.69.58/api/v1/server');
       const jsonData = response.json();
       return jsonData;
     },
@@ -49,7 +49,7 @@ const MovieDashboard: React.FC = () => {
       <div className="flex mb-5 gap-10 justify-end">
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="text-white" variant={"default"}>
+            <Button className="text-white" variant={'default'}>
               TRANSFER VIDEO
             </Button>
           </DialogTrigger>
@@ -62,18 +62,14 @@ const MovieDashboard: React.FC = () => {
             </DialogHeader>
             <div>
               <div>
-                <ServerModal
-                  type="1"
-                  title="Choose your server"
-                  data={data.servers}
-                />
+                <ServerModal type="1" title="Choose your server" data={data.servers} />
               </div>
             </div>
           </DialogContent>
         </Dialog>
         <Dialog>
           <DialogTrigger asChild>
-            <Button className="text-white" variant={"default"}>
+            <Button className="text-white" variant={'default'}>
               UPLOAD VIDEO
             </Button>
           </DialogTrigger>
@@ -86,11 +82,7 @@ const MovieDashboard: React.FC = () => {
             </DialogHeader>
             <div>
               <div>
-                <ServerModal
-                  type="2"
-                  title="Choose your server"
-                  data={data.servers}
-                />
+                <ServerModal type="2" title="Choose your server" data={data.servers} />
               </div>
             </div>
           </DialogContent>

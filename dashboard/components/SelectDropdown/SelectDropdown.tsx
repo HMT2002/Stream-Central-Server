@@ -181,8 +181,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       requestHeaders.set('Content-Type', 'application/json');
       requestHeaders.set('filename', chunkName);
       requestHeaders.set('filesize', fileSize.toString());
-      // requestHeaders.set('preferurl', '192.168.1.99');
-      // requestHeaders.set('preferport', ':9100');
+      requestHeaders.set('preferurl', '192.168.1.99');
+      requestHeaders.set('preferport', ':9100');
       // default is best fit
       const requestUploadURL = await fetch(proxy + '/redirect/request-upload-url-dash', {
         method: 'POST',
