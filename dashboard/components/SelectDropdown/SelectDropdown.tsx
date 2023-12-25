@@ -194,10 +194,19 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       requestHeaders.set('Content-Type', 'application/json');
       requestHeaders.set('filename', chunkName);
       requestHeaders.set('filesize', fileSize.toString());
-      // requestHeaders.set('preferurl', '192.168.1.99');
-      // requestHeaders.set('preferport', ':9100');
-      // default is best fit
-      const requestUploadURL = await fetch(proxy + '/redirect/request-upload-url-dash', {
+
+      // default is best fit, if not, use request-upload-url-dash
+
+      const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định
+      // const requestURL=proxy + '/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
+      // const requestURL=proxy + '/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
+      // const requestURL=proxy + '/redirect/available-upload-url-dash-first-fit';
+
+      // const requestURL = proxy + '/redirect/request-upload-url-dash';// Đây là khi chọn manual
+      // requestHeaders.set('preferurl', '192.168.1.99'); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
+      // requestHeaders.set('preferport', ':9100'); // để thêm địa chỉ server  chọn thủ công vào request
+
+      const requestUploadURL = await fetch(requestURL, {
         method: 'POST',
         mode: 'cors', // no-cors, *cors, same-origin
         body: JSON.stringify({
