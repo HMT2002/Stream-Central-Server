@@ -29,7 +29,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [threadVideo, setThreadVideo] = useState<File | null>(null);
-  const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/request-upload-url-dash');
+  const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/available-upload-url-dash-best-fit');
+  const [isMunual, setIsManual] = useState(false);
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['videos'],
     queryFn: async () => {
@@ -203,8 +204,11 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       // const requestURL=proxy + '/redirect/available-upload-url-dash-first-fit';
 
       // const requestURL = proxy + '/redirect/request-upload-url-dash';// Đây là khi chọn manual
-      // requestHeaders.set('preferurl', '192.168.1.99'); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
-      // requestHeaders.set('preferport', ':9100'); // để thêm địa chỉ server  chọn thủ công vào request
+      if (isMunual === true) {
+        console.log('Choose manual. Uncomment 2 requestHeaders');
+        requestHeaders.set('preferurl', '192.168.1.99'); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
+        requestHeaders.set('preferport', ':9100'); // để thêm địa chỉ server  chọn thủ công vào request
+      }
 
       const requestUploadURL = await fetch(requestURL, {
         method: 'POST',
@@ -352,7 +356,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
                 <RadioGroupItem
                   onClick={() => {
                     setRequestURL(proxy + '/redirect/available-upload-url-dash-first-fit');
-                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    setIsManual(false);
+                    console.log(proxy + '/redirect/available-upload-url-dash-first-fit');
                   }}
                   value="first_fit"
                   id="r1"
@@ -360,13 +365,22 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
                 <label htmlFor="r1">First Fit</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="best_fit" id="r2" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    setIsManual(false);
+                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                  }}
+                  value="best_fit"
+                  id="r2"
+                />
                 <label htmlFor="r2">Best Fit</label>
               </div>
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-weight-allocate');
+                    setIsManual(false);
                     console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
                   }}
                   value="weight_allocate"
@@ -378,6 +392,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
                 <RadioGroupItem
                   onClick={() => {
                     setRequestURL(proxy + '/redirect/request-upload-url-dash');
+                    setIsManual(true);
                     console.log(proxy + '/redirect/request-upload-url-dash');
                   }}
                   value="manual_choose"
