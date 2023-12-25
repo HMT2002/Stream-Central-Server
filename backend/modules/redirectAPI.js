@@ -373,7 +373,7 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const port = server[index].port;
   // nên nhớ 2 port này khác nhau
 
-  const d_server = await getServerWithURLAndPort(toURL, toURL);
+  const d_server = await getServerWithURLAndPort(toURL, toPort);
   console.log(d_server);
   await addToServer(video, d_server);
   await addUpVideoReplicant(video);

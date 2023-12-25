@@ -372,6 +372,7 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   // res.end();
 
   try {
+    console.log({ redirectURL, reqbody: req.body });
     const { data } = await axios({
       method: 'post',
       url: redirectURL,
