@@ -29,7 +29,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [threadVideo, setThreadVideo] = useState<File | null>(null);
-
+  const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/request-upload-url-dash');
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['videos'],
     queryFn: async () => {
@@ -197,7 +197,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
 
       // default is best fit, if not, use request-upload-url-dash
 
-      const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định
+      // const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định
       // const requestURL=proxy + '/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
       // const requestURL=proxy + '/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
       // const requestURL=proxy + '/redirect/available-upload-url-dash-first-fit';
@@ -349,7 +349,14 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
           <div className="justify-self-center">
             <RadioGroup defaultValue="first_fit">
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="first_fit" id="r1" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-first-fit');
+                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                  }}
+                  value="first_fit"
+                  id="r1"
+                />
                 <label htmlFor="r1">First Fit</label>
               </div>
               <div className="flex items-center space-x-2">
@@ -357,11 +364,25 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
                 <label htmlFor="r2">Best Fit</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="weight_allocate" id="r3" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                  }}
+                  value="weight_allocate"
+                  id="r3"
+                />
                 <label htmlFor="r3">Weight Allocate</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="manual_choose" id="r4" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/request-upload-url-dash');
+                    console.log(proxy + '/redirect/request-upload-url-dash');
+                  }}
+                  value="manual_choose"
+                  id="r4"
+                />
                 <label htmlFor="r4">Manual Choose</label>
               </div>
             </RadioGroup>
