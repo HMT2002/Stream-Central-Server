@@ -351,7 +351,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         </div>
         {type === '2' && (
           <div className="justify-self-center">
-            <RadioGroup defaultValue="first_fit">
+            <RadioGroup defaultValue="best_fit">
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
@@ -381,7 +381,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
                   onClick={() => {
                     setRequestURL(proxy + '/redirect/available-upload-url-dash-weight-allocate');
                     setIsManual(false);
-                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    console.log('/redirect/available-upload-url-dash-weight-allocate');
                   }}
                   value="weight_allocate"
                   id="r3"

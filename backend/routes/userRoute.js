@@ -16,14 +16,16 @@ router.post('/upload-image', uploadImage, userController.UploadImage);
 
 //ROUTE HANDLER
 
-router.route('/').get(authController.protect, authController.restrictTo('admin'), userController.GetAllUsers) 
+router.route('/').get(authController.protect, authController.restrictTo('admin'), userController.GetAllUsers);
 //   .post(userController.CheckInput, uploadImage, authController.SignUp);
 
-router.route('/self').get(
-  authController.protect,
-  authController.restrictTo('admin', 'content-creator', 'user', 'guest'),
-  userController.GetSelfUser
-);
+router
+  .route('/self')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user', 'guest'),
+    userController.GetSelfUser
+  );
 router
   .route('/all-upgrade-request')
   .get(authController.protect, authController.restrictTo('admin'), userController.GetAllUpgradeRequest);
@@ -70,6 +72,5 @@ router
   );
 
 router.route('/id/:userId').get(userController.GetUserById);
-
 
 module.exports = router;
