@@ -206,8 +206,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       // const requestURL = proxy + '/redirect/request-upload-url-dash';// Đây là khi chọn manual
       if (isMunual === true) {
         console.log('Choose manual. Uncomment 2 requestHeaders');
-        requestHeaders.set('preferurl', '192.168.1.99'); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
-        requestHeaders.set('preferport', ':9100'); // để thêm địa chỉ server  chọn thủ công vào request
+        requestHeaders.set('preferurl', server.URL); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
+        requestHeaders.set('preferport', server.port); // để thêm địa chỉ server  chọn thủ công vào request
       }
 
       const requestUploadURL = await fetch(requestURL, {
