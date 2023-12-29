@@ -21,7 +21,7 @@ import transferAPI from '../../APIs/transfer-apis';
 
 import helperUtils from '../../utils/helperUtils';
 import uploadUtils from '../../utils/uploadUtils';
-const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
 
 const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; title?: string; type?: string }) => {
   const [server, setServer] = useState<Server | null>(null);
