@@ -3,6 +3,8 @@ const path = require('path');
 const helperAPI = require('./helperAPI');
 const driveAPI = require('./driveAPI');
 const firebaseAPI = require('./firebaseAPI');
+const redirectAPI = require('./redirectAPI');
+
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
@@ -422,8 +424,8 @@ exports.GetAllAliveServerFromAllVideo = async () => {
     const videoServers = await Server.find({ videos: video }).select(
       '_id URL port avarageSpeed numberOfRequest occupy occupyPercentage storage'
     );
-    const sum = { video, videoServers };
-    if (sum.video.numberOfRequest < 50 && sum.video.numberOfReplicant > 1) {
+    var sum = { video, videoServers };
+    if (sum.video.numberOfRequest < 50 && sum.video.numberOfReplicant >= 2) {
       console.log(
         'Video viewed is too low, need reduced ' +
           sum.video.videoname +
@@ -434,15 +436,114 @@ exports.GetAllAliveServerFromAllVideo = async () => {
           ' ' +
           sum.video.numberOfReplicant
       );
-      console.log('These are the server of this video: ' + videoServers);
+      console.log('\nThese are the server of this video: ' + videoServers);
+      sum.needRemove = { quantity: 1, server: videoServers };
+    }
+    if (sum.video.numberOfRequest < 100 && sum.video.numberOfRequest >= 50 && sum.video.numberOfReplicant >= 3) {
+      console.log(
+        'Video viewed is too low, need reduced ' +
+          sum.video.videoname +
+          ' ' +
+          sum.video.title +
+          ' ' +
+          sum.video.numberOfRequest +
+          ' ' +
+          sum.video.numberOfReplicant
+      );
+      console.log('\nThese are the server of this video: ' + videoServers);
+      sum.needRemove = { quantity: 1, server: videoServers };
+    }
+    if (sum.video.numberOfRequest < 150 && sum.video.numberOfRequest >= 100 && sum.video.numberOfReplicant >= 4) {
+      console.log(
+        'Video viewed is too low, need reduced ' +
+          sum.video.videoname +
+          ' ' +
+          sum.video.title +
+          ' ' +
+          sum.video.numberOfRequest +
+          ' ' +
+          sum.video.numberOfReplicant
+      );
+      console.log('\nThese are the server of this video: ' + videoServers);
+      sum.needRemove = { quantity: 1, server: videoServers };
     }
     servers.push(sum);
   }
   return servers;
 };
 
+exports.GetAllAliveServerFromAllVideoThatNeededToReduce = async () => {
+  const videos = await Video.find({}).select(
+    '_id videoname type size numberOfRequest numberOfReplicant avarageSpeed title'
+  );
+  let servers = [];
+  for (let i = 0; i < videos.length; i++) {
+    const video = videos[i];
+    const videoServers = await Server.find({ videos: video }).select(
+      '_id URL port avarageSpeed numberOfRequest occupy occupyPercentage storage'
+    );
+    var sum = { video, videoServers };
+    if (sum.video.numberOfRequest < 50 && sum.video.numberOfReplicant >= 2) {
+      console.log(
+        'Video viewed is too low, need reduced ' +
+          sum.video.videoname +
+          ' ' +
+          sum.video.title +
+          ' ' +
+          sum.video.numberOfRequest +
+          ' ' +
+          sum.video.numberOfReplicant
+      );
+      console.log('\nThese are the server of this video: ' + videoServers);
+      sum.needRemove = { quantity: 1, server: videoServers };
+    }
+    if (sum.video.numberOfRequest < 100 && sum.video.numberOfRequest >= 50 && sum.video.numberOfReplicant >= 3) {
+      console.log(
+        'Video viewed is too low, need reduced ' +
+          sum.video.videoname +
+          ' ' +
+          sum.video.title +
+          ' ' +
+          sum.video.numberOfRequest +
+          ' ' +
+          sum.video.numberOfReplicant
+      );
+      console.log('\nThese are the server of this video: ' + videoServers);
+      sum.needRemove = { quantity: 1, server: videoServers };
+    }
+    if (sum.video.numberOfRequest < 150 && sum.video.numberOfRequest >= 100 && sum.video.numberOfReplicant >= 4) {
+      console.log(
+        'Video viewed is too low, need reduced ' +
+          sum.video.videoname +
+          ' ' +
+          sum.video.title +
+          ' ' +
+          sum.video.numberOfRequest +
+          ' ' +
+          sum.video.numberOfReplicant
+      );
+      console.log('\nThese are the server of this video: ' + videoServers);
+      sum.needRemove = { quantity: 1, server: videoServers };
+    }
+    if (sum.needRemove !== undefined) {
+      servers.push(sum);
+    }
+  }
+  return servers;
+};
+
 exports.ResetVideoEveryWeek = async () => {
-  const servers = this.GetAllAliveServerFromAllVideo();
+  const videos = await cronjobAPI.GetAllAliveServerFromAllVideoThatNeededToReduce();
+  for (let i = 0; i < videos.length; i++) {
+    console.log(videos[i]);
+    const needRemove = videos[i].needRemove;
+    for (let n = 0; n < needRemove.quantity; n++) {
+      const video = await Video.findOne({ videoname: videos[i].video.videoname });
+      const server = await redirectAPI.getServerWithURLAndPort(needRemove.server[n].URL, needRemove.server[n].port);
+      const result = await redirectAPI.RemoveVideoFolder(video, server);
+      videos.push(result);
+    }
+  }
 };
 
 exports.ExecuteEveryWeek = async () => {};

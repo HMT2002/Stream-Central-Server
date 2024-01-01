@@ -335,6 +335,17 @@ exports.RedirectDeleteRequest = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const url = req.body.url || 'localhost';
   const port = req.body.port || '';
+  const video = await Video.findOne({ videoname: req.body.videoname });
+  if (video.numberOfReplicant <= 1) {
+    console.log('Cant not delete video with lower thanh 1 replicate');
+    res.status(400).json({
+      message: 'Cant not delete video with lower thanh 1 replicate',
+    });
+    return;
+  }
+  const server = await redirectAPI.getServerWithURLAndPort(url, port);
+  const result = await redirectAPI.RemoveVideoFolder(video, server);
+  console.log(result);
   res.redirect(308, 'http://' + url + port + '/api/v1/delete');
   res.end();
 });

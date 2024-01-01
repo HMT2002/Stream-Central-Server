@@ -299,11 +299,7 @@ const availableLiveOnServer = async (videoname) => {
 
 const availableVideoOnServer = async (video) => {
   const testResults = await testSpeedResults(video);
-  console.log('testSpeedResults(video)');
-  console.log(testResults);
   const availableVideoOnServer = sortAvailableVideoOnServer(testResults);
-  console.log('sortAvailableVideoOnServer(testResults)');
-  console.log(availableVideoOnServer);
   if (availableVideoOnServer === null) {
     return [];
   }
@@ -351,20 +347,12 @@ const countVideoAccessing = async (videoname, url, port, type) => {
 
 const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const checkDestinationServer = await getServerWithURLAndPort(toURL, toPort);
-  console.log('getServerWithURLAndPort(toURL, toPort)');
-  console.log(checkDestinationServer);
   if (checkDestinationServer === null) {
-    console.log('Check URL and port, invalid!');
     return null;
   }
   const video = await Video.findOne({ videoname, type });
-  console.log('Video.findOne({ videoname, type })');
-  console.log(video);
   // const availableServer = await getAvailableServer(video);
   const server = await availableVideoOnServer(video);
-  console.log('availableVideoOnServer(video)');
-  console.log(server);
-  console.log({ videoname, type });
   if (server.length === 0) {
     return null;
   }
@@ -380,6 +368,19 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   await createVideoStatus(video, d_server, 'ready');
 
   return 'http://' + url + port + '/api/v1/replicate/send-folder';
+};
+
+const RemoveVideoFolder = async (video, d_server) => {
+  try {
+    const url = d_server.url;
+    const port = d_server.port;
+    await removeFromServer(video, d_server);
+    await reduceVideoReplicant(video);
+    await deleteVideoStatus(video, d_server);
+    return 'http://' + url + port + '/api/v1/replicate/delete-folder';
+  } catch (error) {
+    return error;
+  }
 };
 
 const sendConcateRequest = async (fullUrl, arrayChunkName, orginalname) => {
@@ -543,6 +544,28 @@ const addToServer = async (video, server) => {
   return server;
 };
 
+const removeFromServer = async (video, server) => {
+  if (server === null) {
+    console.log('Check URL and port, invalid!');
+    return null;
+  }
+  if (!server.videos.includes(video._id)) {
+    console.log('Video is not on server');
+    return server;
+  }
+
+  const index = server.videos.indexOf(video._id);
+  if (index > -1) {
+    // only splice array when item is found
+    server.videos.splice(index, 1); // 2nd parameter means remove one item only
+  }
+  server.occupy -= video.size * 1;
+  const occu = server.occupy;
+  server.occupyPercentage = (occu / server.storage) * 100;
+  await server.save();
+  return server;
+};
+
 const createVideoStatus = async (video, server, status) => {
   if (server === null) {
     console.log('Check URL and port, invalid!');
@@ -561,8 +584,28 @@ const createVideoStatus = async (video, server, status) => {
   return videoStatus;
 };
 
+const deleteVideoStatus = async (video, server) => {
+  if (server === null) {
+    console.log('Check URL and port, invalid!');
+    return null;
+  }
+  if (video === null) {
+    console.log('Check video, doesnt existed!');
+    return null;
+  }
+  const videoStatus = await VideoStatus.findOne({ video: video._id, server: server._id });
+  await videoStatus.deleteOne();
+  return null;
+};
+
 const addUpVideoReplicant = async (video) => {
   video.numberOfReplicant++;
+  await video.save();
+  return video;
+};
+
+const reduceVideoReplicant = async (video) => {
+  video.numberOfReplicant--;
   await video.save();
   return video;
 };
@@ -852,4 +895,8 @@ module.exports = {
   addUpVideoReplicant,
   getServerWithURLAndPort,
   createVideoStatus,
+  reduceVideoReplicant,
+  removeFromServer,
+  RemoveVideoFolder,
+  deleteVideoStatus,
 };

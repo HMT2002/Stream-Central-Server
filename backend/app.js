@@ -6,7 +6,7 @@ const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 const videoController = require('./controllers/videoController');
 const redirectController = require('./controllers/redirectController');
-
+const proxyAPI = require('./modules/proxyAPI');
 const cors = require('cors');
 var path = require('path');
 const fs = require('fs');
@@ -43,6 +43,12 @@ app.use((req, res, next) => {
   // console.log(req.requestTime);
   //console.log(req.headers);
   req.url = decodeURIComponent(req.url);
+
+  next();
+});
+
+app.use((req, res, next) => {
+  proxyAPI.proxyVer1(req);
 
   next();
 });

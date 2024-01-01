@@ -3,6 +3,7 @@ const Thread = require('../models/mongo/Thread');
 const Video = require('../models/mongo/Video');
 const catchAsync = require('./../utils/catchAsync');
 const cronjobAPI = require('./../modules/cronjobAPI');
+const redirectAPI = require('../modules/redirectAPI');
 
 exports.Default = catchAsync(async (req, res, next) => {
   const threads = await Thread.find({});
@@ -35,13 +36,24 @@ exports.Fu = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.VideoServers = catchAsync(async (req, res, next) => {
-  const servers = await cronjobAPI.GetAllAliveServerFromAllVideo();
+exports.ResetServerTest = catchAsync(async (req, res, next) => {
+  const videos = await cronjobAPI.GetAllAliveServerFromAllVideoThatNeededToReduce();
+  for (let i = 0; i < videos.length; i++) {
+    console.log(videos[i]);
+    const needRemove = videos[i].needRemove;
+    console.log('@@@@@@@@@@@@@@@@@@@@@@');
+    for (let n = 0; n < needRemove.quantity; n++) {
+      const video = await Video.findOne({ videoname: videos[i].video.videoname });
+      const server = await redirectAPI.getServerWithURLAndPort(needRemove.server[n].URL, needRemove.server[n].port);
+      const result = await redirectAPI.RemoveVideoFolder(video, server);
+      videos.push(result);
+    }
+  }
   res.status(200).json({
     status: 'success',
     requestTime: req.requestTime,
     data: {
-      ...servers,
+      ...videos,
     },
   });
 });

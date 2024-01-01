@@ -11,6 +11,6 @@ router.route('/reset-password/:token').patch(authController.ResetPassword);
 router.route('/fu').post(defaultController.Fu);
 
 router.route('/all-alive-server').get(defaultController.TestAllAlive);
-router.route('/video-server').get(defaultController.VideoServers);
+router.route('/testreset').get(defaultController.ResetServerTest);
 
 module.exports = router;

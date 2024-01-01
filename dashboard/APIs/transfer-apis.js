@@ -26,7 +26,7 @@ export const POSTDeleteAction = async (server, video) => {
   const url = proxy + '/redirect/delete-folder';
   const { data } = await axios.post(
     url,
-    { filename: video.videoname + 'Dash', url: server.URL, port: server.port },
+    { filename: video.videoname + 'Dash', url: server.URL, port: server.port, videoname: video.name },
     {
       validateStatus: () => true,
     }

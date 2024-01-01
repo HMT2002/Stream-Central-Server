@@ -174,6 +174,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       let arrayChunkName: Array<string> = [];
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         arrayChunkName.push(chunkName + '_' + chunkIndex);
+        toast.info(chunkName + '_' + chunkIndex);
       }
       // const requestHeaders: HeadersInit = new Headers();
       // requestHeaders.set('Content-Type', 'application/json');
@@ -197,8 +198,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
 
       // default is best fit, if not, use request-upload-url-dash
 
-      const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định
-      // const requestURL=proxy + '/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
+      //const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định, đó sẽ là best-fit
+      const requestURL = proxy + '/redirect/available-upload-url-dash-weight-allocate'; //Chọn option Weight Allocate thì dùng URL này
       // const requestURL=proxy + '/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
       // const requestURL=proxy + '/redirect/available-upload-url-dash-first-fit';
 
