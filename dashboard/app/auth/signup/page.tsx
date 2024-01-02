@@ -1,52 +1,31 @@
-import React from "react";
-import Link from "next/link";
-import Image from "next/image";
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import { Metadata } from "next";
+import React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+// import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import { Metadata } from 'next';
 export const metadata: Metadata = {
-  title: "Signup Page | Next.js E-commerce Dashboard Template",
-  description: "This is Signup page for TailAdmin Next.js",
+  title: 'Signup Page | Next.js E-commerce Dashboard Template',
+  description: 'This is Signup page for TailAdmin Next.js',
   // other metadata
 };
 
 const SignUp: React.FC = () => {
   return (
     <>
-      <Breadcrumb pageName="Sign Up" />
+      {/* <Breadcrumb pageName="Sign Up" /> */}
 
       <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
         <div className="flex flex-wrap items-center">
           <div className="hidden w-full xl:block xl:w-1/2">
             <div className="py-17.5 px-26 text-center">
               <Link className="mb-5.5 inline-block" href="/">
-                <Image
-                  className="hidden dark:block"
-                  src={"/images/logo/logo.svg"}
-                  alt="Logo"
-                  width={176}
-                  height={32}
-                />
-                <Image
-                  className="dark:hidden"
-                  src={"/images/logo/logo-dark.svg"}
-                  alt="Logo"
-                  width={176}
-                  height={32}
-                />
+                <Image className="hidden dark:block" src={'/images/logo/logo.svg'} alt="Logo" width={176} height={32} />
+                <Image className="dark:hidden" src={'/images/logo/logo-dark.svg'} alt="Logo" width={176} height={32} />
               </Link>
-              <p className="2xl:px-20">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit
-                suspendisse.
-              </p>
+              <p className="2xl:px-20">Lorem ipsum dolor sit amet, consectetur adipiscing elit suspendisse.</p>
 
               <span className="mt-15 inline-block">
-                <svg
-                  width="350"
-                  height="350"
-                  viewBox="0 0 350 350"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
+                <svg width="350" height="350" viewBox="0 0 350 350" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <path
                     d="M33.5825 294.844L30.5069 282.723C25.0538 280.414 19.4747 278.414 13.7961 276.732L13.4079 282.365L11.8335 276.159C4.79107 274.148 0 273.263 0 273.263C0 273.263 6.46998 297.853 20.0448 316.653L35.8606 319.429L23.5737 321.2C25.2813 323.253 27.1164 325.196 29.0681 327.019C48.8132 345.333 70.8061 353.736 78.1898 345.787C85.5736 337.838 75.5526 316.547 55.8074 298.235C49.6862 292.557 41.9968 288.001 34.2994 284.415L33.5825 294.844Z"
                     fill="#F2F2F2"
@@ -79,18 +58,12 @@ const SignUp: React.FC = () => {
                     d="M190.017 158.289H123.208C122.572 158.288 121.962 158.035 121.512 157.586C121.062 157.137 120.809 156.527 120.809 155.892V89.1315C120.809 88.496 121.062 87.8866 121.512 87.4372C121.962 86.9878 122.572 86.735 123.208 86.7343H190.017C190.653 86.735 191.263 86.9878 191.713 87.4372C192.163 87.8866 192.416 88.496 192.416 89.1315V155.892C192.416 156.527 192.163 157.137 191.713 157.586C191.263 158.035 190.653 158.288 190.017 158.289ZM123.208 87.6937C122.826 87.6941 122.46 87.8457 122.19 88.1154C121.92 88.385 121.769 88.7507 121.768 89.132V155.892C121.769 156.274 121.92 156.639 122.19 156.909C122.46 157.178 122.826 157.33 123.208 157.33H190.017C190.399 157.33 190.765 157.178 191.035 156.909C191.304 156.639 191.456 156.274 191.457 155.892V89.132C191.456 88.7507 191.304 88.385 191.035 88.1154C190.765 87.8457 190.399 87.6941 190.017 87.6937H123.208Z"
                     fill="#CCCCCC"
                   />
-                  <path
-                    d="M204.934 209.464H102.469V210.423H204.934V209.464Z"
-                    fill="#CCCCCC"
-                  />
+                  <path d="M204.934 209.464H102.469V210.423H204.934V209.464Z" fill="#CCCCCC" />
                   <path
                     d="M105.705 203.477C107.492 203.477 108.941 202.029 108.941 200.243C108.941 198.457 107.492 197.01 105.705 197.01C103.918 197.01 102.469 198.457 102.469 200.243C102.469 202.029 103.918 203.477 105.705 203.477Z"
                     fill="#3056D3"
                   />
-                  <path
-                    d="M204.934 241.797H102.469V242.757H204.934V241.797Z"
-                    fill="#CCCCCC"
-                  />
+                  <path d="M204.934 241.797H102.469V242.757H204.934V241.797Z" fill="#CCCCCC" />
                   <path
                     d="M105.705 235.811C107.492 235.811 108.941 234.363 108.941 232.577C108.941 230.791 107.492 229.344 105.705 229.344C103.918 229.344 102.469 230.791 102.469 232.577C102.469 234.363 103.918 235.811 105.705 235.811Z"
                     fill="#3056D3"
@@ -119,10 +92,7 @@ const SignUp: React.FC = () => {
                     d="M264.742 229.309C264.972 229.414 265.193 229.537 265.404 229.678L286.432 220.709L287.183 215.174L295.585 215.123L295.089 227.818L267.334 235.153C267.275 235.345 267.205 235.535 267.124 235.719C266.722 236.574 266.077 237.292 265.269 237.783C264.46 238.273 263.525 238.514 262.58 238.475C261.636 238.436 260.723 238.119 259.958 237.563C259.193 237.008 258.61 236.239 258.28 235.353C257.951 234.467 257.892 233.504 258.108 232.584C258.325 231.664 258.809 230.829 259.5 230.183C260.19 229.538 261.056 229.11 261.989 228.955C262.922 228.799 263.879 228.922 264.742 229.309Z"
                     fill="#FFB8B8"
                   />
-                  <path
-                    d="M298.642 344.352H292.894L290.16 322.198L298.643 322.198L298.642 344.352Z"
-                    fill="#FFB8B8"
-                  />
+                  <path d="M298.642 344.352H292.894L290.16 322.198L298.643 322.198L298.642 344.352Z" fill="#FFB8B8" />
                   <path
                     d="M288.788 342.711H299.873V349.685H281.809C281.809 347.835 282.544 346.062 283.853 344.754C285.162 343.446 286.937 342.711 288.788 342.711Z"
                     fill="#1C2434"
@@ -173,9 +143,7 @@ const SignUp: React.FC = () => {
 
               <form>
                 <div className="mb-4">
-                  <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Name
-                  </label>
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">Name</label>
                   <div className="relative">
                     <input
                       type="text"
@@ -208,9 +176,7 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Email
-                  </label>
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">Email</label>
                   <div className="relative">
                     <input
                       type="email"
@@ -239,9 +205,7 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className="mb-4">
-                  <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Password
-                  </label>
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">Password</label>
                   <div className="relative">
                     <input
                       type="password"
@@ -274,9 +238,7 @@ const SignUp: React.FC = () => {
                 </div>
 
                 <div className="mb-6">
-                  <label className="mb-2.5 block font-medium text-black dark:text-white">
-                    Re-type Password
-                  </label>
+                  <label className="mb-2.5 block font-medium text-black dark:text-white">Re-type Password</label>
                   <div className="relative">
                     <input
                       type="password"
@@ -318,13 +280,7 @@ const SignUp: React.FC = () => {
 
                 <button className="flex w-full items-center justify-center gap-3.5 rounded-lg border border-stroke bg-gray p-4 hover:bg-opacity-50 dark:border-strokedark dark:bg-meta-4 dark:hover:bg-opacity-50">
                   <span>
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g clipPath="url(#clip0_191_13499)">
                         <path
                           d="M19.999 10.2217C20.0111 9.53428 19.9387 8.84788 19.7834 8.17737H10.2031V11.8884H15.8266C15.7201 12.5391 15.4804 13.162 15.1219 13.7195C14.7634 14.2771 14.2935 14.7578 13.7405 15.1328L13.7209 15.2571L16.7502 17.5568L16.96 17.5774C18.8873 15.8329 19.9986 13.2661 19.9986 10.2217"
@@ -355,7 +311,7 @@ const SignUp: React.FC = () => {
 
                 <div className="mt-6 text-center">
                   <p>
-                    Already have an account?{" "}
+                    Already have an account?{' '}
                     <Link href="/auth/signin" className="text-primary">
                       Sign in
                     </Link>
