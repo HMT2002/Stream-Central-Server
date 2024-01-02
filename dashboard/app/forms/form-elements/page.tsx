@@ -1,18 +1,18 @@
-import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
-import CheckboxFive from "@/components/Checkboxes/CheckboxFive";
-import CheckboxFour from "@/components/Checkboxes/CheckboxFour";
-import CheckboxOne from "@/components/Checkboxes/CheckboxOne";
-import CheckboxThree from "@/components/Checkboxes/CheckboxThree";
-import CheckboxTwo from "@/components/Checkboxes/CheckboxTwo";
-import SwitcherFour from "@/components/Switchers/SwitcherFour";
-import SwitcherOne from "@/components/Switchers/SwitcherOne";
-import SwitcherThree from "@/components/Switchers/SwitcherThree";
-import SwitcherTwo from "@/components/Switchers/SwitcherTwo";
+import Breadcrumb from '@/components/Breadcrumbs/Breadcrumb';
+import CheckboxFive from '@/components/Checkboxes/CheckboxFive';
+import CheckboxFour from '@/components/Checkboxes/CheckboxFour';
+import CheckboxOne from '@/components/Checkboxes/CheckboxOne';
+import CheckboxThree from '@/components/Checkboxes/CheckboxThree';
+import CheckboxTwo from '@/components/Checkboxes/CheckboxTwo';
+import SwitcherFour from '@/components/Switchers/SwitcherFour';
+import SwitcherOne from '@/components/Switchers/SwitcherOne';
+import SwitcherThree from '@/components/Switchers/SwitcherThree';
+import SwitcherTwo from '@/components/Switchers/SwitcherTwo';
 
-import { Metadata } from "next";
+import { Metadata } from 'next';
 export const metadata: Metadata = {
-  title: "Form Elements Page | Next.js E-commerce Dashboard Template",
-  description: "This is Form Elements page for TailAdmin Next.js",
+  title: 'Form Elements Page | Next.js E-commerce Dashboard Template',
+  description: 'This is Form Elements page for TailAdmin Next.js',
   // other metadata
 };
 
@@ -26,15 +26,11 @@ const FormElements = () => {
           {/* <!-- Input Fields --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Input Fields
-              </h3>
+              <h3 className="font-medium text-black dark:text-white">Input Fields</h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Default Input
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Default Input</label>
                 <input
                   type="text"
                   placeholder="Default Input"
@@ -43,9 +39,7 @@ const FormElements = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Active Input
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Active Input</label>
                 <input
                   type="text"
                   placeholder="Active Input"
@@ -54,9 +48,7 @@ const FormElements = () => {
               </div>
 
               <div>
-                <label className="mb-3 block font-medium text-black dark:text-white">
-                  Disabled label
-                </label>
+                <label className="mb-3 block font-medium text-black dark:text-white">Disabled label</label>
                 <input
                   type="text"
                   placeholder="Disabled label"
@@ -70,9 +62,7 @@ const FormElements = () => {
           {/* <!-- Toggle switch input --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Toggle switch input
-              </h3>
+              <h3 className="font-medium text-black dark:text-white">Toggle switch input</h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
               <SwitcherOne />
@@ -85,15 +75,11 @@ const FormElements = () => {
           {/* <!-- Time and date --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Time and date
-              </h3>
+              <h3 className="font-medium text-black dark:text-white">Time and date</h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Date picker
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Date picker</label>
                 <div className="relative">
                   <input
                     type="date"
@@ -103,9 +89,7 @@ const FormElements = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Select date
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Select date</label>
                 <div className="relative">
                   <input
                     type="date"
@@ -119,15 +103,11 @@ const FormElements = () => {
           {/* <!-- File upload --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                File upload
-              </h3>
+              <h3 className="font-medium text-black dark:text-white">File upload</h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Attach file
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Attach file</label>
                 <input
                   type="file"
                   className="w-full cursor-pointer rounded-lg border-[1.5px] border-stroke bg-transparent font-medium outline-none transition file:mr-5 file:border-collapse file:cursor-pointer file:border-0 file:border-r file:border-solid file:border-stroke file:bg-whiter file:py-3 file:px-5 file:hover:bg-primary file:hover:bg-opacity-10 focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-form-strokedark dark:file:bg-white/30 dark:file:text-white dark:focus:border-primary"
@@ -135,9 +115,7 @@ const FormElements = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Attach file
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Attach file</label>
                 <input
                   type="file"
                   className="w-full rounded-md border border-stroke p-3 outline-none transition file:mr-4 file:rounded file:border-[0.5px] file:border-stroke file:bg-[#EEEEEE] file:py-1 file:px-2.5 file:text-sm file:font-medium focus:border-primary file:focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:file:border-strokedark dark:file:bg-white/30 dark:file:text-white"
@@ -151,15 +129,11 @@ const FormElements = () => {
           {/* <!-- Textarea Fields --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Textarea Fields
-              </h3>
+              <h3 className="font-medium text-black dark:text-white">Textarea Fields</h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Default textarea
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Default textarea</label>
                 <textarea
                   rows={6}
                   placeholder="Default textarea"
@@ -168,9 +142,7 @@ const FormElements = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Active textarea
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Active textarea</label>
                 <textarea
                   rows={6}
                   placeholder="Active textarea"
@@ -179,9 +151,7 @@ const FormElements = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Disabled textarea
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Disabled textarea</label>
                 <textarea
                   rows={6}
                   disabled
@@ -195,9 +165,7 @@ const FormElements = () => {
           {/* <!-- Checkbox and radio --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Checkbox and radio
-              </h3>
+              <h3 className="font-medium text-black dark:text-white">Checkbox and radio</h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
               <CheckboxOne />
@@ -211,24 +179,14 @@ const FormElements = () => {
           {/* <!-- Select input --> */}
           <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
             <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
-              <h3 className="font-medium text-black dark:text-white">
-                Select input
-              </h3>
+              <h3 className="font-medium text-black dark:text-white">Select input</h3>
             </div>
             <div className="flex flex-col gap-5.5 p-6.5">
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Select Country
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Select Country</label>
                 <div className="relative z-20 bg-white dark:bg-form-input">
                   <span className="absolute top-1/2 left-4 z-30 -translate-y-1/2">
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g opacity="0.8">
                         <path
                           fillRule="evenodd"
@@ -257,13 +215,7 @@ const FormElements = () => {
                     <option value="">Canada</option>
                   </select>
                   <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g opacity="0.8">
                         <path
                           fillRule="evenodd"
@@ -278,21 +230,13 @@ const FormElements = () => {
               </div>
 
               <div>
-                <label className="mb-3 block text-black dark:text-white">
-                  Multiselect Dropdown
-                </label>
+                <label className="mb-3 block text-black dark:text-white">Multiselect Dropdown</label>
                 <div className="relative z-20 w-full rounded border border-stroke p-1.5 pr-8 font-medium outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input">
                   <div className="flex flex-wrap items-center">
                     <span className="m-1.5 flex items-center justify-center rounded border-[.5px] border-stroke bg-gray py-1.5 px-2.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
                       Design
                       <span className="cursor-pointer pl-2 hover:text-danger">
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             fillRule="evenodd"
                             clipRule="evenodd"
@@ -305,13 +249,7 @@ const FormElements = () => {
                     <span className="m-1.5 flex items-center justify-center rounded border-[.5px] border-stroke bg-gray py-1.5 px-2.5 text-sm font-medium dark:border-strokedark dark:bg-white/30">
                       Development
                       <span className="cursor-pointer pl-2 hover:text-danger">
-                        <svg
-                          width="12"
-                          height="12"
-                          viewBox="0 0 12 12"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
+                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
                           <path
                             fillRule="evenodd"
                             clipRule="evenodd"
@@ -322,22 +260,12 @@ const FormElements = () => {
                       </span>
                     </span>
                   </div>
-                  <select
-                    name=""
-                    id=""
-                    className="absolute top-0 left-0 z-20 h-full w-full bg-transparent opacity-0"
-                  >
+                  <select name="" id="" className="absolute top-0 left-0 z-20 h-full w-full bg-transparent opacity-0">
                     <option value="">Option</option>
                     <option value="">Option</option>
                   </select>
                   <span className="absolute top-1/2 right-4 z-10 -translate-y-1/2">
-                    <svg
-                      width="24"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <g opacity="0.8">
                         <path
                           fillRule="evenodd"
