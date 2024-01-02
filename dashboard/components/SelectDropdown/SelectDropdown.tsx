@@ -21,7 +21,7 @@ import transferAPI from '../../APIs/transfer-apis';
 
 import helperUtils from '../../utils/helperUtils';
 import uploadUtils from '../../utils/uploadUtils';
-const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
 
 const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; title?: string; type?: string }) => {
   const [server, setServer] = useState<Server | null>(null);
@@ -29,7 +29,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [threadVideo, setThreadVideo] = useState<File | null>(null);
-
+  const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/available-upload-url-dash-best-fit');
+  const [isMunual, setIsManual] = useState(false);
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['videos'],
     queryFn: async () => {
@@ -174,7 +175,6 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       let arrayChunkName: Array<string> = [];
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         arrayChunkName.push(chunkName + '_' + chunkIndex);
-        toast.info(chunkName + '_' + chunkIndex);
       }
       // const requestHeaders: HeadersInit = new Headers();
       // requestHeaders.set('Content-Type', 'application/json');
@@ -198,14 +198,17 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
 
       // default is best fit, if not, use request-upload-url-dash
 
-      //const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định, đó sẽ là best-fit
-      const requestURL = proxy + '/redirect/available-upload-url-dash-weight-allocate'; //Chọn option Weight Allocate thì dùng URL này
+      // const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định
+      // const requestURL=proxy + '/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
       // const requestURL=proxy + '/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
       // const requestURL=proxy + '/redirect/available-upload-url-dash-first-fit';
 
       // const requestURL = proxy + '/redirect/request-upload-url-dash';// Đây là khi chọn manual
-      // requestHeaders.set('preferurl', '192.168.1.99'); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
-      // requestHeaders.set('preferport', ':9100'); // để thêm địa chỉ server  chọn thủ công vào request
+      if (isMunual === true) {
+        console.log('Choose manual. Uncomment 2 requestHeaders');
+        requestHeaders.set('preferurl', server.URL); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
+        requestHeaders.set('preferport', server.port); // để thêm địa chỉ server  chọn thủ công vào request
+      }
 
       const requestUploadURL = await fetch(requestURL, {
         method: 'POST',
@@ -348,21 +351,53 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         </div>
         {type === '2' && (
           <div className="justify-self-center">
-            <RadioGroup defaultValue="first_fit">
+            <RadioGroup defaultValue="best_fit">
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="first_fit" id="r1" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-first-fit');
+                    setIsManual(false);
+                    console.log(proxy + '/redirect/available-upload-url-dash-first-fit');
+                  }}
+                  value="first_fit"
+                  id="r1"
+                />
                 <label htmlFor="r1">First Fit</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="best_fit" id="r2" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    setIsManual(false);
+                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                  }}
+                  value="best_fit"
+                  id="r2"
+                />
                 <label htmlFor="r2">Best Fit</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="weight_allocate" id="r3" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-weight-allocate');
+                    setIsManual(false);
+                    console.log('/redirect/available-upload-url-dash-weight-allocate');
+                  }}
+                  value="weight_allocate"
+                  id="r3"
+                />
                 <label htmlFor="r3">Weight Allocate</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="manual_choose" id="r4" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/request-upload-url-dash');
+                    setIsManual(true);
+                    console.log(proxy + '/redirect/request-upload-url-dash');
+                  }}
+                  value="manual_choose"
+                  id="r4"
+                />
                 <label htmlFor="r4">Manual Choose</label>
               </div>
             </RadioGroup>
@@ -370,11 +405,8 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         )}
       </div>
       <div className="text-center my-5 text-white">
-        {type === '2' ? (
-          <Button onClick={handleUploadNewVideo}>Start</Button>
-        ) : (
-          <Button onClick={handleStartTransfer}>Transfer</Button>
-        )}
+        <Button onClick={handleUploadNewVideo}>Start</Button>
+        <Button onClick={handleStartTransfer}>Transfer</Button>
       </div>
     </div>
   );

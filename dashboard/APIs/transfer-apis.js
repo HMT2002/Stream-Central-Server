@@ -1,5 +1,5 @@
 import axios from 'axios';
-const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
 export const POSTTranferAction = async (server, video) => {
   if (!server || !video) {
     return { status: 'fail' };

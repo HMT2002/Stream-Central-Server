@@ -1,4 +1,5 @@
 export type Video = {
+  _id?: string;
   avarageSpeed?: number;
   numberOfReplicant?: number;
   numberOfRequest?: number;

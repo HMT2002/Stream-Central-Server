@@ -16,14 +16,24 @@ router.post('/upload-image', uploadImage, userController.UploadImage);
 
 //ROUTE HANDLER
 
-router.route('/').get(authController.protect, authController.restrictTo('admin'), userController.GetAllUsers) 
+router
+  .route('/')
+  .get(authController.protect, authController.restrictTo('admin'), userController.GetAllUsers)
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user'),
+    userController.CheckInput,
+    userController.UpdateUser
+  );
 //   .post(userController.CheckInput, uploadImage, authController.SignUp);
 
-router.route('/self').get(
-  authController.protect,
-  authController.restrictTo('admin', 'content-creator', 'user', 'guest'),
-  userController.GetSelfUser
-);
+router
+  .route('/self')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'content-creator', 'user', 'guest'),
+    userController.GetSelfUser
+  );
 router
   .route('/all-upgrade-request')
   .get(authController.protect, authController.restrictTo('admin'), userController.GetAllUpgradeRequest);
@@ -57,12 +67,7 @@ router
     authController.restrictTo('admin', 'content-creator', 'user', 'guest'),
     userController.GetUser
   )
-  .patch(
-    authController.protect,
-    authController.restrictTo('admin', 'content-creator', 'user'),
-    userController.CheckInput,
-    userController.UpdateUser
-  )
+
   .delete(
     authController.protect,
     authController.restrictTo('admin', 'content-creator', 'user'),
@@ -70,6 +75,5 @@ router
   );
 
 router.route('/id/:userId').get(userController.GetUserById);
-
 
 module.exports = router;
