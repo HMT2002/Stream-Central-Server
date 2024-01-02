@@ -44,6 +44,8 @@ const AccountDetails = (props) => {
   const [displayName, setDisplayName] = useState(initialDisplayName);
   const [email, setEmail] = useState(initialEmail);
 
+  const [photo, setPhoto] = useState(props.userInfo.photo);
+
   const OldPasswordChangedHandler = (event) => {
     setOldPassword(event.target.value);
     setIsCorrectOldPassword(true);
@@ -121,7 +123,7 @@ const AccountDetails = (props) => {
 
   const UpdateUserInfoHandler = async () => {
     try {
-      const userUpdatePayload = { username: displayName, email: email };
+      const userUpdatePayload = { username: displayName, email: email, photo: photo };
       const response = await UserAPIs.POSTUpdateUserInfo(
         props.context.username,
         props.context.token,
@@ -279,14 +281,14 @@ const AccountDetails = (props) => {
                 disabled={!(isUserInfoChanged && isValidDisplayName && isValidEmail)}
                 onClick={UpdateUserInfoHandler}
               />
-              {props.context.role !== 'content-creator' && !props.isRequestingUpgrade && (
+              {/* {props.context.role !== 'content-creator' && !props.isRequestingUpgrade && (
                 <Button
                   className="account-page__button"
                   style={{ marginBlockStart: '0.7rem', marginInlineStart: '1rem' }}
                   content="Upgrade"
                   onClick={RequestUpgradeHandler}
                 />
-              )}
+              )} */}
             </div>
           </div>
         </div>

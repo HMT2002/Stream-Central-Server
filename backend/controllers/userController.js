@@ -137,22 +137,19 @@ exports.GetUserById = catchAsync(async (req, res, next) => {
 
 exports.UpdateUser = catchAsync(async (req, res, next) => {
   const user = req.user;
-  if (req.body.username !== '') {
+  if (req.body.username !== '' && req.body.username) {
     user.username = req.body.username;
   }
-  if (req.body.email !== '') {
+  if (req.body.email !== '' && req.body.email) {
     user.email = req.body.email;
   }
-  if (req.body.photo !== '') {
-    user.photo = req.body.photo;
-  }
-  if (req.body.birthday !== '') {
+  if (req.body.birthday !== '' && req.body.birthday) {
     user.birthday = req.body.birthday;
   }
-  if (req.body.address !== '') {
+  if (req.body.address !== '' && req.body.address) {
     user.address = req.body.address;
   }
-  if (req.body.phone !== '') {
+  if (req.body.phone !== '' && req.body.phone) {
     user.phone = req.body.phone;
   }
   // user.role = req.body.role;

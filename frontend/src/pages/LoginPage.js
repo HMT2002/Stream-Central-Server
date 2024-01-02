@@ -101,14 +101,14 @@ const LoginPage = () => {
 
     const isValidUsername = UsernameValidator(usernameInput);
     const isValidPassword = PasswordValidator(passwordInput);
+    UserLoginHandler(usernameInput, passwordInput);
 
-    if (isValidUsername && isValidPassword) {
-      UserLoginHandler(usernameInput, passwordInput);
-    } else if (!isValidUsername) {
-      setUsernameValidation(false);
-    } else {
-      setPasswordValidation(false);
-    }
+    // if (isValidUsername && isValidPassword) {
+    // } else if (!isValidUsername) {
+    //   setUsernameValidation(false);
+    // } else {
+    //   setPasswordValidation(false);
+    // }
   };
 
   const UserLoginHandler = async (username, password) => {
