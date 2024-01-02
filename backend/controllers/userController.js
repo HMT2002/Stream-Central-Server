@@ -152,6 +152,9 @@ exports.UpdateUser = catchAsync(async (req, res, next) => {
   if (req.body.phone !== '' && req.body.phone) {
     user.phone = req.body.phone;
   }
+  if (req.body.photo ) {
+    user.photo = req.body.photo;
+  }
   // user.role = req.body.role;
   // user.living_city = req.body.living_city;
 
