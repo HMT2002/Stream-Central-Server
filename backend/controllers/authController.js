@@ -376,3 +376,32 @@ exports.ResetPassword = catchAsync(async (req, res, next) => {
     token: token,
   });
 });
+
+exports.ChangePassword = catchAsync(async (req, res, next) => {
+  console.log('Change password route');
+  let token;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+  console.log(decoded);
+
+  const currentUser = await User.findById(decoded.id).populate([{ path: 'department', strictPopulate: false }]);
+
+  if (!currentUser) {
+    return next(new AppError('Signed in user is no longer existed', 401));
+  }
+  currentUser.password = req.body.password;
+  currentUser.passwordConfirm = req.body.passwordConfirm;
+  currentUser.passwordResetToken = undefined;
+  currentUser.passwordResetExpires = undefined;
+  await currentUser.save();
+  //4. Log the user in, send JWT
+  const newToken = SignToken(currentUser._id);
+  res.status(200).json({
+    status: 200,
+    token: newToken,
+    message: 'Success change password',
+  });
+});
