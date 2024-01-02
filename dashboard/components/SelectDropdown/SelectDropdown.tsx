@@ -370,8 +370,11 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         )}
       </div>
       <div className="text-center my-5 text-white">
-        <Button onClick={handleUploadNewVideo}>Start</Button>
-        <Button onClick={handleStartTransfer}>Transfer</Button>
+        {type === '2' ? (
+          <Button onClick={handleUploadNewVideo}>Start</Button>
+        ) : (
+          <Button onClick={handleStartTransfer}>Transfer</Button>
+        )}
       </div>
     </div>
   );

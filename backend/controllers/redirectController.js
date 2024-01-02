@@ -272,8 +272,15 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
   const url = servers[index].URL || 'localhost';
   const port = servers[index].port || '';
   const server = await redirectAPI.getServerWithURLAndPort(url, port);
-  server.numberOfRequest += 0.5;
+  server.numberOfRequest += 1;
+  console.log('servers ' + index + ' is: ');
+  console.log(servers[index]);
+  const updatedSpeed =
+    (server.avarageSpeed * server.numberOfRequest * 1 + servers[index].mbps * 1) / (server.numberOfRequest * 1 + 1);
+  server.avarageSpeed = updatedSpeed;
   await server.save();
+  console.log({ updatedSpeed, servernumberofrequest: server.numberOfRequest });
+
   const oriURL = 'http://' + url + port + '/videos/' + videoname + 'Dash/init.mpd';
   if (req.headers.myaxiosfetch) {
     console.log('req.headers.myaxiosfetch existed');

@@ -185,6 +185,9 @@ const checkTestErrorCode = (result) => {
   if (result.code && result.code === 'ECONNREFUSED') {
     console.log({ url: result.config.url, message: 'ECONNREFUSED' });
     return null;
+  } else if (result.code && result.code === 'ECONNABORTED') {
+    console.log({ url: result.config.url, message: 'ECONNABORTED' });
+    return null;
   } else {
     return result;
   }
