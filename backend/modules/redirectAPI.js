@@ -89,7 +89,7 @@ const calculateTime = async (baseUrl) => {
     const fileSizeInBytes = 200000; // ~ 0,2 mb
     const startTime = new Date().getTime();
     const { data } = await axios.get(baseUrl, {
-      timeout: 500, // Set a timeout of 0,5 seconds, 0,3 giây thì chậm quá, không kịp phản hồi thì abort connect rồi
+      timeout: 1000, // Set a timeout of 1 seconds, 0,3 giây thì chậm quá, không kịp phản hồi thì abort connect rồi
     });
     // console.log(data);
     const endTime = new Date().getTime();

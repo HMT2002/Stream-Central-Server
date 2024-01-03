@@ -259,14 +259,19 @@ exports.RedirectDash = catchAsync(async (req, res, next) => {
   }
 
   const videoNumberOfRequest = video.numberOfRequest;
-  video.numberOfRequest += 0.5;
+  video.numberOfRequest += 1;
   await video.save();
 
-  // if (videoNumberOfRequest === 50 || videoNumberOfRequest === 100) {
-  //   console.log('Request Reached! ' + videoNumberOfRequest);
-  //   const replicateResult = await redirectAPI.ReplicateWhenEnoughRequest(video);
-  //   console.log(replicateResult);
-  // }
+  if (
+    videoNumberOfRequest === 50 ||
+    videoNumberOfRequest === 100 ||
+    videoNumberOfRequest === 150 ||
+    videoNumberOfRequest === 200
+  ) {
+    console.log('Request Reached! ' + videoNumberOfRequest);
+    const replicateResult = await redirectAPI.ReplicateWhenEnoughRequest(video);
+    console.log(replicateResult);
+  }
 
   const index = 0;
   const url = servers[index].URL || 'localhost';
@@ -670,7 +675,7 @@ exports.PreferUploadURL = catchAsync(async (req, res, next) => {
     next();
     return;
   }
-  const actual_size = (filesize * 1 * 1.5) / 1000000;
+  const actual_size = (300000000 * 1.25) / 1000000;
 
   let preferport = req.headers.preferport || '';
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -714,7 +719,8 @@ exports.RequestUploadURLDash = catchAsync(async (req, res, next) => {
   console.log('Dealing with request RequestUploadURLDash');
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
-  const actual_size = (filesize * 1 * 1.5) / 1000000;
+  const actual_size = (300000000 * 1.25) / 1000000;
+
   console.log(req.headers);
   let flag = true;
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -766,7 +772,7 @@ exports.RequestUploadURLDashWeightAllocate = catchAsync(async (req, res, next) =
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
-  const actual_size = (filesize * 1 * 1.5) / 1000000;
+  const actual_size = (300000000 * 1.25) / 1000000;
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');
@@ -815,7 +821,7 @@ exports.RequestUploadURLDashBestFit = catchAsync(async (req, res, next) => {
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
-  const actual_size = (filesize * 1 * 1.5) / 1000000;
+  const actual_size = (300000000 * 1.25) / 1000000;
 
   let flag = true;
 
@@ -865,7 +871,8 @@ exports.RequestUploadURLDashFirstFit = catchAsync(async (req, res, next) => {
   let { file, destination, ext, arrayChunkName, filename, orginalname, chunkname, title, infoID, filesize } =
     req.headers;
   console.log(req.headers);
-  const actual_size = (filesize * 1 * 1.5) / 1000000;
+  const actual_size = (300000000 * 1.25) / 1000000;
+
   let flag = true;
 
   const video = await redirectAPI.getAvailableVideoAndType(filename, 'DASH');

@@ -29,7 +29,9 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [threadVideo, setThreadVideo] = useState<File | null>(null);
-  const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/available-upload-url-dash-best-fit');
+  const [requestURL, setRequestURL] = useState<string>(
+    'http://34.126.69.58/redirect/available-upload-url-dash-best-fit'
+  );
   const [isMunual, setIsManual] = useState(false);
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['videos'],
@@ -181,7 +183,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       // requestHeaders.set('filename', chunkName);
       // requestHeaders.set('filesize', fileSize.toString());
 
-      // const requestUploadURL = await fetch(proxy + '/redirect/available-upload-url-dash-weight-allocate', {
+      // const requestUploadURL = await fetch('http://34.126.69.58/redirect/available-upload-url-dash-weight-allocate', {
       //   method: 'POST',
       //   mode: 'cors', // no-cors, *cors, same-origin
       //   body: JSON.stringify({
@@ -198,12 +200,12 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
 
       // default is best fit, if not, use request-upload-url-dash
 
-      // const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định
-      // const requestURL=proxy + '/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
-      // const requestURL=proxy + '/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
-      // const requestURL=proxy + '/redirect/available-upload-url-dash-first-fit';
+      // const requestURL = 'http://34.126.69.58/redirect/request-upload-url-dash'; // Đây là mặc định
+      // const requestURL='http://34.126.69.58/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
+      // const requestURL='http://34.126.69.58/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
+      // const requestURL='http://34.126.69.58/redirect/available-upload-url-dash-first-fit';
 
-      // const requestURL = proxy + '/redirect/request-upload-url-dash';// Đây là khi chọn manual
+      // const requestURL = 'http://34.126.69.58/redirect/request-upload-url-dash';// Đây là khi chọn manual
       if (isMunual === true) {
         console.log('Choose manual. Uncomment 2 requestHeaders');
         requestHeaders.set('preferurl', server.URL); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
@@ -355,9 +357,9 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL(proxy + '/redirect/available-upload-url-dash-first-fit');
+                    setRequestURL('http://34.126.69.58/redirect/available-upload-url-dash-first-fit');
                     setIsManual(false);
-                    console.log(proxy + '/redirect/available-upload-url-dash-first-fit');
+                    console.log('http://34.126.69.58/redirect/available-upload-url-dash-first-fit');
                   }}
                   value="first_fit"
                   id="r1"
@@ -367,9 +369,9 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    setRequestURL('http://34.126.69.58/redirect/available-upload-url-dash-best-fit');
                     setIsManual(false);
-                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    console.log('http://34.126.69.58/redirect/available-upload-url-dash-best-fit');
                   }}
                   value="best_fit"
                   id="r2"
@@ -379,7 +381,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL(proxy + '/redirect/available-upload-url-dash-weight-allocate');
+                    setRequestURL('http://34.126.69.58/redirect/available-upload-url-dash-weight-allocate');
                     setIsManual(false);
                     console.log('/redirect/available-upload-url-dash-weight-allocate');
                   }}
@@ -391,9 +393,9 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL(proxy + '/redirect/request-upload-url-dash');
+                    setRequestURL('http://34.126.69.58/redirect/request-upload-url-dash');
                     setIsManual(true);
-                    console.log(proxy + '/redirect/request-upload-url-dash');
+                    console.log('http://34.126.69.58/redirect/request-upload-url-dash');
                   }}
                   value="manual_choose"
                   id="r4"
