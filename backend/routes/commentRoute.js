@@ -24,7 +24,18 @@ router
     authController.restrictTo('admin', 'user', 'content-creator'),
     actionController.GetVideoByID,
     actionController.CommentVideo
-  ).get(actionController.GetVideoByID, actionController.GetAllVideoCommentWithVideoID);
+  )
+  .get(actionController.GetVideoByID, actionController.GetAllVideoCommentWithVideoID);
+
+router
+  .route('/info/:infoID')
+  .post(
+    authController.protect,
+    authController.restrictTo('admin', 'user', 'content-creator'),
+    actionController.GetInfoByID,
+    actionController.CommentInfo
+  )
+  .get(actionController.GetInfoByID, actionController.GetAllVideoCommentWithInfoID);
 
 router.route('/user/:userID').get(actionController.GetUserByID, actionController.GetAllVideoCommentWithUserID);
 

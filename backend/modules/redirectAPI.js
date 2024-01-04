@@ -12,6 +12,7 @@ const User = require('./../models/mongo/User');
 const Log = require('./../models/mongo/Log');
 const Server = require('./../models/mongo/Server');
 const Video = require('./../models/mongo/Video');
+const VideoStatus = require('./../models/mongo/VideoStatus');
 
 const fluentFfmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
@@ -88,7 +89,7 @@ const calculateTime = async (baseUrl) => {
     const fileSizeInBytes = 200000; // ~ 0,2 mb
     const startTime = new Date().getTime();
     const { data } = await axios.get(baseUrl, {
-      timeout: 300, // Set a timeout of 0,3 seconds
+      timeout: 500, // Set a timeout of 0,5 seconds, 0,3 giây thì chậm quá, không kịp phản hồi thì abort connect rồi
     });
     // console.log(data);
     const endTime = new Date().getTime();
@@ -372,8 +373,11 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   const port = server[index].port;
   // nên nhớ 2 port này khác nhau
 
-  await addToServer(video, toURL, toPort);
+  const d_server = await getServerWithURLAndPort(toURL, toPort);
+  console.log(d_server);
+  await addToServer(video, d_server);
   await addUpVideoReplicant(video);
+  await createVideoStatus(video, d_server, 'ready');
 
   return 'http://' + url + port + '/api/v1/replicate/send-folder';
 };
@@ -515,9 +519,14 @@ const getInfoWithID = async (id) => {
   return info;
 };
 
-const addToServer = async (video, URL, port) => {
-  const server = await getServerWithURLAndPort(URL, port);
-  console.log(server);
+const serverAfterUploadOccupyPecentage = (server, afterUploadSize) => {
+  return calculatePercentage(server.storage * 1, afterUploadSize);
+};
+const calculatePercentage = (storage, size) => {
+  return (size / storage) * 100;
+};
+
+const addToServer = async (video, server) => {
   if (server === null) {
     console.log('Check URL and port, invalid!');
     return null;
@@ -527,8 +536,29 @@ const addToServer = async (video, URL, port) => {
     return server;
   }
   server.videos.push(video);
+  server.occupy += video.size * 1;
+  const occu = server.occupy;
+  server.occupyPercentage = (occu / server.storage) * 100;
   await server.save();
   return server;
+};
+
+const createVideoStatus = async (video, server, status) => {
+  if (server === null) {
+    console.log('Check URL and port, invalid!');
+    return null;
+  }
+  if (video === null) {
+    console.log('Check video, doesnt existed!');
+    return null;
+  }
+
+  if (status === null) {
+    console.log('Need status, default will be ready');
+    return null;
+  }
+  const videoStatus = await VideoStatus.create({ video, server, status });
+  return videoStatus;
 };
 
 const addUpVideoReplicant = async (video) => {
@@ -731,7 +761,8 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
     // await uploadLoop();
 
     const newVideo = await createVideo(req.headers.filename, 'HLS', title);
-    const addVideoToServer = await addToServer(newVideo, url, port);
+    const d_server = await getServerWithURLAndPort(url, port);
+    const addVideoToServer = await addToServer(newVideo, d_server);
     const addVideoToInfo = await addToInfo(newVideo, infoID);
 
     return {
@@ -772,7 +803,8 @@ const UploadNewFileLargeMultilpartDash = async (req, res, next) => {
     await upload(index, url, port, arrayChunkName, ext, destination, orginalname, 'DASH');
 
     const newVideo = await createVideo(req.headers.filename, 'DASH', title);
-    const addVideoToServer = await addToServer(newVideo, url, port);
+    const d_server = await getServerWithURLAndPort(url, port);
+    const addVideoToServer = await addToServer(newVideo, d_server);
     const addVideoToInfo = await addToInfo(newVideo, infoID);
 
     return {
@@ -818,4 +850,6 @@ module.exports = {
   checkFileISExistedOnServerYet,
   availableLiveOnServer,
   addUpVideoReplicant,
+  getServerWithURLAndPort,
+  createVideoStatus,
 };

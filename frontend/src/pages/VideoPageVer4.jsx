@@ -277,42 +277,12 @@ const VideoPageVer4 = () => {
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
       const fileSize = fileSize;
       const totalChunks = Math.ceil(fileSize / chunkSize);
-      // let chunkNameHls = Utils.RandomString(7);
-      // let arrayChunkNameHls = [];
-      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      //   arrayChunkNameHls.push(chunkNameHls + '_' + chunkIndex);
-      // }
-
-      // // Iterate over the chunks and upload them sequentially
-      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      //   const start = chunkIndex * chunkSize;
-      //   const end = Math.min(start + chunkSize, fileSize);
-      //   const chunk = file.slice(start, end);
-      //   console.log(start);
-      //   console.log(end);
-      //   // Make an API call to upload the chunk to the backend
-      //   const ext = file.name.split('.')[1];
-      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkNameHls[chunkIndex], arrayChunkNameHls, chunkNameHls, ext);
-      // }
 
       let chunkName = Utils.RandomString(7);
       let arrayChunkName = [];
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         arrayChunkName.push(chunkName + '_' + chunkIndex);
       }
-
-      // // Iterate over the chunks and upload them sequentially
-      // for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
-      //   const start = chunkIndex * chunkSize;
-      //   const end = Math.min(start + chunkSize, fileSize);
-      //   const chunk = file.slice(start, end);
-      //   console.log(start);
-      //   console.log(end);
-      //   // Make an API call to upload the chunk to the backend
-      //   const ext = file.name.split('.')[1];
-
-      //   await uploadChunkHls(chunk, chunkIndex, arrayChunkName[chunkIndex], arrayChunkName, chunkName, ext);
-      // }
 
       var chunkIndex = 0;
 
@@ -353,7 +323,7 @@ const VideoPageVer4 = () => {
             console.log(start);
             console.log(end);
             // Make an API call to upload the chunk to the backend
-            const ext = file.name.split('.')[1];
+            const ext = file.name.split('.').pop();
             const title = chunkName;
             const infoID = '654ef92c9f7e923ef27cf32c';
             await uploadChunkDashVer2(
@@ -377,11 +347,6 @@ const VideoPageVer4 = () => {
         }
         uploadLoop();
       }
-
-      // const formData = new FormData();
-      // formData.append('myMultilPartFile', threadVideo);
-      // const response = await POSTLargeVideoMultipartUploadAction(formData);
-      // console.log(response);
     } catch (error) {
       console.log(error);
     }

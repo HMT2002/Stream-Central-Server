@@ -1,5 +1,5 @@
-"use client";
-import React, { useState } from "react";
+'use client';
+import React, { useState } from 'react';
 import {
   Select,
   SelectContent,
@@ -8,32 +8,33 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "../Select/Select";
-import { Server } from "../../types/server";
-import { Video } from "../../types/video";
-import { RadioGroup, RadioGroupItem } from "../RadioGroup/RadioGroup";
-import { Label } from "@radix-ui/react-select";
-import { Button } from "../Button/Button";
-import { Textarea } from "../Textaera/Textarea";
-import { useQuery } from "@tanstack/react-query";
-import { toast } from "sonner";
-const ServerModal = ({
-  data: serverArray,
-  title,
-  type,
-}: {
-  data?: Server[];
-  title?: string;
-  type?: string;
-}) => {
+} from '../Select/Select';
+import { Server } from '../../types/server';
+import { Video } from '../../types/video';
+import { RadioGroup, RadioGroupItem } from '../RadioGroup/RadioGroup';
+import { Label } from '@radix-ui/react-select';
+import { Button } from '../Button/Button';
+import { Textarea } from '../Textaera/Textarea';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import transferAPI from '../../APIs/transfer-apis';
+
+import helperUtils from '../../utils/helperUtils';
+import uploadUtils from '../../utils/uploadUtils';
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+
+const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; title?: string; type?: string }) => {
   const [server, setServer] = useState<Server | null>(null);
   const [videosOfServer, setVideosOfServer] = useState<Video[] | null>(null);
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
+  const [threadVideo, setThreadVideo] = useState<File | null>(null);
+  const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/available-upload-url-dash-best-fit');
+  const [isMunual, setIsManual] = useState(false);
   const { isLoading, isError, data, error } = useQuery({
-    queryKey: ["videos"],
+    queryKey: ['videos'],
     queryFn: async () => {
-      const response = await fetch("http://34.126.69.58/api/v1/video");
+      const response = await fetch('http://34.126.69.58/api/v1/video');
       const jsonData = response.json().then((res) => {
         setVideos(res.data.videos);
         return res.data.videos;
@@ -50,28 +51,32 @@ const ServerModal = ({
     return <span>Error: {error.message}</span>;
   }
   const handleChange = () => {
-    var input = document.getElementById("videoFile");
+    var input = document.getElementById('videoFile');
     if (!(input instanceof HTMLInputElement)) {
-      throw new Error("Element is not an HTMLInputElement");
+      throw new Error('Element is not an HTMLInputElement');
     }
     if (input.files !== null) {
       var files = input.files;
       if (!input.files.length) {
-        toast.error("Fail in getting video");
+        toast.error('Fail in getting video');
         return;
       } else {
         var file = files[0];
         toast.success(file.name);
+        setThreadVideo(files[0]);
+        console.log(files[0]);
       }
     }
   };
   const renderVideoDropdown = () => {
-    if (videos !== null && type === "1") {
+    if (videos !== null && type === '1') {
       return (
         <div className="">
           <Select
             onValueChange={(value) => {
               if (value) setSelectedVideo(value as Video);
+              console.log('selectedVideo');
+              console.log(selectedVideo);
             }}
           >
             <SelectTrigger className="w-[250px]">
@@ -81,10 +86,7 @@ const ServerModal = ({
               <SelectGroup>
                 <SelectLabel>Videos</SelectLabel>
                 {videos.map((videoItem: Video) => (
-                  <SelectItem
-                    className="hover:cursor-pointer hover:text-white"
-                    value={videoItem ?? ""}
-                  >
+                  <SelectItem className="hover:cursor-pointer hover:text-white" value={videoItem ?? ''}>
                     {videoItem.title}
                   </SelectItem>
                 ))}
@@ -95,13 +97,165 @@ const ServerModal = ({
       );
     }
   };
+
+  const handleStartTransfer = async () => {
+    console.log('handleStartTransfer');
+
+    const response = await transferAPI.POSTTranferAction(server, selectedVideo);
+  };
+  async function uploadLoop(
+    chunkIndex,
+    chunkSize,
+    fileSize,
+    file,
+    chunkName,
+    arrayChunkName,
+    fullUploadURL,
+    totalChunks,
+    statusID
+  ) {
+    setTimeout(async function () {
+      const start = chunkIndex * chunkSize;
+      const end = Math.min(start + chunkSize, fileSize);
+      const chunk = file?.slice(start, end);
+      // Make an API call to upload the chunk to the backend
+      const ext = file?.name.split('.').pop();
+      const title = chunkName;
+      const infoID = '';
+      await uploadUtils.uploadChunkDashVer2(
+        chunk,
+        chunkIndex,
+        arrayChunkName[chunkIndex],
+        arrayChunkName,
+        chunkName,
+        ext,
+        title,
+        infoID,
+        fullUploadURL,
+        statusID
+      );
+      console.log({
+        chunk,
+        chunkIndex,
+        arrayChunkNamechunkIndex: arrayChunkName[chunkIndex],
+        arrayChunkName,
+        chunkName,
+        ext,
+        title,
+        infoID,
+        fullUploadURL,
+        statusID,
+      });
+      chunkIndex++;
+      if (chunkIndex < totalChunks) {
+        uploadLoop(
+          chunkIndex,
+          chunkSize,
+          fileSize,
+          file,
+          chunkName,
+          arrayChunkName,
+          fullUploadURL,
+          totalChunks,
+          statusID
+        );
+      }
+    }, 500);
+  }
+  const handleUploadNewVideo = async () => {
+    try {
+      console.log('press create new thread btn');
+      const file = threadVideo;
+      const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
+
+      const fileSize = file?.size || 0;
+      const totalChunks = Math.ceil(fileSize / chunkSize);
+
+      let chunkName = helperUtils.RandomString(7);
+      let arrayChunkName: Array<string> = [];
+      for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
+        arrayChunkName.push(chunkName + '_' + chunkIndex);
+      }
+      // const requestHeaders: HeadersInit = new Headers();
+      // requestHeaders.set('Content-Type', 'application/json');
+      // requestHeaders.set('filename', chunkName);
+      // requestHeaders.set('filesize', fileSize.toString());
+
+      // const requestUploadURL = await fetch(proxy + '/redirect/available-upload-url-dash-weight-allocate', {
+      //   method: 'POST',
+      //   mode: 'cors', // no-cors, *cors, same-origin
+      //   body: JSON.stringify({
+      //     filename: chunkName,
+      //     filesize: fileSize,
+      //   }),
+      //   headers: requestHeaders,
+      // });
+
+      const requestHeaders: HeadersInit = new Headers();
+      requestHeaders.set('Content-Type', 'application/json');
+      requestHeaders.set('filename', chunkName);
+      requestHeaders.set('filesize', fileSize.toString());
+
+      // default is best fit, if not, use request-upload-url-dash
+
+      // const requestURL = proxy + '/redirect/request-upload-url-dash'; // Đây là mặc định
+      // const requestURL=proxy + '/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
+      // const requestURL=proxy + '/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
+      // const requestURL=proxy + '/redirect/available-upload-url-dash-first-fit';
+
+      // const requestURL = proxy + '/redirect/request-upload-url-dash';// Đây là khi chọn manual
+      if (isMunual === true) {
+        console.log('Choose manual. Uncomment 2 requestHeaders');
+        requestHeaders.set('preferurl', server.URL); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
+        requestHeaders.set('preferport', server.port); // để thêm địa chỉ server  chọn thủ công vào request
+      }
+
+      const requestUploadURL = await fetch(requestURL, {
+        method: 'POST',
+        mode: 'cors', // no-cors, *cors, same-origin
+        body: JSON.stringify({
+          filename: chunkName,
+          filesize: fileSize,
+        }),
+        headers: requestHeaders,
+      });
+
+      const checkResult = await requestUploadURL.json();
+      console.log(checkResult);
+      if (checkResult.status === 200) {
+        let chunkIndex = 0;
+        console.log(chunkName);
+
+        const index = 0;
+        const uploadURL = checkResult.servers[index].URL;
+        const uploadPort = checkResult.servers[index].port || '';
+        const fullUploadURL = checkResult.servers[index].uploadURL;
+        // const fullUploadURL = 'http://localhost:9100/api/v1/upload/';
+        const statusID = checkResult.videoStatus._id;
+        console.log({ uploadURL, uploadPort, fullUploadURL });
+
+        uploadLoop(
+          chunkIndex,
+          chunkSize,
+          fileSize,
+          file,
+          chunkName,
+          arrayChunkName,
+          fullUploadURL,
+          totalChunks,
+          statusID
+        );
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
-      <div
-        className={`w-full text-white ${type === "2" && "grid grid-cols-2 "}`}
-      >
+      <div className={`w-full text-white ${type === '2' && 'grid grid-cols-2 '}`}>
         <div className="flex gap-3 flex-col min-w-max ">
-          {type === "2" && (
+          {type === '2' && (
             <div
               id="FileUpload"
               className="relative mb-5.5 block w-full cursor-pointer appearance-none rounded border-2 border-dashed border-primary bg-gray py-4 px-4 dark:bg-meta-4 sm:py-7.5"
@@ -115,13 +269,7 @@ const ServerModal = ({
               />
               <div className="flex flex-col items-center justify-center space-y-3">
                 <span className="flex h-10 w-10 items-center justify-center rounded-full border border-stroke bg-white dark:border-strokedark dark:bg-boxdark">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path
                       fillRule="evenodd"
                       clipRule="evenodd"
@@ -143,8 +291,7 @@ const ServerModal = ({
                   </svg>
                 </span>
                 <p>
-                  <span className="text-primary">Click to upload</span> or drag
-                  and drop
+                  <span className="text-primary">Click to upload</span> or drag and drop
                 </p>
                 <p className="mt-1.5">MP4 or MKV</p>
               </div>
@@ -155,6 +302,8 @@ const ServerModal = ({
             onValueChange={(value) => {
               // alert((value as Server).URL);
               setServer(value as Server);
+              console.log('server');
+              console.log(server);
               setVideosOfServer((value as Server).videos ?? null);
             }}
           >
@@ -165,10 +314,7 @@ const ServerModal = ({
               <SelectGroup className="bg-black">
                 <SelectLabel>Servers</SelectLabel>
                 {serverArray?.map((item) => (
-                  <SelectItem
-                    className="min-w-full hover:cursor-pointer hover:text-white"
-                    value={item ?? ""}
-                  >
+                  <SelectItem className="min-w-full hover:cursor-pointer hover:text-white" value={item ?? ''}>
                     <div>{item.URL}</div>
                   </SelectItem>
                 ))}
@@ -201,29 +347,57 @@ const ServerModal = ({
             </div>
           )} */}
           {renderVideoDropdown()}
-          <Textarea
-            className="min-w-full max-h-39 overflow-y-auto"
-            readOnly
-            draggable={"false"}
-          />
+          <Textarea className="min-w-full max-h-39 overflow-y-auto" readOnly draggable={'false'} />
         </div>
-        {type === "2" && (
+        {type === '2' && (
           <div className="justify-self-center">
-            <RadioGroup defaultValue="first_fit">
+            <RadioGroup defaultValue="best_fit">
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="first_fit" id="r1" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-first-fit');
+                    setIsManual(false);
+                    console.log(proxy + '/redirect/available-upload-url-dash-first-fit');
+                  }}
+                  value="first_fit"
+                  id="r1"
+                />
                 <label htmlFor="r1">First Fit</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="best_fit" id="r2" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-best-fit');
+                    setIsManual(false);
+                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
+                  }}
+                  value="best_fit"
+                  id="r2"
+                />
                 <label htmlFor="r2">Best Fit</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="weight_allocate" id="r3" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-weight-allocate');
+                    setIsManual(false);
+                    console.log('/redirect/available-upload-url-dash-weight-allocate');
+                  }}
+                  value="weight_allocate"
+                  id="r3"
+                />
                 <label htmlFor="r3">Weight Allocate</label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="manual_choose" id="r4" />
+                <RadioGroupItem
+                  onClick={() => {
+                    setRequestURL(proxy + '/redirect/request-upload-url-dash');
+                    setIsManual(true);
+                    console.log(proxy + '/redirect/request-upload-url-dash');
+                  }}
+                  value="manual_choose"
+                  id="r4"
+                />
                 <label htmlFor="r4">Manual Choose</label>
               </div>
             </RadioGroup>
@@ -231,7 +405,8 @@ const ServerModal = ({
         )}
       </div>
       <div className="text-center my-5 text-white">
-        <Button>Start</Button>
+        <Button onClick={handleUploadNewVideo}>Start</Button>
+        <Button onClick={handleStartTransfer}>Transfer</Button>
       </div>
     </div>
   );

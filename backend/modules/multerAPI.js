@@ -16,7 +16,7 @@ const storageVideo = multer.diskStorage({
   destination: videoStoragePath,
   filename: (req, file, cb) => {
     const fileID = helperAPI.GenerrateRandomString(7);
-    const ext = file.originalname.split('.')[1];
+    const ext = file.originalname.split('.').pop();
 
     cb(null, fileID + '.' + ext);
   },

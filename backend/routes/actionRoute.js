@@ -40,7 +40,7 @@ router
     authController.restrictTo('admin', 'user', 'content-creator'),
     actionController.CreatePlaylist
   );
-  router
+router
   .route('/get-all-playlist')
   .get(
     authController.protect,
@@ -48,11 +48,8 @@ router
     actionController.GetUserAllPlaylist
   );
 
-  router
+router
   .route('/get-all-comment/:videoID')
-  .get(
-    actionController.GetVideoByID,
-    actionController.GetAllVideoCommentWithVideoID
-  );
+  .get(actionController.GetVideoByID, actionController.GetAllVideoCommentWithVideoID);
 
 module.exports = router;
