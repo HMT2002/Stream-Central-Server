@@ -41,6 +41,7 @@ const MovieDashboard: React.FC = () => {
     queryFn: async () => {
       const response = await fetch('http://34.126.69.58/api/v1/info/');
       const jsonData = response.json();
+      console.log(jsonData);
       return jsonData;
     },
   });
@@ -55,6 +56,7 @@ const MovieDashboard: React.FC = () => {
   }, [data]);
 
   const videoSections = allFilmsInfoData.map((item) => {
+    console.log(item);
     let video = new videoItem(
       item.filmInfo.name,
       item.filmInfo.first_air_date,
@@ -65,6 +67,24 @@ const MovieDashboard: React.FC = () => {
 
     return <MovieItem video={video} />;
   });
+
+  const handleToggle = (itemID) => {
+    // Check if the item is already in the array
+    const isItemToggled = selectedVideo.includes(itemID);
+
+    if (isItemToggled) {
+      // If the item is already in the array, remove it
+      setSelectedVideo(selectedVideo.filter((item) => item !== itemID));
+    } else {
+      // If the item is not in the array, add it
+      setSelectedVideo([...selectedVideo, itemID]);
+    }
+  };
+
+  useEffect(() => {
+    console.log('Toggled Items: ', selectedVideo);
+    // You could also save to local storage or perform other side effects here
+  }, [selectedVideo]);
 
   return (
     <>
@@ -102,7 +122,7 @@ const MovieDashboard: React.FC = () => {
             <div
               className="w-full hover:cursor-pointer"
               onClick={() => {
-                setSelectedVideo([...selectedVideo, item._id]);
+                handleToggle(item._id);
               }}
             >
               <p>{item.title}</p>

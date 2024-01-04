@@ -32,6 +32,7 @@
     "jsvectormap": "^1.5.3",
     "lucide-react": "^0.294.0",
     "next": "14.0.4",
+    "next-auth": "^4.24.5",
     "npm": "^10.2.5",
     "postcss": "8.4.27",
     "react": "^18",
