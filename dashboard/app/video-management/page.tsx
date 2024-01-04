@@ -51,12 +51,12 @@ const MovieDashboard: React.FC = () => {
       setAllVideos(data.data.videos);
     }
     if (allFilmsInfo.data) {
+      console.log(allFilmsInfo.data.data);
       setAllFilmsInfoData(allFilmsInfo.data.data);
     }
-  }, [data]);
+  });
 
   const videoSections = allFilmsInfoData.map((item) => {
-    console.log(item);
     let video = new videoItem(
       item.filmInfo.name,
       item.filmInfo.first_air_date,
@@ -65,7 +65,7 @@ const MovieDashboard: React.FC = () => {
       item.filmInfo._id
     );
 
-    return <MovieItem video={video} />;
+    return <MovieItem video={video} videos={selectedVideo} />;
   });
 
   const handleToggle = (itemID) => {
@@ -100,11 +100,12 @@ const MovieDashboard: React.FC = () => {
               <DialogTitle></DialogTitle>
               <DialogDescription>
                 {/* Make changes to your profile here. Click save when you're done. */}
-                <div className="min-h-max grid grid-rows-3 grid-flow-col gap-4 overflow-y-auto">{videoSections}</div>
+                {/* <div className="min-h-max grid grid-rows-3 grid-flow-col gap-4 overflow-y-auto">{videoSections}</div> */}
               </DialogDescription>
             </DialogHeader>
-            <div>
-              <div>{/* <ServerModal type="2" title="Choose your server" data={data.allVideos} /> */}</div>
+            <div className="overflow-auto h-[400px] flex flex-wrap justify-center gap-4">
+              {/* <div><ServerModal type="2" title="Choose your server" data={data.allVideos} /></div> */}
+              {videoSections}
             </div>
           </DialogContent>
         </Dialog>
