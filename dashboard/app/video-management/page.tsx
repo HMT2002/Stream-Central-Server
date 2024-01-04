@@ -66,7 +66,7 @@ const MovieDashboard: React.FC = () => {
       item.filmInfo._id
     );
 
-    return <MovieItem video={video} videos={selectedVideo} />;
+    return <MovieItem video={video} videos={selectedVideo} info={item} />;
   });
 
   const handleToggle = (itemID) => {

@@ -71,6 +71,7 @@ exports.GetFilm = catchAsync(async (req, res, next) => {
 });
 
 exports.AddEpisodes = catchAsync(async (req, res, next) => {
+  console.log(req.body);
   const result = await infoAPI.AddEpisodes(req);
 
   res.status(200).json({

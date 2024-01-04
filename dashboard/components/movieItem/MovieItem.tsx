@@ -7,13 +7,14 @@ import { toast } from 'sonner';
 
 const MovieItem = (props) => {
   const video = props.video;
-  const videos = props.videos ?? undefined;
+  const info = props.info;
+  const videos = props.videos ?? [];
   const queryClient = useQueryClient();
   const addFilmIntoInfo = useMutation({
     mutationFn: POSTFilmIntoInfo,
     onSuccess: () => {
       toast.success('Add film successfully');
-      console.log('filmID: ' + video._id);
+      console.log('filmID: ' + info._id);
       console.log('videos: ' + videos);
       queryClient.invalidateQueries({ queryKey: ['videos'] });
     },
@@ -35,7 +36,7 @@ const MovieItem = (props) => {
           <p className="font-semibold ">{video.title != null ? video.title : 'Ben 10: Alien Force'}</p>
         </div>
         <Button
-          onClick={() => addFilmIntoInfo.mutate({ filmID: video._id, videos: videos })}
+          onClick={() => addFilmIntoInfo.mutate(info._id, videos)}
           variant="default"
           color=""
           className="text-white w-full rounded-sm py-1 mb-2 mx-auto "

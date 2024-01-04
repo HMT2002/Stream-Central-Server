@@ -24,7 +24,7 @@ const SectionList = (props) => {
       thread._id
     );
 
-    return <MovieItem video={video} />;
+    return <MovieItem video={video} info={thread} />;
   });
 
   return (

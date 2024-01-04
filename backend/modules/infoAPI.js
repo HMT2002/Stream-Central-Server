@@ -28,7 +28,7 @@ exports.GetAll = async () => {
     //   }
     //   info.filmInfo = filmInfo;
     // }
-    return allInfo ;
+    return allInfo;
   } catch (err) {
     console.log(err);
     return { message: 'There is error', isError: true, err };
@@ -130,8 +130,13 @@ exports.AddEpisodes = async (req) => {
 const addEpisodes = async (req) => {
   try {
     const info = req.info;
+    console.log(req.body.videos);
     for (let i = 0; i < req.body.videos.length; i++) {
-      if (info.videos.some((video)=>{ return video._id.toString()=== req.body.videos[i]})) {
+      if (
+        info.videos.some((video) => {
+          return video._id.toString() === req.body.videos[i];
+        })
+      ) {
         console.log('repeated!');
         continue;
       }
