@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import logo from '../../assets/img/ben10.jpg';
 import { Button } from '../Button/Button';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 const MovieItem = (props) => {
   const video = props.video;
   const info = props.info;
-  const videos = props.videos ?? [];
+  const [videos, setVideos] = useState<string[]>(props.videos);
   const queryClient = useQueryClient();
   const addFilmIntoInfo = useMutation({
     mutationFn: POSTFilmIntoInfo,
@@ -22,6 +22,9 @@ const MovieItem = (props) => {
       toast.error('Fail');
     },
   });
+  useEffect(() => {
+    setVideos(props.videos);
+  }, [props.videos]);
   return (
     <div className="shadow-lg hover:shadow-2xl text-sm gap-2 mx-2 flex flex-col min-h-max bg-black rounded-sm w-29">
       <div className="">
@@ -36,7 +39,9 @@ const MovieItem = (props) => {
           <p className="font-semibold ">{video.title != null ? video.title : 'Ben 10: Alien Force'}</p>
         </div>
         <Button
-          onClick={() => addFilmIntoInfo.mutate(info._id, videos)}
+          onClick={() => {
+            POSTFilmIntoInfo({ filmID: info._id, videos: videos });
+          }}
           variant="default"
           color=""
           className="text-white w-full rounded-sm py-1 mb-2 mx-auto "

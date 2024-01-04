@@ -35,7 +35,7 @@ export const POSTDeleteAction = async (server, video) => {
   return data;
 };
 
-export const POSTFilmIntoInfo = async (filmID, videos) => {
+export const POSTFilmIntoInfo = async ({ filmID, videos }) => {
   console.log({ filmID, videos });
   // if (!filmID || !videos) {
   //   return { status: 'fail' };
@@ -43,16 +43,16 @@ export const POSTFilmIntoInfo = async (filmID, videos) => {
   console.log({ server: filmID, videos: videos, proxy });
   const url = proxy + '/api/v1/info/film/' + filmID;
   console.log(url);
-  const { data } = await axios({
-    method: 'post',
-    url: url,
-    data: { videos: videos },
-    validateStatus: () => true,
-    headers: {
-      'Content-Type': 'application/json',
-      authorization: token,
-    },
-  });
+  const { data } = await axios.post(
+    url,
+    { videos: videos },
+    {
+      validateStatus: () => true,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
   console.log(data);
   console.log('post Data: ' + videos + ', ' + filmID);
   return data;
