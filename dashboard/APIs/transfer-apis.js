@@ -1,11 +1,13 @@
 import axios from 'axios';
-const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+// const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
+
 export const POSTTranferAction = async (server, video) => {
   if (!server || !video) {
     return { status: 'fail' };
   }
   console.log({ server, video, proxy });
-  const url = 'http://34.126.69.58/redirect/replicate/send-folder';
+  const url = proxy + '/redirect/replicate/send-folder';
   const { data } = await axios.post(
     url,
     { filename: video.videoname + 'Dash', url: server.URL, port: server.port },
@@ -23,7 +25,7 @@ export const POSTDeleteAction = async (server, video) => {
   }
   console.log;
   console.log({ server, video, proxy });
-  const url = 'http://34.126.69.58/redirect/delete-folder';
+  const url = proxy + '/redirect/delete-folder';
   const { data } = await axios.post(
     url,
     { filename: video.videoname + 'Dash', url: server.URL, port: server.port, videoname: video.name },
@@ -60,13 +62,16 @@ export const POSTFilmIntoInfo = async ({ filmID, videos }) => {
 
 export const GETAllInfoAction = async () => {
   const storedToken = localStorage.getItem('token');
-  const response = await fetch('http://34.126.69.58/api/v1/info', {
-    method: 'GET',
-    headers: {
-      // 'Content-Type': 'application/json',
-      Authorization: storedToken,
-    },
-  });
+  const response =
+    (await fetchproxy) +
+    ('/api/v1/info',
+    {
+      method: 'GET',
+      headers: {
+        // 'Content-Type': 'application/json',
+        Authorization: storedToken,
+      },
+    });
   if (!response.status || response.status === 'error') {
     throw new Error('Something went wrong!');
   }
@@ -76,7 +81,7 @@ export const GETAllInfoAction = async () => {
 };
 
 export const GETFilmInfo = async (infoID) => {
-  var url = 'http://34.126.69.58/api/v1/info/film/' + infoID;
+  var url = proxy + '/api/v1/info/film/' + infoID;
   const { data } = await axios({
     method: 'get',
     url: url,
