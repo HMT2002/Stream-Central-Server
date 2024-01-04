@@ -44,7 +44,8 @@ export const GETFilmInfo = async (infoID) => {
     url: url,
     headers: { myaxiosfetch: '123' },
   });
-  console.log(data);
+  // var info = data.data;
+  // console.log(data);
   var info = data.data;
   return info;
 };
@@ -199,8 +200,6 @@ export const POSTLargeVideoMultipartUploadDashActionVer2 = async (
       ext,
       title,
       infoID,
-      preferurl: '192.168.1.99',
-      preferport: ':9100',
     },
   });
   return data;

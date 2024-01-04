@@ -35,6 +35,23 @@ export const POSTDeleteAction = async (server, video) => {
   return data;
 };
 
+export const POSTFilmIntoInfo = async (filmID, videos) => {
+  if (!filmID || !videos) {
+    return { status: 'fail' };
+  }
+  console.log({ server: filmID, videos: videos, proxy });
+  const url = proxy + `/api/v1/info/film/${filmID}`;
+  const { data } = await axios.post(
+    url,
+    { videos: videos },
+    {
+      validateStatus: () => true,
+    }
+  );
+  console.log('post Data: ' + videos + ', ' + filmID);
+  return data;
+};
+
 export const GETAllInfoAction = async () => {
   const storedToken = localStorage.getItem('token');
   const response = await fetch('http://34.126.69.58/api/v1/info', {

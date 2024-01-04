@@ -42,6 +42,7 @@ const MovieDashboard: React.FC = () => {
     queryFn: async () => {
       const response = await fetch('http://34.126.69.58/api/v1/info/');
       const jsonData = response.json();
+      console.log(jsonData);
       return jsonData;
     },
   });
@@ -51,9 +52,10 @@ const MovieDashboard: React.FC = () => {
       setAllVideos(data.data.videos);
     }
     if (allFilmsInfo.data) {
+      console.log(allFilmsInfo.data.data);
       setAllFilmsInfoData(allFilmsInfo.data.data);
     }
-  }, [data]);
+  });
 
   const videoSections = allFilmsInfoData.map((item) => {
     let video = new videoItem(
@@ -64,8 +66,26 @@ const MovieDashboard: React.FC = () => {
       item.filmInfo._id
     );
 
-    return <MovieItem video={video} />;
+    return <MovieItem video={video} videos={selectedVideo} />;
   });
+
+  const handleToggle = (itemID) => {
+    // Check if the item is already in the array
+    const isItemToggled = selectedVideo.includes(itemID);
+
+    if (isItemToggled) {
+      // If the item is already in the array, remove it
+      setSelectedVideo(selectedVideo.filter((item) => item !== itemID));
+    } else {
+      // If the item is not in the array, add it
+      setSelectedVideo([...selectedVideo, itemID]);
+    }
+  };
+
+  useEffect(() => {
+    console.log('Toggled Items: ', selectedVideo);
+    // You could also save to local storage or perform other side effects here
+  }, [selectedVideo]);
 
   return (
     <>
@@ -81,11 +101,12 @@ const MovieDashboard: React.FC = () => {
               <DialogTitle></DialogTitle>
               <DialogDescription>
                 {/* Make changes to your profile here. Click save when you're done. */}
-                <div className="min-h-max grid grid-rows-3 grid-flow-col gap-4 overflow-y-auto">{videoSections}</div>
+                {/* <div className="min-h-max grid grid-rows-3 grid-flow-col gap-4 overflow-y-auto">{videoSections}</div> */}
               </DialogDescription>
             </DialogHeader>
-            <div>
-              <div>{/* <ServerModal type="2" title="Choose your server" data={data.allVideos} /> */}</div>
+            <div className="overflow-auto h-[400px] flex flex-wrap justify-center gap-4">
+              {/* <div><ServerModal type="2" title="Choose your server" data={data.allVideos} /></div> */}
+              {videoSections}
             </div>
           </DialogContent>
         </Dialog>
@@ -103,7 +124,7 @@ const MovieDashboard: React.FC = () => {
             <div
               className="w-full hover:cursor-pointer"
               onClick={() => {
-                setSelectedVideo([...selectedVideo, item._id]);
+                handleToggle(item._id);
               }}
             >
               <p>{item.title}</p>
