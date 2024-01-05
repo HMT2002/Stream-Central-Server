@@ -354,6 +354,9 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
     return null;
   }
   const video = await Video.findOne({ videoname, type });
+  if (video.status !== 'ready') {
+    return null;
+  }
   // const availableServer = await getAvailableServer(video);
   const server = await availableVideoOnServer(video);
   if (server.length === 0) {

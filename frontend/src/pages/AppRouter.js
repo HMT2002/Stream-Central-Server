@@ -22,63 +22,173 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import MoviePage from './MoviePage';
 import TVPage from './TVPage';
 import AuthContext from '../contexts/auth-context';
-
+import { RequireAuth } from '../components/RequireAuth/RequireAuth';
+import { RequireRole } from '../components/RequireRole/RequireRole';
 const AppRouter = () => {
-  const authCtx = useContext(AuthContext);
-
   return (
     <GoogleOAuthProvider clientId="1031226840176-2hfbvd0am0ea3hcapmapeea1tc4ijn0n.apps.googleusercontent.com">
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/create-new-account" element={<RegisterPage />} />
-        <Route path="/" exact element={authCtx.isAuthorized ? <HomePage /> : <Navigate to="/login" />} />
-        <Route path="/movies" exact element={authCtx.isAuthorized ? <MoviePage /> : <Navigate to="/login" />} />
-        <Route path="/tv-series" exact element={authCtx.isAuthorized ? <TVPage /> : <Navigate to="/login" />} />
-        <Route path="/user/:id" element={authCtx.isAuthorized ? <UserPage /> : <Navigate to="/login" />} />
-        <Route path="/tag/:tag" element={authCtx.isAuthorized ? <TagPage /> : <Navigate to="/login" />} />
-        <Route path="/thread/:slug" element={authCtx.isAuthorized ? <ThreadPage /> : <Navigate to="/login" />} />
-        <Route path="/account/:username" element={authCtx.isAuthorized ? <AccountPage /> : <Navigate to="/login" />} />
-        <Route path="/video/:videoname" element={authCtx.isAuthorized ? <VideoPage /> : <Navigate to="/login" />} />
-        <Route path="/video-demo/:filename" element={authCtx.isAuthorized ? <VideoDemo /> : <Navigate to="/login" />} />
+        <Route
+          path="/"
+          exact
+          element={
+            <RequireAuth>
+              {' '}
+              <HomePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/movies"
+          exact
+          element={
+            <RequireAuth>
+              <MoviePage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/tv-series"
+          exact
+          element={
+            <RequireAuth>
+              <TVPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/user/:id"
+          element={
+            <RequireAuth>
+              <UserPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/tag/:tag"
+          element={
+            <RequireAuth>
+              <TagPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/thread/:slug"
+          element={
+            <RequireAuth>
+              <ThreadPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/account/:username"
+          element={
+            <RequireAuth>
+              <AccountPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/video/:videoname"
+          element={
+            <RequireAuth>
+              <VideoPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/video-demo/:filename"
+          element={
+            <RequireAuth>
+              <VideoDemo />
+            </RequireAuth>
+          }
+        />
         <Route
           path="/video-ver-2/:videoname"
-          element={authCtx.isAuthorized ? <VideoPageVer2 /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              {' '}
+              <VideoPageVer2 />
+            </RequireAuth>
+          }
         />
         <Route
           path="/video-ver-3/:videoname"
-          element={authCtx.isAuthorized ? <VideoPageVer3 /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              <VideoPageVer3 />
+            </RequireAuth>
+          }
         />
         <Route
           path="/video-ver-4/:videoname"
-          element={authCtx.isAuthorized ? <VideoPageVer4 /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              {' '}
+              <VideoPageVer4 />
+            </RequireAuth>
+          }
         />
         <Route
           path="/video-dash/:videoname"
-          element={authCtx.isAuthorized ? <VideoDash /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              {' '}
+              <VideoDash />
+            </RequireAuth>
+          }
         />
         <Route
           path="/workshop/:username"
-          element={authCtx.isAuthorized ? <WorkshopPage /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              {' '}
+              <WorkshopPage />
+            </RequireAuth>
+          }
         />
         <Route
           path="/workshop/create/thread/:username"
-          element={authCtx.isAuthorized ? <WorkshopPage /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              <WorkshopPage />
+            </RequireAuth>
+          }
         />
         <Route
           path="/workshop/dashboard/:username"
-          element={authCtx.isAuthorized ? <WorkshopPage /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              <WorkshopPage />{' '}
+            </RequireAuth>
+          }
         />
         <Route
           path="/workshop/threads/:username"
-          element={authCtx.isAuthorized ? <WorkshopPage /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              <WorkshopPage />
+            </RequireAuth>
+          }
         />
         <Route
           path="/workshop/comments/:username"
-          element={authCtx.isAuthorized ? <WorkshopPage /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              <WorkshopPage />
+            </RequireAuth>
+          }
         />
         <Route
           path="/workshop/edit/thread/:slug"
-          element={authCtx.isAuthorized ? <WorkshopPage /> : <Navigate to="/login" />}
+          element={
+            <RequireAuth>
+              <WorkshopPage />
+            </RequireAuth>
+          }
         />
       </Routes>
     </GoogleOAuthProvider>

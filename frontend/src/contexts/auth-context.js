@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { GETUserInfoAction } from '../APIs/user-apis';
 
 const AuthContext = React.createContext({
@@ -120,3 +120,6 @@ export const AuthContextProvider = (props) => {
 };
 
 export default AuthContext;
+export const useAuth = () => {
+  return useContext(AuthContext);
+};
