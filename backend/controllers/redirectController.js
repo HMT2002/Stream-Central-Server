@@ -367,7 +367,7 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   console.log(req.body);
   const filename = req.body.filename || 'mkvmediumHls';
   const toURL = req.body.url;
-  const toPort = req.body.port;
+  const toPort = req.body.port || '';
   const videoname = filename.split('Hls')[0].split('Dash')[0];
   const type = filename.split(videoname)[1] === 'Hls' ? 'HLS' : 'DASH';
   // const videoname=filename.split('Hls')[0].split('Dash')[0];

@@ -1,5 +1,5 @@
 import axios from 'axios';
-// const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+//const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
 const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
 
 export const POSTTranferAction = async (server, video) => {

@@ -21,7 +21,8 @@ import transferAPI from '../../APIs/transfer-apis';
 
 import helperUtils from '../../utils/helperUtils';
 import uploadUtils from '../../utils/uploadUtils';
-const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+//const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
 
 const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; title?: string; type?: string }) => {
   const [server, setServer] = useState<Server | null>(null);
@@ -29,14 +30,13 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const [videos, setVideos] = useState<Video[] | null>(null);
   const [selectedVideo, setSelectedVideo] = useState<Video | null>(null);
   const [threadVideo, setThreadVideo] = useState<File | null>(null);
-  const [requestURL, setRequestURL] = useState<string>(
-    'http://34.126.69.58/redirect/available-upload-url-dash-best-fit'
-  );
+  const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/available-upload-url-dash-best-fit');
+  const [videoTitle, setVideoTitle] = useState<string>('');
   const [isMunual, setIsManual] = useState(false);
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['videos'],
     queryFn: async () => {
-      const response = await fetch('http://34.126.69.58/api/v1/video');
+      const response = await fetch(proxy + '/api/v1/video');
       const jsonData = response.json().then((res) => {
         setVideos(res.data.videos);
         return res.data.videos;
@@ -48,7 +48,20 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   if (isLoading) {
     return <span>Loading...</span>;
   }
-
+  const updateInput = (e) => {
+    const fieldName = e.target.name;
+    var value = e.target.value;
+    if (
+      fieldName === 'numberOfTheoryCredits' ||
+      fieldName === 'numberOfPracticeCredits' ||
+      fieldName === 'numberOfSelfLearnCredits'
+    ) {
+      value = e.target.value.replace(/\D/g, '');
+    }
+    setVideoTitle((prevState) => {
+      return value;
+    });
+  };
   if (isError) {
     return <span>Error: {error.message}</span>;
   }
@@ -167,6 +180,11 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const handleUploadNewVideo = async () => {
     try {
       console.log('press create new thread btn');
+      if (videoTitle === '') {
+        toast.error('Please enter video name');
+
+        return;
+      }
       const file = threadVideo;
       const chunkSize = 30 * 1024 * 1024; // Set the desired chunk size (30MB in this example)
 
@@ -183,7 +201,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       // requestHeaders.set('filename', chunkName);
       // requestHeaders.set('filesize', fileSize.toString());
 
-      // const requestUploadURL = await fetch('http://34.126.69.58/redirect/available-upload-url-dash-weight-allocate', {
+      // const requestUploadURL = await fetch(proxy+'/redirect/available-upload-url-dash-weight-allocate', {
       //   method: 'POST',
       //   mode: 'cors', // no-cors, *cors, same-origin
       //   body: JSON.stringify({
@@ -197,15 +215,16 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       requestHeaders.set('Content-Type', 'application/json');
       requestHeaders.set('filename', chunkName);
       requestHeaders.set('filesize', fileSize.toString());
+      requestHeaders.set('title', videoTitle);
 
       // default is best fit, if not, use request-upload-url-dash
 
-      // const requestURL = 'http://34.126.69.58/redirect/request-upload-url-dash'; // Đây là mặc định
-      // const requestURL='http://34.126.69.58/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
-      // const requestURL='http://34.126.69.58/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
-      // const requestURL='http://34.126.69.58/redirect/available-upload-url-dash-first-fit';
+      // const requestURL = proxy+'/redirect/request-upload-url-dash'; // Đây là mặc định
+      // const requestURL=proxy+'/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
+      // const requestURL=proxy+'/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
+      // const requestURL=proxy+'/redirect/available-upload-url-dash-first-fit';
 
-      // const requestURL = 'http://34.126.69.58/redirect/request-upload-url-dash';// Đây là khi chọn manual
+      // const requestURL = proxy+'/redirect/request-upload-url-dash';// Đây là khi chọn manual
       if (isMunual === true) {
         console.log('Choose manual. Uncomment 2 requestHeaders');
         requestHeaders.set('preferurl', server.URL); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
@@ -357,9 +376,9 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL('http://34.126.69.58/redirect/available-upload-url-dash-first-fit');
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-first-fit');
                     setIsManual(false);
-                    console.log('http://34.126.69.58/redirect/available-upload-url-dash-first-fit');
+                    console.log(proxy + '/redirect/available-upload-url-dash-first-fit');
                   }}
                   value="first_fit"
                   id="r1"
@@ -369,9 +388,9 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL('http://34.126.69.58/redirect/available-upload-url-dash-best-fit');
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-best-fit');
                     setIsManual(false);
-                    console.log('http://34.126.69.58/redirect/available-upload-url-dash-best-fit');
+                    console.log(proxy + '/redirect/available-upload-url-dash-best-fit');
                   }}
                   value="best_fit"
                   id="r2"
@@ -381,7 +400,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL('http://34.126.69.58/redirect/available-upload-url-dash-weight-allocate');
+                    setRequestURL(proxy + '/redirect/available-upload-url-dash-weight-allocate');
                     setIsManual(false);
                     console.log('/redirect/available-upload-url-dash-weight-allocate');
                   }}
@@ -393,9 +412,9 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
               <div className="flex items-center space-x-2">
                 <RadioGroupItem
                   onClick={() => {
-                    setRequestURL('http://34.126.69.58/redirect/request-upload-url-dash');
+                    setRequestURL(proxy + '/redirect/request-upload-url-dash');
                     setIsManual(true);
-                    console.log('http://34.126.69.58/redirect/request-upload-url-dash');
+                    console.log(proxy + '/redirect/request-upload-url-dash');
                   }}
                   value="manual_choose"
                   id="r4"
@@ -403,12 +422,24 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
                 <label htmlFor="r4">Manual Choose</label>
               </div>
             </RadioGroup>
+            <input
+              className="w-full rounded border border-stroke bg-gray py-3 pl-11.5 pr-4.5 text-black focus:border-primary focus-visible:outline-none dark:border-strokedark dark:bg-meta-4 dark:text-white dark:focus:border-primary"
+              type="email"
+              name="title"
+              id="emailAddress"
+              placeholder=""
+              defaultValue=""
+              onChange={updateInput}
+            />
           </div>
         )}
       </div>
       <div className="text-center my-5 text-white">
-        <Button onClick={handleUploadNewVideo}>Start</Button>
-        <Button onClick={handleStartTransfer}>Transfer</Button>
+        {type === '2' ? (
+          <Button onClick={handleUploadNewVideo}>Start</Button>
+        ) : (
+          <Button onClick={handleStartTransfer}>Transfer</Button>
+        )}
       </div>
     </div>
   );
