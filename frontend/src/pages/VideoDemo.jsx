@@ -141,17 +141,10 @@ const VideoDemo = () => {
         const index = 0;
         const filename = fetchInfo.videos[index].videoname;
         var urlDash = await getDashUrl(filename);
-        var urlHls = await getHlsUrl(filename);
-
-        if (urlDash) {
-          setReactPlayerURL(() => {
-            return urlDash;
-          });
-        } else {
-          setReactPlayerURL(() => {
-            return urlHls;
-          });
-        }
+        console.log(urlDash);
+        setReactPlayerURL(() => {
+          return urlDash;
+        });
       } catch (error) {
         console.log(error);
         if (playerDashWindow.current) {
@@ -173,7 +166,7 @@ const VideoDemo = () => {
 
   const getAllComment = useCallback(async () => {
     try {
-      const response = await GETAllCommentAction(filename);
+      const response = await GETAllCommentAction(params.filename);
       if (response.status === 200) {
         console.log(response.data);
       }
@@ -238,20 +231,10 @@ const VideoDemo = () => {
                   const index = 0;
                   const filename = info.videos[index].videoname;
                   var urlDash = await getDashUrl(filename);
-                  var urlHls = await getHlsUrl(filename);
-
                   var urlDash = await getDashUrl(filename);
-                  var urlHls = await getHlsUrl(filename);
-
-                  if (urlDash) {
-                    setReactPlayerURL(() => {
-                      return urlDash;
-                    });
-                  } else {
-                    setReactPlayerURL(() => {
-                      return urlHls;
-                    });
-                  }
+                  setReactPlayerURL(() => {
+                    return urlDash;
+                  });
 
                   const duration = videoReactPlayer.current.getDuration();
                   console.log(duration);
@@ -299,7 +282,25 @@ const VideoDemo = () => {
               )}
             </select>
 
-            <SwiperEspisode episodes={info.videos} />
+            <SwiperEspisode
+              episodes={info.videos}
+              onclick={async (video) => {
+                console.log(video);
+                setIsPlaying(() => {
+                  return false;
+                }); /// dòng này thì chạy đc
+                const filename = video.videoname;
+                var urlDash = await getDashUrl(filename);
+                var urlDash = await getDashUrl(filename);
+                setReactPlayerURL(() => {
+                  return urlDash;
+                });
+
+                setIsPlaying(() => {
+                  return true; /// dòng này thì chạy đc
+                });
+              }}
+            />
           </div>
 
           {/* <div className="dash-video-player">

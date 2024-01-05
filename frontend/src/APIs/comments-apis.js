@@ -2,7 +2,7 @@ export const GETAllCommentAction = async (videoID) => {
   if (!videoID) {
     return { status: 'fail' };
   }
-  const response = await fetch('/api/v1/comment/get-all-comment' + videoID, {
+  const response = await fetch('/api/v1/comment/get-all-comment/' + videoID, {
     method: 'GET',
     headers: {
       // 'Content-Type': 'application/json',

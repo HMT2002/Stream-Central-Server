@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 
 // Import Swiper styles
@@ -7,6 +7,9 @@ import SwiperItems from '../swiper-items/swiper-item';
 
 const SwiperEspisode = (props) => {
   console.log(props.episodes);
+  const onclick = useCallback((video) => {
+    props.onclick(video);
+  });
   return (
     <Swiper
       spaceBetween={50}
@@ -18,7 +21,7 @@ const SwiperEspisode = (props) => {
       {props.episodes.map((episode) => {
         return (
           <SwiperSlide className=" max-w-fit">
-            <SwiperItems episode={episode} />
+            <SwiperItems episode={episode} onclick={onclick} />
           </SwiperSlide>
         );
       })}

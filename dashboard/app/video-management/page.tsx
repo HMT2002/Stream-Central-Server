@@ -21,7 +21,8 @@ import { Video } from '../../types/video';
 import { GETAllInfoAction } from '../../APIs/transfer-apis';
 import MovieItem from '../../components/movieItem/MovieItem';
 import { videoItem } from '../../types/movieItem';
-const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+// const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
 
 const MovieDashboard: React.FC = () => {
   const [allVideos, setAllVideos] = useState<Video[]>([]);
