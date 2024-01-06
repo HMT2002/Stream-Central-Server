@@ -4,7 +4,6 @@ import AuthContext from '../contexts/auth-context';
 import UserAPIs from '../APIs/user-apis';
 import AccountOverview from '../components/accounts/AccountOverview';
 import AccountDetails from '../components/accounts/AccountDetails';
-import ContentCreatorInfo from '../components/accounts/ContentCreatorInfo';
 import ReactLoading from 'react-loading';
 
 import { useNavigate } from 'react-router-dom';
@@ -96,17 +95,6 @@ const AccountPage = () => {
             isRequestingUpgrade={isRequestingUpgrade}
             onRequestUpgrade={RequestUpgradeAccountHandler}
           />
-          {(authContext.role === 'content-creator' || isRequestingUpgrade) && (
-            <React.Fragment>
-              <div className="account-page__separator" />
-              <ContentCreatorInfo
-                context={authContext}
-                userInfo={userInfo}
-                onRequestUpgradeAccount={RequestedUpgradeAccountHandler}
-                onAbortRequestUpgrade={AbortRequestUpgradeAccountHandler}
-              />
-            </React.Fragment>
-          )}
         </div>
       )}
     </React.Fragment>
