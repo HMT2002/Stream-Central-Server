@@ -21,8 +21,8 @@ import transferAPI from '../../APIs/transfer-apis';
 
 import helperUtils from '../../utils/helperUtils';
 import uploadUtils from '../../utils/uploadUtils';
-//const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
-const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+// const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
 
 const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; title?: string; type?: string }) => {
   const [server, setServer] = useState<Server | null>(null);
@@ -32,7 +32,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
   const [threadVideo, setThreadVideo] = useState<File | null>(null);
   const [requestURL, setRequestURL] = useState<string>(proxy + '/redirect/available-upload-url-dash-best-fit');
   const [videoTitle, setVideoTitle] = useState<string>('');
-  const [isMunual, setIsManual] = useState(false);
+  const [isManual, setIsManual] = useState(false);
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['videos'],
     queryFn: async () => {
@@ -140,7 +140,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       await uploadUtils.uploadChunkDashVer2(
         chunk,
         chunkIndex,
-        arrayChunkName[chunkIndex],
+        // arrayChunkName[chunkIndex],
         arrayChunkName,
         chunkName,
         ext,
@@ -152,7 +152,7 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       console.log({
         chunk,
         chunkIndex,
-        arrayChunkNamechunkIndex: arrayChunkName[chunkIndex],
+        // arrayChunkNamechunkIndex: arrayChunkName[chunkIndex],
         arrayChunkName,
         chunkName,
         ext,
@@ -196,36 +196,13 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         arrayChunkName.push(chunkName + '_' + chunkIndex);
       }
-      // const requestHeaders: HeadersInit = new Headers();
-      // requestHeaders.set('Content-Type', 'application/json');
-      // requestHeaders.set('filename', chunkName);
-      // requestHeaders.set('filesize', fileSize.toString());
-
-      // const requestUploadURL = await fetch(proxy+'/redirect/available-upload-url-dash-weight-allocate', {
-      //   method: 'POST',
-      //   mode: 'cors', // no-cors, *cors, same-origin
-      //   body: JSON.stringify({
-      //     filename: chunkName,
-      //     filesize: fileSize,
-      //   }),
-      //   headers: requestHeaders,
-      // });
-
       const requestHeaders: HeadersInit = new Headers();
       requestHeaders.set('Content-Type', 'application/json');
       requestHeaders.set('filename', chunkName);
       requestHeaders.set('filesize', fileSize.toString());
       requestHeaders.set('title', videoTitle);
 
-      // default is best fit, if not, use request-upload-url-dash
-
-      // const requestURL = proxy+'/redirect/request-upload-url-dash'; // Đây là mặc định
-      // const requestURL=proxy+'/redirect/available-upload-url-dash-weight-allocate' //Chọn option Weight Allocate thì dùng URL này
-      // const requestURL=proxy+'/redirect/available-upload-url-dash-best-fit'; // tương tự 2 cái dưới
-      // const requestURL=proxy+'/redirect/available-upload-url-dash-first-fit';
-
-      // const requestURL = proxy+'/redirect/request-upload-url-dash';// Đây là khi chọn manual
-      if (isMunual === true) {
+      if (isManual === true) {
         console.log('Choose manual. Uncomment 2 requestHeaders');
         requestHeaders.set('preferurl', server.URL); // 3 dòng này, chỉ khi chọn manual upload, chọn server thì mới bỏ ẩn 2 dòng này
         requestHeaders.set('preferport', server.port); // để thêm địa chỉ server  chọn thủ công vào request
@@ -251,7 +228,6 @@ const ServerModal = ({ data: serverArray, title, type }: { data?: Server[]; titl
         const uploadURL = checkResult.servers[index].URL;
         const uploadPort = checkResult.servers[index].port || '';
         const fullUploadURL = checkResult.servers[index].uploadURL;
-        // const fullUploadURL = 'http://localhost:9100/api/v1/upload/';
         const statusID = checkResult.videoStatus._id;
         console.log({ uploadURL, uploadPort, fullUploadURL });
 

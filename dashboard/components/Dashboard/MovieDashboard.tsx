@@ -22,6 +22,8 @@ import {
 } from '../Dialog/Dialog';
 import ServerModal from '../SelectDropdown/SelectDropdown';
 import { Button } from '../Button/Button';
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+// const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
 const MapOne = dynamic(() => import('../Maps/MapOne'), {
   ssr: false,
 });
@@ -30,7 +32,7 @@ const MovieDashboard: React.FC = () => {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['servers'],
     queryFn: async () => {
-      const response = await fetch('http://34.126.69.58/api/v1/server');
+      const response = await fetch(proxy + '/api/v1/server');
       const jsonData = response.json();
       return jsonData;
     },

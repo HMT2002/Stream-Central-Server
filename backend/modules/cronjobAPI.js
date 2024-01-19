@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const helperAPI = require('./helperAPI');
 const driveAPI = require('./driveAPI');
-const firebaseAPI = require('./firebaseAPI');
+// const firebaseAPI = require('./firebaseAPI');
 const redirectAPI = require('./redirectAPI');
 
 const catchAsync = require('../utils/catchAsync');
@@ -21,6 +21,7 @@ fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 const axios = require('axios');
 const Info = require('../models/mongo/Info');
+const { CONSTANTS } = require('../constants/constants');
 
 const getAvailableVideoID = async (id) => {
   const availVideo = await Video.findOne({ _id: id });
@@ -178,7 +179,7 @@ const getMyNetworkDownloadSpeedDash = async (url, port, videoname) => {
 };
 
 const getMyNetworkStorageSpeed = async (url, port, videofolder) => {
-  const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + videofolder;
+  const baseUrl = 'http://' + url + port + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + videofolder;
   return calculateTimeStorage(baseUrl);
 };
 
@@ -341,7 +342,7 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   await addToServer(video, toURL, toPort);
   await addUpVideoReplicant(video);
 
-  return 'http://' + url + port + '/api/v1/replicate/send-folder';
+  return 'http://' + url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/send-folder';
 };
 
 exports.DeleteFolderWithVideoIDRequest = async (url, port, videoID) => {

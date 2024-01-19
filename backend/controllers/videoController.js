@@ -3,7 +3,7 @@ const path = require('path');
 const users = JSON.parse(fs.readFileSync('./json-resources/users.json'));
 const helperAPI = require('../modules/helperAPI');
 const driveAPI = require('../modules/driveAPI');
-const firebaseAPI = require('../modules/firebaseAPI');
+// const firebaseAPI = require('../modules/firebaseAPI');
 
 const threads_test = JSON.parse(fs.readFileSync('./json-resources/threads_test.json'));
 
@@ -72,15 +72,15 @@ exports.UploadNewFileFirebase = catchAsync(async (req, res, next) => {
   const filebuffer = fs.readFileSync(file.path);
   console.log(filebuffer);
 
-  const firebaseDownloadUrl = await firebaseAPI(file, filebuffer);
-  console.log(firebaseDownloadUrl);
+  // const firebaseDownloadUrl = await firebaseAPI(file, filebuffer);
+  // console.log(firebaseDownloadUrl);
   fs.unlink(file.path, function (err) {
     if (err) throw err;
     console.log('File deleted!');
   });
   res.status(200).json({
     status: 'test',
-    firebaseDownloadUrl,
+    // firebaseDownloadUrl,
   });
 });
 

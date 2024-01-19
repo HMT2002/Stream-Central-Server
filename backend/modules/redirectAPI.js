@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const helperAPI = require('./helperAPI');
 const driveAPI = require('./driveAPI');
-const firebaseAPI = require('./firebaseAPI');
+// const firebaseAPI = require('./firebaseAPI');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const APIFeatures = require('../utils/apiFeatures');
@@ -20,6 +20,7 @@ fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 const axios = require('axios');
 const Info = require('../models/mongo/Info');
+const { CONSTANTS } = require('../constants/constants');
 
 const getAvailableVideoID = async (id) => {
   const availVideo = await Video.findOne({ _id: id });
@@ -172,7 +173,7 @@ const getMyNetworkDownloadSpeedDash = async (url, port, videoname) => {
 };
 
 const getMyNetworkStorageSpeed = async (url, port, videofolder) => {
-  const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + videofolder;
+  const baseUrl = 'http://' + url + port + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + videofolder;
   return calculateTimeStorage(baseUrl);
 };
 
@@ -373,7 +374,7 @@ const ReplicateVideoFolder = async (videoname, type, toURL, toPort) => {
   await addUpVideoReplicant(video);
   await createVideoStatus(video, d_server, 'ready');
 
-  return 'http://' + url + port + '/api/v1/replicate/send-folder';
+  return 'http://' + url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/send-folder';
 };
 
 const RemoveVideoFolder = async (video, d_server) => {
@@ -383,7 +384,7 @@ const RemoveVideoFolder = async (video, d_server) => {
     await removeFromServer(video, d_server);
     await reduceVideoReplicant(video);
     await deleteVideoStatus(video, d_server);
-    return 'http://' + url + port + '/api/v1/replicate/delete-folder';
+    return 'http://' + url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/delete-folder';
   } catch (error) {
     return error;
   }
@@ -417,9 +418,6 @@ const SendFileToOtherNodeAndConvertToHls = async (
 ) => {
   try {
     const filePath = './' + destination + filename;
-    // console.log('sending file ' + filePath);
-    // console.log(filePath);
-    // console.log(fs.existsSync(filePath));
     const readStream = fs.createReadStream(filePath);
     var form = new FormData();
     form.append('myMultilPartFileChunk', readStream);
@@ -428,7 +426,7 @@ const SendFileToOtherNodeAndConvertToHls = async (
 
     await axios({
       method: 'post',
-      url: url + port + '/api/v1/replicate/receive',
+      url: url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/receive',
       data: form,
       headers: { ...form.getHeaders(), chunkname: filename, ext },
       maxContentLength: Infinity,
@@ -437,9 +435,13 @@ const SendFileToOtherNodeAndConvertToHls = async (
       .then(function (response) {
         const data = response.data;
         // console.log(data);
-        if (data.message == 'enough for concate') {
+        if (data.message == CONSTANTS.ENOUGH_FOR_CONCATE_MESSAGE) {
           setTimeout(async () => {
-            await sendConcateRequest(url + port + '/api/v1/replicate/concate-hls', arrayChunkName, orginalname);
+            await sendConcateRequest(
+              url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/concate-hls',
+              arrayChunkName,
+              orginalname
+            );
           }, 5000);
         }
       })
@@ -478,7 +480,7 @@ const SendFileToOtherNodeAndConvertToDash = async (
 
     await axios({
       method: 'post',
-      url: url + port + '/api/v1/replicate/receive',
+      url: url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/receive',
       data: form,
       headers: { ...form.getHeaders(), chunkname: filename, ext },
       maxContentLength: Infinity,
@@ -487,9 +489,13 @@ const SendFileToOtherNodeAndConvertToDash = async (
       .then(function (response) {
         // console.log(response.data);
         const data = response.data;
-        if (data.message == 'enough for concate') {
+        if (data.message == CONSTANTS.ENOUGH_FOR_CONCATE_MESSAGE) {
           setTimeout(async () => {
-            await sendConcateRequest(url + port + '/api/v1/replicate/concate-dash', arrayChunkName, orginalname);
+            await sendConcateRequest(
+              url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/concate-dash',
+              arrayChunkName,
+              orginalname
+            );
           }, 5000);
         }
       })
@@ -515,6 +521,7 @@ const createServer = async (URL, port) => {
 };
 
 const getServerWithURLAndPort = async (URL, port) => {
+  console.log('getServerWithURLAndPort');
   console.log({ URL, port });
   const server = await Server.findOne({ URL, port });
   return server;
@@ -637,7 +644,6 @@ const checkFolderOnServer = async (baseUrl) => {
   try {
     console.log(baseUrl);
     const { data } = await axios.get(baseUrl, { validateStatus: () => true });
-
     return data;
   } catch (error) {
     console.log(error);
@@ -727,9 +733,9 @@ const checkFileISExistedOnServerYet = async (filename, type) => {
   const port = aliveServers[index].port || '';
   let baseUrl;
   if (type === 'HLS') {
-    baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
+    baseUrl = 'http://' + url + port + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + filename + 'Hls';
   } else if (type === 'DASH') {
-    baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Dash';
+    baseUrl = 'http://' + url + port + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + filename + 'Dash';
   }
   const check = await checkFolderOnServer(baseUrl);
   if (check.existed === true) {
@@ -770,7 +776,7 @@ const UploadNewFileLargeMultilpartHls = async (req) => {
   // const index = 0;
   // const url = aliveServers[index].URL || 'localhost';
   // const port = aliveServers[index].port || '';
-  // const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
+  // const baseUrl = 'http://' + url + port + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + filename + 'Hls';
   // const check = await checkFolderOnServer(baseUrl);
   // if (check.existed === true) {
   //   return {

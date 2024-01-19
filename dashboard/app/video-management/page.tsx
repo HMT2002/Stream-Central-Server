@@ -21,8 +21,8 @@ import { Video } from '../../types/video';
 import { GETAllInfoAction } from '../../APIs/transfer-apis';
 import MovieItem from '../../components/movieItem/MovieItem';
 import { videoItem } from '../../types/movieItem';
-// const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
-const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
+const proxy = process.env.NEXT_PUBLIC_PROXY_TUE_LOCAL;
+// const proxy = process.env.NEXT_PUBLIC_PROXY_CLOUD;
 
 const MovieDashboard: React.FC = () => {
   const [allVideos, setAllVideos] = useState<Video[]>([]);
@@ -32,7 +32,7 @@ const MovieDashboard: React.FC = () => {
   const { isLoading, isError, data, error } = useQuery({
     queryKey: ['allVideos'],
     queryFn: async () => {
-      const response = await fetch('http://34.126.69.58/api/v1/video/');
+      const response = await fetch(proxy + '/api/v1/video/');
       const jsonData = response.json();
       return jsonData;
     },
@@ -41,7 +41,7 @@ const MovieDashboard: React.FC = () => {
   const allFilmsInfo = useQuery({
     queryKey: ['allFilmsInfo'],
     queryFn: async () => {
-      const response = await fetch('http://34.126.69.58/api/v1/info/');
+      const response = await fetch(proxy + '/api/v1/info/');
       const jsonData = response.json();
       console.log(jsonData);
       return jsonData;

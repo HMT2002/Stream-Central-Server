@@ -3,7 +3,7 @@ const path = require('path');
 const users = JSON.parse(fs.readFileSync('./json-resources/users.json'));
 const helperAPI = require('../modules/helperAPI');
 const driveAPI = require('../modules/driveAPI');
-const firebaseAPI = require('../modules/firebaseAPI');
+// const firebaseAPI = require('../modules/firebaseAPI');
 const redirectAPI = require('../modules/redirectAPI');
 const storageStrategiesAPI = require('../modules/storageStrategiesAPI');
 
@@ -23,6 +23,7 @@ fluentFfmpeg.setFfmpegPath(ffmpegPath);
 
 const axios = require('axios');
 const VideoStatus = require('../models/mongo/VideoStatus');
+const { CONSTANTS } = require('../constants/constants');
 
 exports.GetAvailableServerHls = catchAsync(async (req, res, next) => {
   console.log('check hls server');
@@ -338,7 +339,7 @@ exports.RedirectReplicateRequest = catchAsync(async (req, res, next) => {
   const url = availableServer[index].URL || 'localhost';
   const port = availableServer[index].port || '';
   console.log({ url, port });
-  res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send');
+  res.redirect(308, 'http://' + url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/send');
   res.end();
 });
 
@@ -380,7 +381,7 @@ exports.RedirectReplicateFolderRequest = catchAsync(async (req, res, next) => {
   // const port =availableServer[index].port||'';
   // // nên nhớ 2 port này khác nhau
   // await addToServer(video,toURL,toPort);
-  // res.redirect(308, 'http://' + url + port + '/api/v1/replicate/send-folder');
+  // res.redirect(308, 'http://' + url + port + CONSTANTS.SUB_SERVER_REPLICATE_API+ '/send-folder');
 
   const redirectURL = await redirectAPI.ReplicateVideoFolder(videoname, type, toURL, toPort);
   console.log(redirectURL);
@@ -525,7 +526,7 @@ exports.UploadNewFileLargeMultilpartHls = catchAsync(async (req, res, next) => {
   const index = 0;
   const url = aliveServers[index].URL || 'localhost';
   const port = aliveServers[index].port || '';
-  // const baseUrl = 'http://' + url + port + '/api/v1/check/folder/' + filename + 'Hls';
+  // const baseUrl = 'http://' + url + port + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + filename + 'Hls';
   // const check = await redirectAPI.checkFolderOnServer(baseUrl);
   // if (check.existed === true) {
   //   res.status(200).json({
@@ -686,7 +687,7 @@ exports.PreferUploadURL = catchAsync(async (req, res, next) => {
     });
     return;
   }
-  const baseUrl = 'http://' + preferurl + preferport + '/api/v1/check/folder/' + filename + 'Dash';
+  const baseUrl = 'http://' + preferurl + preferport + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + filename + 'Dash';
   const check = await redirectAPI.checkFolderOnServer(baseUrl);
   if (check.existed === true) {
     res.status(200).json({
@@ -952,7 +953,7 @@ exports.SendFolderFileToOtherNode = catchAsync(async (req, res, next) => {
   const url = req.body.url || 'http://localhost';
   const port = req.body.port || ':9200';
 
-  const baseUrl = url + port + '/api/v1/check/folder/' + filename;
+  const baseUrl = url + port + CONSTANTS.SUB_SERVER_CHECK_API + '/folder/' + filename;
   console.log(baseUrl);
   const { data: check } = await axios.get(baseUrl);
   console.log(check);
@@ -984,7 +985,7 @@ exports.SendFolderFileToOtherNode = catchAsync(async (req, res, next) => {
     form.append('myFolderFile', readStream);
     const { data } = await axios({
       method: 'post',
-      url: url + port + '/api/v1/replicate/receive-folder',
+      url: url + port + CONSTANTS.SUB_SERVER_REPLICATE_API + '/receive-folder',
       data: form,
       headers: { ...form.getHeaders(), filename: fileList[i], folder: filename },
     });
