@@ -8,14 +8,14 @@ const DB_CLOUD = process.env.DATABASE.replace('<PASSWORD>', process.env.DATABASE
 
 const connect = async () => {
   try {
-    // await mongoose.connect(DB_CLOUD, {}).then((con) => {
-    //   console.log('Mongo connected! ');
-    //   console.log(con.connections);
-    // });
-    await mongoose.connect(DB_LOCAL_ALPHA_TEST, {}).then((con) => {
+    await mongoose.connect(DB_CLOUD, {}).then((con) => {
       console.log('Mongo connected! ');
-      //console.log(con.connections);
+      // console.log(con.connections);
     });
+    // await mongoose.connect(DB_LOCAL_ALPHA_TEST, {}).then((con) => {
+    //   console.log('Mongo connected! ');
+    //   //console.log(con.connections);
+    // });
   } catch (err) {
     console.log(err);
   }

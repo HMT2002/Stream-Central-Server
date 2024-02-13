@@ -73,7 +73,7 @@ const VideoDemo = () => {
 
   const [isPlayingDash, setIsPlaying] = useState(false);
   const [isPlayingHls, setIsPlayingHls] = useState(false);
-  const [info, setInfo] = useState({ videos: [] });
+  const [info, setInfo] = useState({ filmInfo: undefined, videos: [] });
 
   const playerDashWindow = useRef(null);
 
@@ -134,11 +134,15 @@ const VideoDemo = () => {
         //   controlbar.initialize();
         // }
         const fetchInfo = await GETFilmInfo(infoID);
+        if (fetchInfo === null) {
+          return;
+        }
         setInfo(() => {
           return fetchInfo;
         });
         console.log(fetchInfo);
         const index = 0;
+
         const filename = fetchInfo.videos[index].videoname;
         var urlDash = await getDashUrl(filename);
         console.log(urlDash);
@@ -229,6 +233,9 @@ const VideoDemo = () => {
                     return false;
                   }); /// dòng này thì chạy đc
                   const index = 0;
+                  if (info.videos.length < 1) {
+                    return;
+                  }
                   const filename = info.videos[index].videoname;
                   var urlDash = await getDashUrl(filename);
                   var urlDash = await getDashUrl(filename);

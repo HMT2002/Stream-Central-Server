@@ -3,10 +3,8 @@ import React, { useContext, useEffect, useState, useRef, Component } from 'react
 import Hls from 'hls.js';
 import { TimelineChart } from '../chart/timeline-chart.ts';
 import SubtitlesOctopus from '../subtitles/subtitles-octopus';
-import MediaElement from '../mediaelement-7.0.0/MediaElement';
 import videojs from 'video.js';
 import toWebVTT from 'srt-webvtt'; // This is a default export, so you don't have to worry about the import name
-
 
 function customLogger(logContent) {
   const color = 'color: white; background-color: black;';
@@ -240,19 +238,16 @@ const VideoHls = (props) => {
       // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
       // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
       url = 'http://192.168.140.104/tmp/prep/convert/_Nee Nee Nee.m3u8';
-    }
-    else if (props.videoname === 'ハルジオン-Red5-mp4') {
+    } else if (props.videoname === 'ハルジオン-Red5-mp4') {
       // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
       // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
       url = 'http://localhost:5080/oflaDemo/ハルジオン.mp4';
-    }
-    else if (props.videoname === 'ハルジオン-Red5-m3u8') {
+    } else if (props.videoname === 'ハルジオン-Red5-m3u8') {
       // có khả năng nhận về file sub định dạng vtt vì bên server nginx có hỗ trợ host file toàn tập, node thì không thấy.
       // url = 'http://192.168.140.104/tmp/convert/哀の隙間 - feat.初音ミク.m3u8';
       url = 'http://localhost:5080/oflaDemo/convert/ハルジオン.m3u8';
     }
     console.log(url);
-
 
     let obj_play = {
       fill: true,
@@ -274,7 +269,7 @@ const VideoHls = (props) => {
       // liveui: true,
       // techorder : ["flash","html5"],
     };
-    
+
     const VideoJS_player = videojs(video, obj_play, function onPlayerReady() {
       videojs.log('Your player is ready!');
 
@@ -293,65 +288,63 @@ const VideoHls = (props) => {
     hls.loadSource(url);
     hls.attachMedia(video);
     hls.subtitleDisplay = true;
-    
-  const loadSubtitle = async (player,VideoJS_player) => {
-    try{
-    const video=player.current;
-    const subASSResponse = await fetch('/videos/' + props.videoname + '.ass', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: storedToken,
-      },
-    });
-    const subSRTResponse = await fetch('/videos/' + props.videoname + '.srt', {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        // Authorization: storedToken,
-      },
-    });
-    
-    if (subSRTResponse.status != 500) {
-      //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
-      //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
-      //server nhận SRT , dùng ffmpeg để tổng hợp từ file sub srt và video ra thành hls kèm sub
-      console.log(subSRTResponse);
-      // const srtSub = await subSRTResponse.text();
-      // console.log(srtSub);
-      const vtt = await subSRTResponse.blob();
-      console.log(vtt);
-      const WebVTT_sutitle = await toWebVTT(vtt); // this function accepts a parameer of SRT subtitle blob/file object
-      // cái trên là lấy 1 
-      console.log(WebVTT_sutitle);
 
-      // const localURL = await URL.createObjectURL(vtt);
-      VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
-      // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành 1 obj blob
-      // Dùng obj blob đó cùng phương thức toWebVTT thành blob nguồn(src) cho _player videojs blob:http://localhost:3000/xxxxx-xxx-xxxxxxx-xxxxxxx
-    }
+    const loadSubtitle = async (player, VideoJS_player) => {
+      try {
+        const video = player.current;
+        const subASSResponse = await fetch('/videos/' + props.videoname + '.ass', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // Authorization: storedToken,
+          },
+        });
+        const subSRTResponse = await fetch('/videos/' + props.videoname + '.srt', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            // Authorization: storedToken,
+          },
+        });
 
-    // nếu để ASS ở dưới thì ưu tiên ASS hơn, sẽ tìm cách xét độ ưu tiên sau
-    if (subASSResponse.status != 500) {
-      var options = {
-        video: video, // HTML5 video element
-        subUrl: '/videos/' + props.videoname + '.ass', // Link to subtitles
-        // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
-        fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
-        workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
-        legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
-      };
-      const SubtitlesOctopus_subtitle = new SubtitlesOctopus(options);
-      console.log(SubtitlesOctopus_subtitle);
-    }
-    }
-    catch(error){
-      console.log(error)
-    }
+        if (subSRTResponse.status != 500) {
+          //oke, cho đến hiện tại chỉ có libass là hỗ trợ hiển thị sub ass thôi, còn srt chả thấy thư viện hay gói nào hỗ trợ hết.
+          //nếu người dùng bất đắc dĩ đăng file sub srt thì theo quy trình sau:
+          //server nhận SRT , dùng ffmpeg để tổng hợp từ file sub srt và video ra thành hls kèm sub
+          console.log(subSRTResponse);
+          // const srtSub = await subSRTResponse.text();
+          // console.log(srtSub);
+          const vtt = await subSRTResponse.blob();
+          console.log(vtt);
+          const WebVTT_sutitle = await toWebVTT(vtt); // this function accepts a parameer of SRT subtitle blob/file object
+          // cái trên là lấy 1
+          console.log(WebVTT_sutitle);
 
-  };
+          // const localURL = await URL.createObjectURL(vtt);
+          VideoJS_player.addRemoteTextTrack({ src: WebVTT_sutitle, kind: 'subtitles', label: 'Vietnamese' }, false);
+          // ayda, ngộ là ngộ hiểu rồi nha, be stream file srt về response cho fe, fe chuyển stream nhận đc thành 1 obj blob
+          // Dùng obj blob đó cùng phương thức toWebVTT thành blob nguồn(src) cho _player videojs blob:http://localhost:3000/xxxxx-xxx-xxxxxxx-xxxxxxx
+        }
 
-  loadSubtitle(player,VideoJS_player);
+        // nếu để ASS ở dưới thì ưu tiên ASS hơn, sẽ tìm cách xét độ ưu tiên sau
+        if (subASSResponse.status != 500) {
+          var options = {
+            video: video, // HTML5 video element
+            subUrl: '/videos/' + props.videoname + '.ass', // Link to subtitles
+            // fonts: ['/test/font-1.ttf', '/test/font-2.ttf'], // Links to fonts (not required, default font already included in build)
+            fonts: ['/Arial.ttf', '/TimesNewRoman.ttf'],
+            workerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to WebAssembly-based file "libassjs-worker.js"
+            legacyWorkerUrl: process.env.PUBLIC_URL + '/subtitles-octopus-worker.js', // Link to non-WebAssembly worker
+          };
+          const SubtitlesOctopus_subtitle = new SubtitlesOctopus(options);
+          console.log(SubtitlesOctopus_subtitle);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    loadSubtitle(player, VideoJS_player);
 
     //#region chart handler
     const updateLevelOrTrack = (eventName, data) => {
@@ -508,8 +501,6 @@ const VideoHls = (props) => {
     hls.on(Hls.Events.BUFFER_APPENDED, updateChart, chart);
     hls.on(Hls.Events.BUFFER_FLUSHED, updateChart, chart);
     //#endregion
-  
-    
   };
 
   const loadChart = async () => {
@@ -549,19 +540,15 @@ const VideoHls = (props) => {
     });
   };
 
-  const onChangeShowSubtitleAss=async()=>{
-
-  }
-  const onChangeShowSubtitleSrt=async()=>{
-
-  }
+  const onChangeShowSubtitleAss = async () => {};
+  const onChangeShowSubtitleSrt = async () => {};
   useEffect(() => {
     try {
       let VideoJS_player;
       let SubtitlesOctopus_subtitle;
       let WebVTT_sutitle;
 
-       loadVideo(player,VideoJS_player,SubtitlesOctopus_subtitle,WebVTT_sutitle);
+      loadVideo(player, VideoJS_player, SubtitlesOctopus_subtitle, WebVTT_sutitle);
     } catch (ex) {
       console.log(ex);
     }
@@ -575,12 +562,22 @@ const VideoHls = (props) => {
         <div className="hls-main-video">
           <video className="video-js" ref={player}></video>
           <input ref={threadVideoRef} type="file" onChange={VideoChangeHandler} />
-          <input id='checkboxShowSubtitleAss' type='checkbox' checked={showSubtitleAss} onChange={onChangeShowSubtitleAss}/>
-          <label htmlFor="checkboxShowSubtitleAss"> Show ASS Subtitles</label><br></br>
-          <input id='checkboxShowSubtitleSrt' type='checkbox' checked={showSubtitleSrt} onChange={onChangeShowSubtitleSrt}/>
-          <label  htmlFor="checkboxShowSubtitleSrt"> Show SRT Subtitles</label><br></br>
-
-
+          <input
+            id="checkboxShowSubtitleAss"
+            type="checkbox"
+            checked={showSubtitleAss}
+            onChange={onChangeShowSubtitleAss}
+          />
+          <label htmlFor="checkboxShowSubtitleAss"> Show ASS Subtitles</label>
+          <br></br>
+          <input
+            id="checkboxShowSubtitleSrt"
+            type="checkbox"
+            checked={showSubtitleSrt}
+            onChange={onChangeShowSubtitleSrt}
+          />
+          <label htmlFor="checkboxShowSubtitleSrt"> Show SRT Subtitles</label>
+          <br></br>
         </div>
         <canvas className="canvas-main-video" ref={canvas} />
 

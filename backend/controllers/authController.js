@@ -132,7 +132,6 @@ exports.SignIn = catchAsync(async (req, res, next) => {
     return next(new AppError('Please provide account and password.', 400));
   }
   const user = await User.findOne({ account: account }).select('+password');
-
   if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError('Wrong information.', 401));
   }

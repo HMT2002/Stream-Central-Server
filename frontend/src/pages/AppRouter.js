@@ -30,166 +30,25 @@ const AppRouter = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/create-new-account" element={<RegisterPage />} />
-        <Route
-          path="/"
-          exact
-          element={
-            <RequireAuth>
-              {' '}
-              <HomePage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/movies"
-          exact
-          element={
-            <RequireAuth>
-              <MoviePage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/tv-series"
-          exact
-          element={
-            <RequireAuth>
-              <TVPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/user/:id"
-          element={
-            <RequireAuth>
-              <UserPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/tag/:tag"
-          element={
-            <RequireAuth>
-              <TagPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/thread/:slug"
-          element={
-            <RequireAuth>
-              <ThreadPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/account/:username"
-          element={
-            <RequireAuth>
-              <AccountPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/video/:videoname"
-          element={
-            <RequireAuth>
-              <VideoPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/video-demo/:filename"
-          element={
-            <RequireAuth>
-              <VideoDemo />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/video-ver-2/:videoname"
-          element={
-            <RequireAuth>
-              {' '}
-              <VideoPageVer2 />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/video-ver-3/:videoname"
-          element={
-            <RequireAuth>
-              <VideoPageVer3 />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/video-ver-4/:videoname"
-          element={
-            <RequireAuth>
-              {' '}
-              <VideoPageVer4 />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/video-dash/:videoname"
-          element={
-            <RequireAuth>
-              {' '}
-              <VideoDash />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/workshop/:username"
-          element={
-            <RequireAuth>
-              {' '}
-              <WorkshopPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/workshop/create/thread/:username"
-          element={
-            <RequireAuth>
-              <WorkshopPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/workshop/dashboard/:username"
-          element={
-            <RequireAuth>
-              <WorkshopPage />{' '}
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/workshop/threads/:username"
-          element={
-            <RequireAuth>
-              <WorkshopPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/workshop/comments/:username"
-          element={
-            <RequireAuth>
-              <WorkshopPage />
-            </RequireAuth>
-          }
-        />
-        <Route
-          path="/workshop/edit/thread/:slug"
-          element={
-            <RequireAuth>
-              <WorkshopPage />
-            </RequireAuth>
-          }
-        />
+        <Route path="/" exact element={<HomePage />} />
+        <Route path="/movies" exact element={<MoviePage />} />
+        <Route path="/tv-series" exact element={<TVPage />} />
+        <Route path="/user/:id" element={<UserPage />} />
+        <Route path="/tag/:tag" element={<TagPage />} />
+        <Route path="/thread/:slug" element={<ThreadPage />} />
+        <Route path="/account/:username" element={<AccountPage />} />
+        <Route path="/video/:videoname" element={<VideoPage />} />
+        <Route path="/video-demo/:filename" element={<VideoDemo />} />
+        <Route path="/video-ver-2/:videoname" element={<VideoPageVer2 />} />
+        <Route path="/video-ver-3/:videoname" element={<VideoPageVer3 />} />
+        <Route path="/video-ver-4/:videoname" element={<VideoPageVer4 />} />
+        <Route path="/video-dash/:videoname" element={<VideoDash />} />
+        <Route path="/workshop/:username" element={<WorkshopPage />} />
+        <Route path="/workshop/create/thread/:username" element={<WorkshopPage />} />
+        <Route path="/workshop/dashboard/:username" element={<WorkshopPage />} />
+        <Route path="/workshop/threads/:username" element={<WorkshopPage />} />
+        <Route path="/workshop/comments/:username" element={<WorkshopPage />} />
+        <Route path="/workshop/edit/thread/:slug" element={<WorkshopPage />} />
       </Routes>
     </GoogleOAuthProvider>
   );
